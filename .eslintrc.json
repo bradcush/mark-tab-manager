@@ -1,0 +1,39 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "./tsconfig.json",
+        "extraFileExtensions": [".json"]
+    },
+    "plugins": ["@typescript-eslint", "json"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:prettier/recommended",
+        "prettier/@typescript-eslint"
+    ],
+    "rules": {
+        "@typescript-eslint/no-use-before-define": 0,
+        "@typescript-eslint/no-var-requires": "warn",
+        "@typescript-eslint/no-empty-function": "off",
+        "curly": ["error", "all"],
+        "no-caller": "error",
+        "no-duplicate-imports": "error",
+        "no-eval": "error",
+        "no-floating-promises": false,
+        "no-var": "error",
+        "sort-imports": [
+            "error",
+            {
+                "ignoreCase": true,
+                "ignoreDeclarationSort": true
+            }
+        ]
+    },
+    "env": {
+        "browser": true,
+        "es6": true,
+        "webextensions": true
+    }
+}

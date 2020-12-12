@@ -1,0 +1,13 @@
+{
+    "name": "mark",
+    "version": "0.1.0",
+    "manifest_version": 3,
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_title": "Better bookmarks"
+    },
+    "host_permissions": ["http://*/", "https://*/"],
+    "permissions": ["bookmarks", "tabs"]
+}

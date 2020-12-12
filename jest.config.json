@@ -1,0 +1,20 @@
+{
+    "verbose": true,
+    "testURL": "http://localhost/",
+    "collectCoverageFrom": [
+        "<rootDir>/**/*.ts",
+        "!<rootDir>/**node_modules/**"
+    ],
+    "transform": {
+        "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "/__tests__/.*\\.(unit|integration)\\.(js|ts)$",
+    "moduleFileExtensions": ["js", "json", "node", "ts"],
+    "moduleNameMapper": {
+        "^src(.*)$": "<rootDir>/src$1"
+    },
+    "coverageReporters": ["html", "json"],
+    "moduleDirectories": ["node_modules", "<rootDir>/"],
+    "modulePathIgnorePatterns": ["<rootDir>[/\\\\](dist|node_modules)[/\\\\]"],
+    "rootDir": "./"
+}

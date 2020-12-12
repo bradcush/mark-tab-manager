@@ -1,0 +1,41 @@
+{
+  "name": "mark",
+  "version": "0.1.0",
+  "description": "Better bookmarking",
+  "main": "dist/background.js",
+  "repository": "https://github.com/bradcush/mark.git",
+  "author": "Dashlane <bradleycushing@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "build": "webpack --config meta/webpack.config.js",
+    "test": "yarn test:unit && yarn test:integration",
+    "test:integration": "jest '/__tests__/.*\\.integration\\.(js|ts)$' --config=./jest.config.json",
+    "test:integration:coverage": "yarn test:integration --coverage --no-cache",
+    "test:unit": "jest '/__tests__/.*\\.unit\\.(js|ts)$' --config=./jest.config.json",
+    "test:unit:coverage": "yarn test:unit --coverage --no-cache"
+  },
+  "dependencies": {
+    "parse-domain": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.126",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.0.14",
+    "@typescript-eslint/eslint-plugin": "^3.4.0",
+    "@typescript-eslint/parser": "^3.4.0",
+    "copy-webpack-plugin": "^6.0.2",
+    "eslint": "^7.3.1",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-json": "^2.1.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "jest": "^24.0.13",
+    "jest-junit-reporter": "^1.1.0",
+    "prettier": "^2.0.5",
+    "ts-jest": "^26.4.3",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
+  }
+}
