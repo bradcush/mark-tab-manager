@@ -9,6 +9,7 @@ export const tabOrganizerBrowser = {
     },
     tabs: {
         move: browser.tabs.move,
+        onUpdated: browser.tabs.onUpdated,
         query: browser.tabs.query,
     },
 };

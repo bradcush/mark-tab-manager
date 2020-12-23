@@ -12,6 +12,7 @@ const organizerBrowserRuntime = {
 
 const organizerBrowserTabs = {
     move: jest.fn(),
+    onUpdated: browserMock.tabs.onUpdated,
     query: makeTabsQueryMock([]),
 };
 

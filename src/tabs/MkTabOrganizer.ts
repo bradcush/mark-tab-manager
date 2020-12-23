@@ -14,6 +14,7 @@ interface MkToBrowserRuntime {
 
 interface MkToBrowserTabs {
     move: MkBrowser.tabs.Move;
+    onUpdated: MkBrowser.tabs.OnUpdated;
     query: MkBrowser.tabs.Query;
 }
 

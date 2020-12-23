@@ -5,10 +5,9 @@ export function onUpdatedMock() {
     const { onUpdatedListeners } = browserMockListeners.tabs;
     onUpdatedListeners.forEach((onUpdatedListener) => {
         const tabId = 1;
-        const changeInfo = {};
-        const tab = {
-            url: 'https://www.example.com',
-        } as MkBrowser.tabs.Tab;
+        const url = 'https://www.example.com';
+        const changeInfo = { url };
+        const tab = { url } as MkBrowser.tabs.Tab;
         onUpdatedListener(tabId, changeInfo, tab);
     });
 }
