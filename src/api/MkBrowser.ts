@@ -9,6 +9,11 @@ interface MkBrowserBookmarks {
     search: MkBrowser.bookmarks.Search;
 }
 
+interface MkBrowserContextMenus {
+    create: MkBrowser.contextMenus.Create;
+    onClicked: MkBrowser.contextMenus.OnClicked;
+}
+
 interface MkBrowserTabs {
     get: MkBrowser.tabs.Get;
     move: MkBrowser.tabs.Move;
@@ -21,10 +26,16 @@ interface MkBrowserRuntime {
     lastError: MkBrowser.runtime.LastError;
 }
 
+interface MkBrowserStorage {
+    sync: MkBrowser.storage.Sync;
+}
+
 export interface MkBrowser {
     action: MkBrowserAction;
+    contextMenus: MkBrowserContextMenus;
     bookmarks: MkBrowserBookmarks;
     runtime: MkBrowserRuntime;
+    storage: MkBrowserStorage;
     tabs: MkBrowserTabs;
 }
 
@@ -32,6 +43,12 @@ export declare namespace MkBrowser.action {
     export type OnClicked = typeof chrome.browserAction.onClicked;
     export type SetBadgeBackgroundColor = typeof chrome.browserAction.setBadgeBackgroundColor;
     export type SetBadgeText = typeof chrome.browserAction.setBadgeText;
+}
+
+export declare namespace MkBrowser.contextMenus {
+    export type Create = typeof chrome.contextMenus.create;
+    export type OnClicked = typeof chrome.contextMenus.onClicked;
+    export type OnClickedData = chrome.contextMenus.OnClickData;
 }
 
 export declare namespace MkBrowser.bookmarks {
@@ -45,6 +62,10 @@ export declare namespace MkBrowser.bookmarks {
 
 export declare namespace MkBrowser.runtime {
     export type LastError = typeof chrome.runtime.lastError;
+}
+
+export declare namespace MkBrowser.storage {
+    export type Sync = typeof chrome.storage.sync;
 }
 
 export declare namespace MkBrowser.tabs {

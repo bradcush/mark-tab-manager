@@ -6,9 +6,40 @@ import { TabOrganizer } from '../TabOrganizer';
 import { organizerBrowserMock } from '../__mocks__/organizerBrowserMock';
 import { browserMockTriggers } from 'src/api/__mocks__/browserMock';
 import { MkBrowser } from 'src/api/MkBrowser';
-import { makeQueryMock } from 'src/api/__mocks__/browserMock/tabs/queryMock';
+import { makeOrganizerBrowserMock } from '../__mocks__/helpers/makeOrganizerBrowserMock';
 
 describe('TabOrganizer', () => {
+    const tabs = [
+        {
+            id: 5,
+            url: 'https://sub.sub.dragonfruit.com',
+        },
+        {
+            id: 3,
+            url: 'https://www.banana.com',
+        },
+        {
+            id: 2,
+            url: 'https://apple.com',
+        },
+        {
+            id: 4,
+            url: 'https://sub.cherry.com',
+        },
+        {
+            id: 1,
+            url: 'chrome://newtab/',
+        },
+        {
+            id: 7,
+            url: 'https://fig.be',
+        },
+        {
+            id: 6,
+            url: 'https://elderberry.co.uk',
+        },
+    ] as MkBrowser.tabs.Tab[];
+
     afterEach(() => {
         browserMockRemoveListeners();
         jest.clearAllMocks();
@@ -22,8 +53,9 @@ describe('TabOrganizer', () => {
             });
 
             it('should register all relevant event handlers', () => {
-                const { action } = browserMockListeners;
+                const { action, tabs } = browserMockListeners;
                 expect(action.onClickedListeners).toHaveLength(1);
+                expect(tabs.onUpdatedListeners).toHaveLength(1);
             });
         });
 
@@ -31,51 +63,20 @@ describe('TabOrganizer', () => {
         // have an idea how the more nominal cases are treated
         describe('when the extension icon is clicked', () => {
             beforeEach(() => {
-                const tabs = [
-                    {
-                        id: 4,
-                        url: 'https://sub.sub.dragonfruit.com',
-                    },
-                    {
-                        id: 2,
-                        url: 'https://www.banana.com',
-                    },
-                    {
-                        id: 1,
-                        url: 'https://apple.com',
-                    },
-                    {
-                        id: 3,
-                        url: 'https://sub.cherry.com',
-                    },
-                    {
-                        id: 6,
-                        url: 'https://fig.be',
-                    },
-                    {
-                        id: 5,
-                        url: 'https://elderberry.co.uk',
-                    },
-                ] as MkBrowser.tabs.Tab[];
-                const browserMock = {
-                    ...organizerBrowserMock,
-                    tabs: {
-                        ...organizerBrowserMock.tabs,
-                        query: makeQueryMock(tabs),
-                    },
-                };
+                const items = {};
+                const browserMock = makeOrganizerBrowserMock({ tabs, items });
                 const tabOrganizer = new TabOrganizer(browserMock);
                 tabOrganizer.init();
             });
 
-            it('should reorder all open tabs alphabetically by second-level domain', () => {
+            it('should reorder all open tabs alphabetically by domain', () => {
                 const { onClickedListeners } = browserMockListeners.action;
                 expect(onClickedListeners).toHaveLength(1);
                 browserMockTriggers.action.onClicked.trigger();
                 const { move } = organizerBrowserMock.tabs;
-                expect(move).toBeCalledTimes(6);
+                expect(move).toBeCalledTimes(7);
                 const moveProperties = { index: -1 };
-                const expectedIdsOrder = [1, 2, 3, 4, 5, 6];
+                const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7];
                 expectedIdsOrder.forEach((id, index) => {
                     const tabId = index + 1;
                     expect(move).toHaveBeenNthCalledWith(
@@ -85,6 +86,43 @@ describe('TabOrganizer', () => {
                         expect.any(Function)
                     );
                 });
+            });
+        });
+
+        describe('when a tabs URL is updated', () => {
+            it('should reorder all open tabs if automatic sorting is enabled', async () => {
+                const items = { enableAutomaticSorting: true };
+                const browserMock = makeOrganizerBrowserMock({ tabs, items });
+                const tabOrganizer = new TabOrganizer(browserMock);
+                tabOrganizer.init();
+                const { onUpdatedListeners } = browserMockListeners.tabs;
+                expect(onUpdatedListeners).toHaveLength(1);
+                await browserMockTriggers.tabs.onUpdated.trigger();
+                const { move } = organizerBrowserMock.tabs;
+                expect(move).toBeCalledTimes(7);
+                const moveProperties = { index: -1 };
+                const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7];
+                expectedIdsOrder.forEach((id, index) => {
+                    const tabId = index + 1;
+                    expect(move).toHaveBeenNthCalledWith(
+                        tabId,
+                        id,
+                        moveProperties,
+                        expect.any(Function)
+                    );
+                });
+            });
+
+            it('should not reorder anything if automatic sorting is disabled', async () => {
+                const items = { enableAutomaticSorting: false };
+                const browserMock = makeOrganizerBrowserMock({ tabs, items });
+                const tabOrganizer = new TabOrganizer(browserMock);
+                tabOrganizer.init();
+                const { onUpdatedListeners } = browserMockListeners.tabs;
+                expect(onUpdatedListeners).toHaveLength(1);
+                await browserMockTriggers.tabs.onUpdated.trigger();
+                const { move } = organizerBrowserMock.tabs;
+                expect(move).toHaveBeenCalledTimes(0);
             });
         });
     });

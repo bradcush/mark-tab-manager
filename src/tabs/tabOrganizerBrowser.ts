@@ -7,8 +7,12 @@ export const tabOrganizerBrowser = {
     runtime: {
         lastError: browser.runtime.lastError,
     },
+    storage: {
+        sync: browser.storage.sync,
+    },
     tabs: {
         move: browser.tabs.move,
+        onUpdated: browser.tabs.onUpdated,
         query: browser.tabs.query,
     },
 };

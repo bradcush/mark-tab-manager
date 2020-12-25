@@ -122,8 +122,8 @@ export class BookmarkCounter implements MkBookmarkCounter {
      */
     private updateBookmarkCount(tab: MkBrowser.tabs.Tab) {
         console.log('BookmarkCounter.updateBookmarkCount', tab);
-        const url = tab.url || '';
-        const { hostname } = new URL(url);
+        const url = tab.url || tab.pendingUrl;
+        const { hostname } = url ? new URL(url) : { hostname: '' };
         const domainName = parseSharedDomain(hostname);
         // Show the count of bookmarks matching the same
         // second level domain next to the popup icon

@@ -16,12 +16,14 @@
     "test:unit:coverage": "yarn test:unit --coverage --no-cache"
   },
   "dependencies": {
-    "parse-domain": "^3.0.3"
+    "parse-domain": "^3.0.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.126",
     "@types/jest": "^26.0.15",
     "@types/node": "^14.0.14",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^3.4.0",
     "@typescript-eslint/parser": "^3.4.0",
     "copy-webpack-plugin": "^6.0.2",

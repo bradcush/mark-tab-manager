@@ -4,10 +4,12 @@ import { onActivatedMock as tabsOnActivatedMock } from './browserMock/tabs/onAct
 import { onCreatedMock as bookmarksOnCreatedMock } from './browserMock/bookmarks/onCreatedMock';
 import { onUpdatedMock as tabsOnUpdatedMock } from './browserMock/tabs/onUpdatedMock';
 import { onClickedMock as actionOnClickedMock } from './browserMock/action/onClickedMock';
+import { onClickedMock as contextMenusOnClickedMock } from './browserMock/contextMenus/onClickedMock';
 import { MkTabsOnActivatedMockHandler } from './browserMock/tabs/MkOnActivatedMock';
 import { MkTabsOnUpdatedMockHandler } from './browserMock/tabs/MkOnUpdatedMock';
 import { MkBookmarksOnCreatedMockHandler } from './browserMock/bookmarks/MkOnCreatedMock';
 import { MkActionOnClickedMockHandler } from './browserMock/action/MkOnClickedMock';
+import { MkContextMenusOnClickedMockHandler } from './browserMock/contextMenus/MkOnClickedMock';
 
 const browserMockActionTriggers = {
     onClicked: {
@@ -18,6 +20,12 @@ const browserMockActionTriggers = {
 const browserMockBookmarksTriggers = {
     onCreated: {
         trigger: bookmarksOnCreatedMock,
+    },
+};
+
+const browserMockContextMenusTriggers = {
+    onClicked: {
+        trigger: contextMenusOnClickedMock,
     },
 };
 
@@ -34,6 +42,7 @@ const browserMockTabsTriggers = {
 export const browserMockTriggers = {
     action: browserMockActionTriggers,
     bookmarks: browserMockBookmarksTriggers,
+    contextMenus: browserMockContextMenusTriggers,
     tabs: browserMockTabsTriggers,
 };
 
@@ -58,8 +67,25 @@ const browserBookmarksMock = {
     search: jest.fn(),
 };
 
+const browserContextMenusMock = {
+    create: jest.fn(),
+    onClicked: {
+        addListener: (handler: MkContextMenusOnClickedMockHandler) => {
+            const { onClickedListeners } = browserMockListeners.contextMenus;
+            onClickedListeners.push(handler);
+        },
+    },
+};
+
 const browserRuntimeMock = {
     lastError: undefined,
+};
+
+const browserStorageMock = {
+    sync: {
+        get: jest.fn(),
+        set: jest.fn(),
+    },
 };
 
 const browserTabsMock = {
@@ -82,6 +108,8 @@ const browserTabsMock = {
 export const browserMock = ({
     action: browserActionMock,
     bookmarks: browserBookmarksMock,
+    contextMenus: browserContextMenusMock,
     runtime: browserRuntimeMock,
+    storage: browserStorageMock,
     tabs: browserTabsMock,
 } as any) as MkBrowser;
