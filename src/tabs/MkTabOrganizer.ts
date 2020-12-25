@@ -12,6 +12,10 @@ interface MkToBrowserRuntime {
     lastError: MkBrowser.runtime.LastError;
 }
 
+interface MkToBrowserStorage {
+    sync: MkBrowser.storage.Sync;
+}
+
 interface MkToBrowserTabs {
     move: MkBrowser.tabs.Move;
     onUpdated: MkBrowser.tabs.OnUpdated;
@@ -21,5 +25,6 @@ interface MkToBrowserTabs {
 export interface MkToBrowser {
     action: MkToBrowserAction;
     runtime: MkToBrowserRuntime;
+    storage: MkToBrowserStorage;
     tabs: MkToBrowserTabs;
 }

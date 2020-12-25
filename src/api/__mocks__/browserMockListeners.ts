@@ -8,6 +8,10 @@ const browserMockBookmarksListeners = {
     onCreatedListeners: [],
 };
 
+const browserMockContextMenusListeners = {
+    onClickedListeners: [],
+};
+
 const browserMockTabsListeners = {
     onActivatedListeners: [],
     onUpdatedListeners: [],
@@ -16,6 +20,7 @@ const browserMockTabsListeners = {
 export const browserMockListeners: MkBrowserListeners = {
     action: browserMockActionListeners,
     bookmarks: browserMockBookmarksListeners,
+    contextMenus: browserMockContextMenusListeners,
     tabs: browserMockTabsListeners,
 };
 
@@ -23,6 +28,7 @@ export const browserMockListeners: MkBrowserListeners = {
 export function browserMockRemoveListeners() {
     browserMockListeners.action.onClickedListeners = [];
     browserMockListeners.bookmarks.onCreatedListeners = [];
+    browserMockListeners.contextMenus.onClickedListeners = [];
     browserMockListeners.tabs.onActivatedListeners = [];
     browserMockListeners.tabs.onUpdatedListeners = [];
 }

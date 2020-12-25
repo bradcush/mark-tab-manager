@@ -63,7 +63,8 @@ describe('TabOrganizer', () => {
         // have an idea how the more nominal cases are treated
         describe('when the extension icon is clicked', () => {
             beforeEach(() => {
-                const browserMock = makeOrganizerBrowserMock(tabs);
+                const items = {};
+                const browserMock = makeOrganizerBrowserMock({ tabs, items });
                 const tabOrganizer = new TabOrganizer(browserMock);
                 tabOrganizer.init();
             });
@@ -89,16 +90,14 @@ describe('TabOrganizer', () => {
         });
 
         describe('when a tabs URL is updated', () => {
-            beforeEach(() => {
-                const browserMock = makeOrganizerBrowserMock(tabs);
+            it('should reorder all open tabs if automatic sorting is enabled', async () => {
+                const items = { enableAutomaticSorting: true };
+                const browserMock = makeOrganizerBrowserMock({ tabs, items });
                 const tabOrganizer = new TabOrganizer(browserMock);
                 tabOrganizer.init();
-            });
-
-            it('should reorder all open tabs alphabetically by domain', () => {
                 const { onUpdatedListeners } = browserMockListeners.tabs;
                 expect(onUpdatedListeners).toHaveLength(1);
-                browserMockTriggers.tabs.onUpdated.trigger();
+                await browserMockTriggers.tabs.onUpdated.trigger();
                 const { move } = organizerBrowserMock.tabs;
                 expect(move).toBeCalledTimes(7);
                 const moveProperties = { index: -1 };
@@ -112,6 +111,18 @@ describe('TabOrganizer', () => {
                         expect.any(Function)
                     );
                 });
+            });
+
+            it('should not reorder anything if automatic sorting is disabled', async () => {
+                const items = { enableAutomaticSorting: false };
+                const browserMock = makeOrganizerBrowserMock({ tabs, items });
+                const tabOrganizer = new TabOrganizer(browserMock);
+                tabOrganizer.init();
+                const { onUpdatedListeners } = browserMockListeners.tabs;
+                expect(onUpdatedListeners).toHaveLength(1);
+                await browserMockTriggers.tabs.onUpdated.trigger();
+                const { move } = organizerBrowserMock.tabs;
+                expect(move).toHaveBeenCalledTimes(0);
             });
         });
     });

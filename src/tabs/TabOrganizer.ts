@@ -17,8 +17,8 @@ export class TabOrganizer implements MkTabOrganizer {
     private readonly browser: MkToBrowser;
 
     /**
-     * Initialize tab organizer to trigger
-     * on extension icon click
+     * Initialize tab organizer to trigger on extension
+     * icon click or automatic tab URL update
      */
     public init() {
         console.log('TabOrganizer.init');
@@ -33,12 +33,17 @@ export class TabOrganizer implements MkTabOrganizer {
             this.orderAllTabs();
         });
 
-        // Handle when any given tab URL is updated
-        this.browser.tabs.onUpdated.addListener((_tabId, changeInfo) => {
+        // Handle tabs where a URL is updated
+        this.browser.tabs.onUpdated.addListener(async (_tabId, changeInfo) => {
             console.log('TabOrganizer.browser.tabs.onUpdated', changeInfo);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
+            }
+            // We only want automatic sort if enabled
+            const isAutomaticSortingEnabled = await this.getEnableAutomaticSorting();
+            if (!isAutomaticSortingEnabled) {
+                return;
             }
             // TODO: We could only update the order if the domain has changed
             // but this would require keeping track of a tabs previous state
@@ -48,6 +53,24 @@ export class TabOrganizer implements MkTabOrganizer {
                 return;
             }
             this.orderAllTabs();
+        });
+    }
+
+    /**
+     * Get the determiner for if we want automatic sorting
+     * TODO: This function should be part of a storage/settings service
+     */
+    private getEnableAutomaticSorting() {
+        console.log('TabOrganizer.getEnableAutomaticSorting');
+        return new Promise((resolve) => {
+            this.browser.storage.sync.get('enableAutomaticSorting', (items) => {
+                console.log('TabOrganizer.browser.storage.sync', items);
+                const lastError = this.browser.runtime.lastError;
+                if (lastError) {
+                    throw lastError;
+                }
+                resolve(items.enableAutomaticSorting);
+            });
         });
     }
 
