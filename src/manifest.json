@@ -9,5 +9,5 @@
         "default_title": "Better bookmarks"
     },
     "host_permissions": ["http://*/", "https://*/"],
-    "permissions": ["bookmarks", "contextMenus", "storage", "tabs"]
+    "permissions": ["bookmarks", "contextMenus", "storage", "tabGroups", "tabs"]
 }
