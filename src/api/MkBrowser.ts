@@ -14,14 +14,6 @@ interface MkBrowserContextMenus {
     onClicked: MkBrowser.contextMenus.OnClicked;
 }
 
-interface MkBrowserTabs {
-    get: MkBrowser.tabs.Get;
-    move: MkBrowser.tabs.Move;
-    onActivated: MkBrowser.tabs.OnActivated;
-    onUpdated: MkBrowser.tabs.OnUpdated;
-    query: MkBrowser.tabs.Query;
-}
-
 interface MkBrowserRuntime {
     lastError: MkBrowser.runtime.LastError;
 }
@@ -30,12 +22,28 @@ interface MkBrowserStorage {
     sync: MkBrowser.storage.Sync;
 }
 
+interface MkBrowserTabGroups {
+    Color: MkBrowser.tabGroups.Color;
+    update: MkBrowser.tabGroups.Update;
+}
+
+interface MkBrowserTabs {
+    get: MkBrowser.tabs.Get;
+    group: MkBrowser.tabs.Group;
+    move: MkBrowser.tabs.Move;
+    onActivated: MkBrowser.tabs.OnActivated;
+    onUpdated: MkBrowser.tabs.OnUpdated;
+    query: MkBrowser.tabs.Query;
+    ungroup: MkBrowser.tabs.Ungroup;
+}
+
 export interface MkBrowser {
     action: MkBrowserAction;
     contextMenus: MkBrowserContextMenus;
     bookmarks: MkBrowserBookmarks;
     runtime: MkBrowserRuntime;
     storage: MkBrowserStorage;
+    tabGroups: MkBrowserTabGroups;
     tabs: MkBrowserTabs;
 }
 
@@ -68,9 +76,25 @@ export declare namespace MkBrowser.storage {
     export type Sync = typeof chrome.storage.sync;
 }
 
+export declare namespace MkBrowser.tabGroups {
+    // TODO: Replace by types when possible
+    export type Color = { [key: string]: string };
+    // TODO: Replace by types when possible
+    export type Update = (
+        groupId: number,
+        updateProperties: object,
+        callback?: () => void
+    ) => void;
+}
+
 export declare namespace MkBrowser.tabs {
     export type ChangeInfo = chrome.tabs.TabChangeInfo;
     export type Get = typeof chrome.tabs.get;
+    // TODO: Replace by types when possible
+    export type Group = (
+        options: object,
+        callback?: (groupId: number) => void
+    ) => void;
     export type Move = typeof chrome.tabs.move;
     export type MoveProperties = chrome.tabs.MoveProperties;
     export type OnActivated = typeof chrome.tabs.onActivated;
@@ -79,4 +103,6 @@ export declare namespace MkBrowser.tabs {
     export type QueryInfo = chrome.tabs.QueryInfo;
     export type Tab = chrome.tabs.Tab;
     export type TabActiveInfo = chrome.tabs.TabActiveInfo;
+    // TODO: Replace by types when possible
+    export type Ungroup = (tabIds: number[], callback?: () => void) => void;
 }

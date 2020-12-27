@@ -5,8 +5,9 @@ import { makeSyncMock } from 'src/api/__mocks__/browserMock/storage/syncMock';
 import { MkBrowser } from 'src/api/MkBrowser';
 
 export function makeOrganizerBrowserMock({
-    tabs,
     items,
+    tabs,
+    group,
 }: MkMakeOrganizerBrowserMockParams) {
     return {
         ...organizerBrowserMock,
@@ -15,6 +16,7 @@ export function makeOrganizerBrowserMock({
         },
         tabs: {
             ...organizerBrowserMock.tabs,
+            group,
             query: makeQueryMock(tabs),
         },
     };

@@ -1,6 +1,6 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 
-// For MV3 broserAction should be replaced by action
+// For MV3 browserAction should be replaced by action
 // but types don't yet support this change
 // https://developers.chrome.com/extensions/migrating_to_manifest_v3#actions
 const action = {
@@ -34,12 +34,25 @@ const storage = {
     sync: chrome.storage.sync,
 };
 
+// See the proposed API for tabGroups and tabs related to groups
+// https://bugs.chromium.org/p/chromium/issues/detail?id=1106846
+const tabGroups = {
+    // @ts-expect-error Still in preview
+    update: chrome.tabGroups.update,
+    // @ts-expect-error Still in preview
+    Color: chrome.tabGroups.Color,
+};
+
 const tabs = {
     get: chrome.tabs.get,
+    // @ts-expect-error Still in preview
+    group: chrome.tabs.group,
     move: chrome.tabs.move,
     onActivated: chrome.tabs.onActivated,
     onUpdated: chrome.tabs.onUpdated,
     query: chrome.tabs.query,
+    // @ts-expect-error Still in preview
+    ungroup: chrome.tabs.ungroup,
 };
 
 export const browser: MkBrowser = {
@@ -48,5 +61,6 @@ export const browser: MkBrowser = {
     contextMenus,
     runtime,
     storage,
+    tabGroups,
     tabs,
 };
