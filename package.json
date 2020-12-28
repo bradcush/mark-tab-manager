@@ -4,7 +4,7 @@
   "description": "Better bookmarking",
   "main": "dist/background.js",
   "repository": "https://github.com/bradcush/mark.git",
-  "author": "Dashlane <bradleycushing@gmail.com>",
+  "author": "Bradley <bradleycushing@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
