@@ -12,6 +12,7 @@ interface MkBrowserBookmarks {
 interface MkBrowserContextMenus {
     create: MkBrowser.contextMenus.Create;
     onClicked: MkBrowser.contextMenus.OnClicked;
+    removeAll: MkBrowser.contextMenus.RemoveAll;
 }
 
 interface MkBrowserRuntime {
@@ -57,6 +58,7 @@ export declare namespace MkBrowser.contextMenus {
     export type Create = typeof chrome.contextMenus.create;
     export type OnClicked = typeof chrome.contextMenus.onClicked;
     export type OnClickedData = chrome.contextMenus.OnClickData;
+    export type RemoveAll = typeof chrome.contextMenus.removeAll;
 }
 
 export declare namespace MkBrowser.bookmarks {

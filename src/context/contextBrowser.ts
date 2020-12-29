@@ -4,6 +4,7 @@ export const contextBrowser = {
     contextMenus: {
         create: browser.contextMenus.create,
         onClicked: browser.contextMenus.onClicked,
+        removeAll: browser.contextMenus.removeAll,
     },
     runtime: {
         lastError: browser.runtime.lastError,

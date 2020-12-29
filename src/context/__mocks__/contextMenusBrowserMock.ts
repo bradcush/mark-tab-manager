@@ -5,6 +5,7 @@ import { makeSyncMock as makeStorageSyncMock } from 'src/api/__mocks__/browserMo
 const contextBrowserContextMenus = {
     create: browserMock.contextMenus.create,
     onClicked: browserMock.contextMenus.onClicked,
+    removeAll: jest.fn(),
 };
 
 const contextBrowserRuntime = {
