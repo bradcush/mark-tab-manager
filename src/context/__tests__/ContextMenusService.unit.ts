@@ -8,7 +8,11 @@ import { ContextMenusService } from '../ContextMenusService';
 import { contextBrowserMock } from '../__mocks__/contextMenusBrowserMock';
 import { makeContextBrowserMock } from '../__mocks__/helpers/makeContextBrowserMock';
 import { makeSyncMock } from 'src/api/__mocks__/browserMock/storage/syncMock';
+import { removeAllMock as contextMenusRemoveAllMock } from '../__mocks__/contextMenusBrowserMock/contextMenus/removeAllMock';
+import { makeQueueMock } from 'src/helpers/__mocks__/makeQueueMock';
 
+// TODO: Integration tests using the real queue and
+// needed done callback when all items are processed
 describe('ContextMenusService', () => {
     afterEach(() => {
         browserMockRemoveListeners();
@@ -17,8 +21,24 @@ describe('ContextMenusService', () => {
 
     describe('init', () => {
         describe('when init is called', () => {
+            it('should remove all context menus that exist', async () => {
+                const contextMenu = new ContextMenusService({
+                    addToQueue: makeQueueMock(),
+                    browser: contextBrowserMock,
+                });
+                await contextMenu.init();
+                const { removeAll } = contextBrowserMock.contextMenus;
+                expect(removeAll).toHaveBeenCalledTimes(1);
+            });
+
             it('should create automatic sorting checkbox menu', async () => {
-                const contextMenu = new ContextMenusService(contextBrowserMock);
+                const browserMock = makeContextBrowserMock({
+                    removeAll: contextMenusRemoveAllMock,
+                });
+                const contextMenu = new ContextMenusService({
+                    addToQueue: makeQueueMock(),
+                    browser: browserMock,
+                });
                 await contextMenu.init();
                 const { create } = contextBrowserMock.contextMenus;
                 const autoSortCreateProperties = {
@@ -36,11 +56,17 @@ describe('ContextMenusService', () => {
             });
 
             it('should create automatic sorting checkbox menu from storage', async () => {
-                const syncMock = (makeSyncMock({
+                const syncMock = makeSyncMock({
                     enableAutomaticSorting: false,
-                }) as any) as MkBrowser.storage.Sync;
-                const browserMock = makeContextBrowserMock(syncMock);
-                const contextMenu = new ContextMenusService(browserMock);
+                });
+                const browserMock = makeContextBrowserMock({
+                    removeAll: contextMenusRemoveAllMock,
+                    sync: syncMock,
+                });
+                const contextMenu = new ContextMenusService({
+                    addToQueue: makeQueueMock(),
+                    browser: browserMock,
+                });
                 await contextMenu.init();
                 const { create } = browserMock.contextMenus;
                 const autoSortCreateProperties = {
@@ -58,7 +84,10 @@ describe('ContextMenusService', () => {
             });
 
             it('should register all relevant event handlers', async () => {
-                const contextMenu = new ContextMenusService(contextBrowserMock);
+                const contextMenu = new ContextMenusService({
+                    addToQueue: makeQueueMock(),
+                    browser: contextBrowserMock,
+                });
                 await contextMenu.init();
                 const { contextMenus } = browserMockListeners;
                 expect(contextMenus.onClickedListeners).toHaveLength(1);
@@ -67,7 +96,10 @@ describe('ContextMenusService', () => {
 
         describe('when enable automatic sorting toggled', () => {
             beforeEach(() => {
-                const contextMenu = new ContextMenusService(contextBrowserMock);
+                const contextMenu = new ContextMenusService({
+                    addToQueue: makeQueueMock(),
+                    browser: contextBrowserMock,
+                });
                 contextMenu.init();
             });
 

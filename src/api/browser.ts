@@ -20,6 +20,7 @@ const bookmarks = {
 const contextMenus = {
     create: chrome.contextMenus.create,
     onClicked: chrome.contextMenus.onClicked,
+    removeAll: chrome.contextMenus.removeAll,
 };
 
 const runtime = {

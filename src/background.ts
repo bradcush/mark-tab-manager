@@ -4,12 +4,17 @@ import { TabOrganizer } from './tabs/TabOrganizer';
 import { tabOrganizerBrowser } from './tabs/tabOrganizerBrowser';
 import { ContextMenusService } from './context/ContextMenusService';
 import { contextBrowser } from './context/contextBrowser';
+import { makeQueue } from './helpers/makeQueue';
 
 // When the service worker starts
 console.log('Service worker started');
 
 // Create various context menus that dictate client behaviour
-const contextMenusService = new ContextMenusService(contextBrowser);
+const contextAddToQueue = makeQueue();
+const contextMenusService = new ContextMenusService({
+    browser: contextBrowser,
+    addToQueue: contextAddToQueue,
+});
 contextMenusService.init();
 
 // Start bookmark counter to track criteria matches
