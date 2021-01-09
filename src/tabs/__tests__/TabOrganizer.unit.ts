@@ -29,12 +29,36 @@ describe('TabOrganizer', () => {
                 expect(action.onClickedListeners).toHaveLength(1);
                 expect(tabs.onUpdatedListeners).toHaveLength(1);
             });
+
+            it('should reorder all open tabs if automatic sorting is enabled', async () => {
+                const items = { enableAutomaticSorting: true };
+                const browserMock = makeOrganizerBrowserMock({
+                    items,
+                    tabs,
+                    group: jest.fn(),
+                });
+                const tabOrganizer = new TabOrganizer(browserMock);
+                await tabOrganizer.init();
+                const { move } = browserMock.tabs;
+                expect(move).toBeCalledTimes(9);
+                const moveProperties = { index: -1 };
+                const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+                expectedIdsOrder.forEach((id, index) => {
+                    const count = index + 1;
+                    expect(move).toHaveBeenNthCalledWith(
+                        count,
+                        id,
+                        moveProperties,
+                        expect.any(Function)
+                    );
+                });
+            });
         });
 
         // TODO: Make these tests a bit more exhaustive so we
         // have an idea how the more nominal cases are treated
         describe('when the extension icon is clicked', () => {
-            it('should reorder all open tabs', () => {
+            it('should reorder all open tabs', async () => {
                 const items = {};
                 const browserMock = makeOrganizerBrowserMock({
                     items,
@@ -42,7 +66,7 @@ describe('TabOrganizer', () => {
                     group: jest.fn(),
                 });
                 const tabOrganizer = new TabOrganizer(browserMock);
-                tabOrganizer.init();
+                await tabOrganizer.init();
                 const { onClickedListeners } = browserMockListeners.action;
                 expect(onClickedListeners).toHaveLength(1);
                 browserMockTriggers.action.onClicked.trigger();
@@ -61,7 +85,7 @@ describe('TabOrganizer', () => {
                 });
             });
 
-            it('should ungroup open tabs not part of any group', () => {
+            it('should ungroup open tabs not part of any group', async () => {
                 const { onClickedListeners } = browserMockListeners.action;
                 const items = {};
                 const browserMock = makeOrganizerBrowserMock({
@@ -70,7 +94,7 @@ describe('TabOrganizer', () => {
                     group: jest.fn(),
                 });
                 const tabOrganizer = new TabOrganizer(browserMock);
-                tabOrganizer.init();
+                await tabOrganizer.init();
                 expect(onClickedListeners).toHaveLength(1);
                 browserMockTriggers.action.onClicked.trigger();
                 const { ungroup } = browserMock.tabs;
@@ -86,7 +110,7 @@ describe('TabOrganizer', () => {
                 });
             });
 
-            it('should group open tabs that are part of a group', () => {
+            it('should group open tabs that are part of a group', async () => {
                 const { onClickedListeners } = browserMockListeners.action;
                 const items = {};
                 const browserMock = makeOrganizerBrowserMock({
@@ -95,7 +119,7 @@ describe('TabOrganizer', () => {
                     group: jest.fn(),
                 });
                 const tabOrganizer = new TabOrganizer(browserMock);
-                tabOrganizer.init();
+                await tabOrganizer.init();
                 expect(onClickedListeners).toHaveLength(1);
                 browserMockTriggers.action.onClicked.trigger();
                 const { group } = browserMock.tabs;
@@ -114,7 +138,7 @@ describe('TabOrganizer', () => {
                 });
             });
 
-            it('should color and name groups by domain and group count', () => {
+            it('should color and name groups by domain and group count', async () => {
                 const items = {};
                 const browserMock = makeOrganizerBrowserMock({
                     items,
@@ -122,7 +146,7 @@ describe('TabOrganizer', () => {
                     group: groupMock,
                 });
                 const tabOrganizer = new TabOrganizer(browserMock);
-                tabOrganizer.init();
+                await tabOrganizer.init();
                 const { onClickedListeners } = browserMockListeners.action;
                 expect(onClickedListeners).toHaveLength(1);
                 browserMockTriggers.action.onClicked.trigger();
@@ -165,23 +189,26 @@ describe('TabOrganizer', () => {
                     group: jest.fn(),
                 });
                 const tabOrganizer = new TabOrganizer(browserMock);
-                tabOrganizer.init();
+                await tabOrganizer.init();
+                const { move } = browserMock.tabs;
+                expect(move).toBeCalledTimes(9);
                 const { onUpdatedListeners } = browserMockListeners.tabs;
                 expect(onUpdatedListeners).toHaveLength(1);
                 await browserMockTriggers.tabs.onUpdated.trigger();
-                const { move } = browserMock.tabs;
-                expect(move).toBeCalledTimes(9);
+                expect(move).toBeCalledTimes(18);
                 const moveProperties = { index: -1 };
                 const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-                expectedIdsOrder.forEach((id, index) => {
-                    const count = index + 1;
-                    expect(move).toHaveBeenNthCalledWith(
-                        count,
-                        id,
-                        moveProperties,
-                        expect.any(Function)
-                    );
-                });
+                [...expectedIdsOrder, ...expectedIdsOrder].forEach(
+                    (id, index) => {
+                        const count = index + 1;
+                        expect(move).toHaveBeenNthCalledWith(
+                            count,
+                            id,
+                            moveProperties,
+                            expect.any(Function)
+                        );
+                    }
+                );
             });
 
             it('should not reorder anything if automatic sorting is disabled', async () => {
@@ -192,7 +219,7 @@ describe('TabOrganizer', () => {
                     group: jest.fn(),
                 });
                 const tabOrganizer = new TabOrganizer(browserMock);
-                tabOrganizer.init();
+                await tabOrganizer.init();
                 const { onUpdatedListeners } = browserMockListeners.tabs;
                 expect(onUpdatedListeners).toHaveLength(1);
                 await browserMockTriggers.tabs.onUpdated.trigger();

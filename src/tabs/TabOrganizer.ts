@@ -27,8 +27,14 @@ export class TabOrganizer implements MkTabOrganizer {
      * TODO: Handle funky case where the browser is relaunched and
      * multiple tabs are updating at once causing multiple re-renders
      */
-    public init() {
+    public async init() {
         console.log('TabOrganizer.init');
+
+        // Handle when the extension is installed and tabs exist
+        const isAutomaticSortingEnabled = await this.getEnableAutomaticSorting();
+        if (isAutomaticSortingEnabled) {
+            this.organizeAllTabs();
+        }
 
         // Handle when the extension icon is clicked
         this.browser.action.onClicked.addListener(() => {
