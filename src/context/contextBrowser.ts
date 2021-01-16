@@ -9,7 +9,4 @@ export const contextBrowser = {
     runtime: {
         lastError: browser.runtime.lastError,
     },
-    storage: {
-        sync: browser.storage.sync,
-    },
 };

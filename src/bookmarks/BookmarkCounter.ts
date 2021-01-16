@@ -1,3 +1,4 @@
+import debounce from 'lodash/debounce';
 import { MkBookmarkCounter, MkBcBrowser } from './MkBookmarkCounter';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
@@ -16,6 +17,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
     }
 
     private readonly browser: MkBcBrowser;
+    private readonly DEBOUNCE_TIMEOUT = 50;
 
     /**
      * Init handlers for when the bookmark
@@ -38,13 +40,19 @@ export class BookmarkCounter implements MkBookmarkCounter {
         });
 
         // Handle already focused tabs where the URL has changed
+        const updateBookmarkCount = debounce(
+            this.updateBookmarkCount,
+            this.DEBOUNCE_TIMEOUT
+        );
         this.browser.tabs.onUpdated.addListener((_tabId, _changeInfo, tab) => {
             console.log('BookmarkCounter.browser.tabs.onUpdated', tab);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
             }
-            this.updateBookmarkCount(tab);
+            // Grouping tabs causes onUpdated to fire multiple times
+            // with changeInfo indicating the URL has changed
+            updateBookmarkCount(tab);
         });
 
         // Handle when a bookmark has been added
@@ -120,7 +128,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
      * Update bookmark count based on the tab current URL second
      * level domain and the URL of any bookmarked site
      */
-    private updateBookmarkCount(tab: MkBrowser.tabs.Tab) {
+    private updateBookmarkCount = (tab: MkBrowser.tabs.Tab) => {
         console.log('BookmarkCounter.updateBookmarkCount', tab);
         const url = tab.url || tab.pendingUrl;
         const { hostname } = url ? new URL(url) : { hostname: '' };
@@ -136,5 +144,5 @@ export class BookmarkCounter implements MkBookmarkCounter {
             const bookmarksCount = results.length;
             this.updateBadge(bookmarksCount);
         });
-    }
+    };
 }

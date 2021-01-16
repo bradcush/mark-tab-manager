@@ -1,3 +1,5 @@
+import { MkSyncGetKeys, MkSyncGetItems } from './browser/storage/sync/MkSync';
+
 interface MkBrowserAction {
     onClicked: MkBrowser.action.OnClicked;
     setBadgeBackgroundColor: MkBrowser.action.SetBadgeBackgroundColor;
@@ -19,8 +21,13 @@ interface MkBrowserRuntime {
     lastError: MkBrowser.runtime.LastError;
 }
 
+interface MkBrowserStorageSync {
+    get: MkBrowser.storage.sync.Get;
+    set: MkBrowser.storage.sync.Set;
+}
+
 interface MkBrowserStorage {
-    sync: MkBrowser.storage.Sync;
+    sync: MkBrowserStorageSync;
 }
 
 interface MkBrowserTabGroups {
@@ -74,8 +81,16 @@ export declare namespace MkBrowser.runtime {
     export type LastError = typeof chrome.runtime.lastError;
 }
 
+export declare namespace MkBrowser.storage.sync {
+    export type Get = (keys: MkSyncGetKeys) => Promise<MkSyncGetItems>;
+    export type Set = (items: MkSyncGetItems) => Promise<void>;
+}
+
 export declare namespace MkBrowser.storage {
-    export type Sync = typeof chrome.storage.sync;
+    export interface Sync {
+        get: MkBrowser.storage.sync.Get;
+        set: MkBrowser.storage.sync.Set;
+    }
 }
 
 export declare namespace MkBrowser.tabGroups {
