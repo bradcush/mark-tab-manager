@@ -1,19 +1,15 @@
 import { contextBrowserMock } from '../contextMenusBrowserMock';
-import { MkMakeContextBrowserMockParams } from './MkMakeContextBrowserMock';
+import { MkBrowser } from 'src/api/MkBrowser';
 
-export function makeContextBrowserMock({
-    removeAll = contextBrowserMock.contextMenus.removeAll,
-    sync = contextBrowserMock.storage.sync,
-}: MkMakeContextBrowserMockParams) {
+export function makeContextBrowserMock(
+    removeAll: MkBrowser.contextMenus.RemoveAll = contextBrowserMock
+        .contextMenus.removeAll
+) {
     return {
         ...contextBrowserMock,
         contextMenus: {
             ...contextBrowserMock.contextMenus,
             removeAll,
-        },
-        storage: {
-            ...contextBrowserMock.storage,
-            sync,
         },
     };
 }

@@ -1,4 +1,5 @@
 import { MkBrowser } from 'src/api/MkBrowser';
+import { MkStorageService } from 'src/storage/MkStorageService';
 
 export interface MkTabOrganizer {
     init(): void;
@@ -48,4 +49,9 @@ export interface MkToBrowser {
     storage: MkToBrowserStorage;
     tabGroups: MkToBrowserTabGroups;
     tabs: MkToBrowserTabs;
+}
+
+export interface MkToContstructorParams {
+    browser: MkToBrowser;
+    storage: MkStorageService;
 }

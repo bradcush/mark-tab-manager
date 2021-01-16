@@ -105,11 +105,15 @@ describe('BookmarkCounter', () => {
                 const { tabs } = browserMockListeners;
                 expect(tabs.onUpdatedListeners).toHaveLength(1);
                 browserMockTriggers.tabs.onUpdated.trigger();
-                testUpdateBadge({
-                    color: '#F00',
-                    text: '0',
-                    timesCalled: 2,
-                });
+                // Must match the timeout specified in BookmarkCounter
+                const DEBOUNCE_TIMEOUT = 50;
+                setTimeout(() => {
+                    testUpdateBadge({
+                        color: '#F00',
+                        text: '0',
+                        timesCalled: 2,
+                    });
+                }, DEBOUNCE_TIMEOUT);
             });
 
             it('should set the current tab bookmark count in blue', () => {
@@ -129,11 +133,15 @@ describe('BookmarkCounter', () => {
                 const { tabs } = browserMockListeners;
                 expect(tabs.onUpdatedListeners).toHaveLength(1);
                 browserMockTriggers.tabs.onUpdated.trigger();
-                testUpdateBadge({
-                    color: '#00F',
-                    text: '1',
-                    timesCalled: 2,
-                });
+                // Must match the timeout specified in BookmarkCounter
+                const DEBOUNCE_TIMEOUT = 50;
+                setTimeout(() => {
+                    testUpdateBadge({
+                        color: '#00F',
+                        text: '0',
+                        timesCalled: 2,
+                    });
+                }, DEBOUNCE_TIMEOUT);
             });
         });
 
