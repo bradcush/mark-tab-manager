@@ -58,11 +58,13 @@ export class TabOrganizer implements MkTabOrganizer {
             this.organizeAllTabs();
         });
 
-        // Handle tabs where a URL is updated
+        // Prevent too many repetetive calls to organize
         const organizeAllTabs = debounce(
             this.organizeAllTabs,
             this.DEBOUNCE_TIMEOUT
         );
+
+        // Handle tabs where a URL is updated
         this.browser.tabs.onUpdated.addListener((_tabId, changeInfo) => {
             console.log('TabOrganizer.browser.tabs.onUpdated', changeInfo);
             const lastError = this.browser.runtime.lastError;
@@ -79,11 +81,10 @@ export class TabOrganizer implements MkTabOrganizer {
             // but this would require keeping track of a tabs previous state
             // which might not be worth the added complexity.
             const hasUrlChanged = !!changeInfo.url;
-            if (!hasUrlChanged) {
+            const hasPinnedChanged = typeof changeInfo.pinned === 'boolean';
+            if (!hasUrlChanged && !hasPinnedChanged) {
                 return;
             }
-            // Grouping tabs causes onUpdated to fire multiple times
-            // with changeInfo indicating the URL has changed
             organizeAllTabs();
         });
 
@@ -121,6 +122,16 @@ export class TabOrganizer implements MkTabOrganizer {
     }
 
     /**
+     * Remove tabs that are pinned from the list
+     */
+    private filterNonPinnedTabs(tabs: MkBrowser.tabs.Tab[]) {
+        console.log('TabOrganizer.filterNonPinnedTabs');
+        const isTabPinned = (tab: MkBrowser.tabs.Tab) => !!tab.pinned;
+        const nonPinnedTabs = tabs.filter((tab) => !isTabPinned(tab));
+        return nonPinnedTabs;
+    }
+
+    /**
      * Get the color based on each index so that each index will
      * retain the same color regardless of a group re-render
      */
@@ -141,7 +152,8 @@ export class TabOrganizer implements MkTabOrganizer {
      */
     private groupBrowserTabs(tabs: MkBrowser.tabs.Tab[]) {
         console.log('TabOrganizer.groupBrowserTabs');
-        const tabIdsByDomain = this.sortTabIdsByDomain(tabs);
+        const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
+        const tabIdsByDomain = this.sortTabIdsByDomain(nonPinnedTabs);
         this.renderBrowserTabGroups(tabIdsByDomain);
     }
 

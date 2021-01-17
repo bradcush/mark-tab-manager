@@ -3,43 +3,50 @@ import { MkBrowser } from 'src/api/MkBrowser';
 export function makeTabsMock() {
     return [
         {
-            id: 10,
+            id: 11,
             url: 'chrome://newtab',
         },
         {
-            id: 7,
-            url: 'https://sub.sub.dragonfruit.com',
-        },
-        {
-            id: 4,
-            url: 'https://www.banana.com',
-        },
-        {
-            id: 3,
-            url: 'https://apple.com',
-        },
-        {
-            id: 5,
-            url: 'https://sub.cherry.com',
-        },
-        {
+            // Last element ignored by group tests
+            // as pinned tabs aren't grouped
             id: 1,
-            url: 'chrome://chrome-urls',
-        },
-        {
-            id: 6,
-            url: 'https://cherry.com',
-        },
-        {
-            id: 9,
-            url: 'https://fig.be',
+            url: 'chrome://pinned',
+            pinned: true,
         },
         {
             id: 8,
-            url: 'https://elderberry.co.uk',
+            url: 'https://sub.sub.dragonfruit.com',
+        },
+        {
+            id: 5,
+            url: 'https://www.banana.com',
+        },
+        {
+            id: 4,
+            url: 'https://apple.com',
+        },
+        {
+            id: 6,
+            url: 'https://sub.cherry.com',
         },
         {
             id: 2,
+            url: 'chrome://chrome-urls',
+        },
+        {
+            id: 7,
+            url: 'https://cherry.com',
+        },
+        {
+            id: 10,
+            url: 'https://fig.be',
+        },
+        {
+            id: 9,
+            url: 'https://elderberry.co.uk',
+        },
+        {
+            id: 3,
             url: 'chrome://extensions',
         },
     ] as MkBrowser.tabs.Tab[];
