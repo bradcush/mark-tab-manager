@@ -236,8 +236,7 @@ export class TabOrganizer implements MkTabOrganizer {
             }
             const parsedUrl = new URL(url);
             const { hostname } = parsedUrl;
-            // For now using system to replace empty strings
-            const domain = parseSharedDomain(hostname) || 'system';
+            const domain = parseSharedDomain(hostname);
             if (!tabIdsByDomain[domain]) {
                 tabIdsByDomain[domain] = [tab.id];
             } else {

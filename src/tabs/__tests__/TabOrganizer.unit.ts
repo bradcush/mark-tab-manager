@@ -162,7 +162,7 @@ describe('TabOrganizer', () => {
                 {
                     color: 'blue',
                     id: 123,
-                    title: 'system (2)',
+                    title: '* (2)',
                 },
                 {
                     color: 'cyan',

@@ -13,13 +13,15 @@ export function parseSharedDomain(host: string) {
     if (hostname === 'newtab') {
         return hostname;
     }
+    // Treat URLs with unlisted domain as system URLs
     // Only treating listed domains temporarily
     if (parseResult.type !== ParseResultType.Listed) {
-        return '';
+        return '*';
     }
+    // Treat URLs with no domain as system URLs
     const domain = parseResult.icann.domain;
     if (!domain) {
-        return '';
+        return '*';
     }
     console.log('parseSharedDomain', domain);
     return domain;
