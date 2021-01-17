@@ -249,7 +249,7 @@ export class TabOrganizer implements MkTabOrganizer {
 
     /**
      * Sort tabs alphabetically using their hostname with
-     * exceptions for system tabs and most specifically newtabs
+     * exceptions for system tabs and most specifically "newtab"
      */
     private sortTabsAlphabetically(tabs: MkBrowser.tabs.Tab[]) {
         console.log('TabOrganizer.sortTabsAlphabetically', tabs);
@@ -257,8 +257,6 @@ export class TabOrganizer implements MkTabOrganizer {
             if (!a.url || !b.url) {
                 throw new Error('No url for sorted tab');
             }
-            // TODO: Handle exception when we try to create a URL object
-            // from a URL that isn't supported (eg. chrome://newtab)
             const firstTabUrl = new URL(a.url);
             const firstTabHostname = firstTabUrl.hostname;
             const firstTabDomain = parseSharedDomain(firstTabHostname);
@@ -278,10 +276,10 @@ export class TabOrganizer implements MkTabOrganizer {
         if (a === b) {
             return 0;
         }
-        if (a === 'newtab') {
+        if (a === 'new') {
             return 1;
         }
-        if (b === 'newtab') {
+        if (b === 'new') {
             return -1;
         }
         return a.localeCompare(b);

@@ -11,7 +11,7 @@ export function parseSharedDomain(host: string) {
     const { hostname } = parseResult;
     // Flag new tabs so they can be treated uniquely
     if (hostname === 'newtab') {
-        return hostname;
+        return 'new';
     }
     // Treat URLs with unlisted domain as system URLs
     // Only treating listed domains temporarily
