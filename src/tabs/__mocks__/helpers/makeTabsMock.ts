@@ -3,6 +3,10 @@ import { MkBrowser } from 'src/api/MkBrowser';
 export function makeTabsMock() {
     return [
         {
+            id: 10,
+            url: 'chrome://newtab',
+        },
+        {
             id: 7,
             url: 'https://sub.sub.dragonfruit.com',
         },
@@ -20,7 +24,7 @@ export function makeTabsMock() {
         },
         {
             id: 1,
-            url: 'chrome://newtab/',
+            url: 'chrome://chrome-urls',
         },
         {
             id: 6,

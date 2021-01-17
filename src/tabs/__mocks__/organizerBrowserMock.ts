@@ -20,6 +20,7 @@ const organizerBrowserTabs = {
     group: jest.fn(),
     move: jest.fn(),
     onUpdated: browserMock.tabs.onUpdated,
+    onRemoved: browserMock.tabs.onRemoved,
     query: makeTabsQueryMock([]),
     ungroup: jest.fn(),
 };

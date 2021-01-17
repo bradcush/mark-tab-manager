@@ -3,6 +3,7 @@ import { browserMockListeners } from 'src/api/__mocks__/browserMockListeners';
 import { onActivatedMock as tabsOnActivatedMock } from './browserMock/tabs/onActivatedMock';
 import { onCreatedMock as bookmarksOnCreatedMock } from './browserMock/bookmarks/onCreatedMock';
 import { onUpdatedMock as tabsOnUpdatedMock } from './browserMock/tabs/onUpdatedMock';
+import { onRemovedMock as tabsOnRemovedMock } from './browserMock/tabs/onRemovedMock';
 import { onClickedMock as actionOnClickedMock } from './browserMock/action/onClickedMock';
 import { onClickedMock as contextMenusOnClickedMock } from './browserMock/contextMenus/onClickedMock';
 import { MkTabsOnActivatedMockHandler } from './browserMock/tabs/MkOnActivatedMock';
@@ -10,6 +11,7 @@ import { MkTabsOnUpdatedMockHandler } from './browserMock/tabs/MkOnUpdatedMock';
 import { MkBookmarksOnCreatedMockHandler } from './browserMock/bookmarks/MkOnCreatedMock';
 import { MkActionOnClickedMockHandler } from './browserMock/action/MkOnClickedMock';
 import { MkContextMenusOnClickedMockHandler } from './browserMock/contextMenus/MkOnClickedMock';
+import { MkTabsOnRemovedMockHandler } from './browserMock/tabs/MkOnRemovedMock';
 
 const browserMockActionTriggers = {
     onClicked: {
@@ -35,6 +37,9 @@ const browserMockTabsTriggers = {
     },
     onUpdated: {
         trigger: tabsOnUpdatedMock,
+    },
+    onRemoved: {
+        trigger: tabsOnRemovedMock,
     },
 };
 
@@ -100,6 +105,12 @@ const browserTabsMock = {
         addListener: (handler: MkTabsOnUpdatedMockHandler) => {
             const { onUpdatedListeners } = browserMockListeners.tabs;
             onUpdatedListeners.push(handler);
+        },
+    },
+    onRemoved: {
+        addListener: (handler: MkTabsOnRemovedMockHandler) => {
+            const { onRemovedListeners } = browserMockListeners.tabs;
+            onRemovedListeners.push(handler);
         },
     },
     query: jest.fn(),

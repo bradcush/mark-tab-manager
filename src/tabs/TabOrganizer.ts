@@ -86,6 +86,17 @@ export class TabOrganizer implements MkTabOrganizer {
             // with changeInfo indicating the URL has changed
             organizeAllTabs();
         });
+
+        // Handle removed tabs
+        this.browser.tabs.onRemoved.addListener(() => {
+            // We only want automatic sort if enabled
+            const state = this.storage.getState();
+            const isAutomaticSortingEnabled = state.enableAutomaticSorting;
+            if (!isAutomaticSortingEnabled) {
+                return;
+            }
+            organizeAllTabs();
+        });
     }
 
     /**
@@ -179,7 +190,7 @@ export class TabOrganizer implements MkTabOrganizer {
         // determine the color isn't affected by orphan groups
         [...realGroups, ...orphanGroups].forEach((group, idx) => {
             const tabIds = tabIdsByGroup[group];
-            // Ungroup existing collections of 1
+            // Ungroup existing collections of one tab
             if (tabIds.length < 2) {
                 this.removeExistingGroup(tabIds);
                 return;
@@ -221,7 +232,7 @@ export class TabOrganizer implements MkTabOrganizer {
             // Don't group tabs without a URL
             // TODO: Depending on what these are we should reconsider
             if (!url) {
-                return;
+                throw new Error('No tab url');
             }
             const parsedUrl = new URL(url);
             const { hostname } = parsedUrl;
@@ -238,7 +249,8 @@ export class TabOrganizer implements MkTabOrganizer {
     }
 
     /**
-     * Sort tabs alphabetically using their hostname
+     * Sort tabs alphabetically using their hostname with
+     * exceptions for system tabs and most specifically newtabs
      */
     private sortTabsAlphabetically(tabs: MkBrowser.tabs.Tab[]) {
         console.log('TabOrganizer.sortTabsAlphabetically', tabs);
@@ -254,9 +266,26 @@ export class TabOrganizer implements MkTabOrganizer {
             const secondTabUrl = new URL(b.url);
             const secondTabHostname = secondTabUrl.hostname;
             const secondTabDomain = parseSharedDomain(secondTabHostname);
-            return firstTabDomain.localeCompare(secondTabDomain);
+            return this.domainCompare(firstTabDomain, secondTabDomain);
         });
         return sortedTabs;
+    }
+
+    /**
+     * Compare to be used with sorting where "newtab" is
+     * last and specifically references the domain group
+     */
+    private domainCompare(a: string, b: string) {
+        if (a === b) {
+            return 0;
+        }
+        if (a === 'newtab') {
+            return 1;
+        }
+        if (b === 'newtab') {
+            return -1;
+        }
+        return a.localeCompare(b);
     }
 
     /**

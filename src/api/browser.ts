@@ -56,6 +56,7 @@ const tabs = {
     move: chrome.tabs.move,
     onActivated: chrome.tabs.onActivated,
     onUpdated: chrome.tabs.onUpdated,
+    onRemoved: chrome.tabs.onRemoved,
     query: chrome.tabs.query,
     // @ts-expect-error Still in preview
     ungroup: chrome.tabs.ungroup,

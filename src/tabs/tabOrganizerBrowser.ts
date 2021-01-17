@@ -18,6 +18,7 @@ export const tabOrganizerBrowser = {
         group: browser.tabs.group,
         move: browser.tabs.move,
         onUpdated: browser.tabs.onUpdated,
+        onRemoved: browser.tabs.onRemoved,
         query: browser.tabs.query,
         ungroup: browser.tabs.ungroup,
     },
