@@ -30,7 +30,7 @@ describe('TabOrganizer', () => {
             expect(tabs.onUpdatedListeners).toHaveLength(1);
         });
 
-        it('should reorder all open tabs if automatic sorting is enabled', () => {
+        it('should reorder all tabs if automatic sorting is enabled', () => {
             const browserMock = makeOrganizerBrowserMock({
                 tabs,
                 group: jest.fn(),
@@ -41,9 +41,9 @@ describe('TabOrganizer', () => {
             });
             tabOrganizer.init();
             const { move } = browserMock.tabs;
-            expect(move).toBeCalledTimes(10);
+            expect(move).toBeCalledTimes(11);
             const moveProperties = { index: -1 };
-            const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
             expectedIdsOrder.forEach((id, index) => {
                 const count = index + 1;
                 expect(move).toHaveBeenNthCalledWith(
@@ -59,7 +59,7 @@ describe('TabOrganizer', () => {
     // TODO: Make these tests a bit more exhaustive so we
     // have an idea how the more nominal cases are treated
     describe('when the extension icon is clicked', () => {
-        it('should reorder all open tabs', () => {
+        it('should reorder all tabs', () => {
             const browserMock = makeOrganizerBrowserMock({
                 tabs,
                 group: jest.fn(),
@@ -74,9 +74,9 @@ describe('TabOrganizer', () => {
             expect(onClickedListeners).toHaveLength(1);
             browserMockTriggers.action.onClicked.trigger();
             const { move } = browserMock.tabs;
-            expect(move).toBeCalledTimes(10);
+            expect(move).toBeCalledTimes(11);
             const moveProperties = { index: -1 };
-            const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
             expectedIdsOrder.forEach((id, index) => {
                 const count = index + 1;
                 expect(move).toHaveBeenNthCalledWith(
@@ -88,7 +88,7 @@ describe('TabOrganizer', () => {
             });
         });
 
-        it('should ungroup open tabs not part of any group', () => {
+        it('should ungroup tabs not part of any group', () => {
             const { onClickedListeners } = browserMockListeners.action;
             const browserMock = makeOrganizerBrowserMock({
                 tabs,
@@ -104,7 +104,7 @@ describe('TabOrganizer', () => {
             browserMockTriggers.action.onClicked.trigger();
             const { ungroup } = browserMock.tabs;
             expect(ungroup).toHaveBeenCalledTimes(6);
-            const expectedIdsOrder = [[3], [4], [7], [8], [9], [10]];
+            const expectedIdsOrder = [[4], [5], [8], [9], [10], [11]];
             expectedIdsOrder.forEach((ids, index) => {
                 const count = index + 1;
                 expect(ungroup).toHaveBeenNthCalledWith(
@@ -115,7 +115,7 @@ describe('TabOrganizer', () => {
             });
         });
 
-        it('should group open tabs that are part of a group', () => {
+        it('should group unpinned tabs that are part of a group', () => {
             const { onClickedListeners } = browserMockListeners.action;
             const browserMock = makeOrganizerBrowserMock({
                 tabs,
@@ -131,7 +131,7 @@ describe('TabOrganizer', () => {
             browserMockTriggers.action.onClicked.trigger();
             const { group } = browserMock.tabs;
             expect(group).toHaveBeenCalledTimes(2);
-            const expectedIdsOrder = [{ tabIds: [1, 2] }, { tabIds: [5, 6] }];
+            const expectedIdsOrder = [{ tabIds: [2, 3] }, { tabIds: [6, 7] }];
             expectedIdsOrder.forEach((ids, index) => {
                 const count = index + 1;
                 expect(group).toHaveBeenNthCalledWith(
@@ -187,7 +187,7 @@ describe('TabOrganizer', () => {
     });
 
     describe('when a tabs URL is updated', () => {
-        it('should reorder all open tabs if automatic sorting is enabled', () => {
+        it('should reorder all tabs if automatic sorting is enabled', (done) => {
             const browserMock = makeOrganizerBrowserMock({
                 tabs,
                 group: jest.fn(),
@@ -198,16 +198,16 @@ describe('TabOrganizer', () => {
             });
             tabOrganizer.init();
             const { move } = browserMock.tabs;
-            expect(move).toBeCalledTimes(10);
+            expect(move).toBeCalledTimes(11);
             const { onUpdatedListeners } = browserMockListeners.tabs;
             expect(onUpdatedListeners).toHaveLength(1);
             browserMockTriggers.tabs.onUpdated.trigger();
             // Must match the timeout specified in TabOrganizer
             const DEBOUNCE_TIMEOUT = 50;
             setTimeout(() => {
-                expect(move).toBeCalledTimes(20);
+                expect(move).toBeCalledTimes(22);
                 const moveProperties = { index: -1 };
-                const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
                 [...expectedIdsOrder, ...expectedIdsOrder].forEach(
                     (id, index) => {
                         const count = index + 1;
@@ -219,6 +219,7 @@ describe('TabOrganizer', () => {
                         );
                     }
                 );
+                done();
             }, DEBOUNCE_TIMEOUT);
         });
 
@@ -242,7 +243,7 @@ describe('TabOrganizer', () => {
     });
 
     describe('when a tab is removed', () => {
-        it('should reorder all open tabs if automatic sorting is enabled', () => {
+        it('should reorder all tabs if automatic sorting is enabled', (done) => {
             const browserMock = makeOrganizerBrowserMock({
                 tabs,
                 group: jest.fn(),
@@ -253,16 +254,16 @@ describe('TabOrganizer', () => {
             });
             tabOrganizer.init();
             const { move } = browserMock.tabs;
-            expect(move).toBeCalledTimes(10);
+            expect(move).toBeCalledTimes(11);
             const { onRemovedListeners } = browserMockListeners.tabs;
             expect(onRemovedListeners).toHaveLength(1);
             browserMockTriggers.tabs.onRemoved.trigger();
             // Must match the timeout specified in TabOrganizer
             const DEBOUNCE_TIMEOUT = 50;
             setTimeout(() => {
-                expect(move).toBeCalledTimes(20);
+                expect(move).toBeCalledTimes(22);
                 const moveProperties = { index: -1 };
-                const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                const expectedIdsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
                 [...expectedIdsOrder, ...expectedIdsOrder].forEach(
                     (id, index) => {
                         const count = index + 1;
@@ -274,6 +275,7 @@ describe('TabOrganizer', () => {
                         );
                     }
                 );
+                done();
             }, DEBOUNCE_TIMEOUT);
         });
 
