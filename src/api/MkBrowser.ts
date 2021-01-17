@@ -41,6 +41,7 @@ interface MkBrowserTabs {
     move: MkBrowser.tabs.Move;
     onActivated: MkBrowser.tabs.OnActivated;
     onUpdated: MkBrowser.tabs.OnUpdated;
+    onRemoved: MkBrowser.tabs.OnRemoved;
     query: MkBrowser.tabs.Query;
     ungroup: MkBrowser.tabs.Ungroup;
 }
@@ -116,6 +117,7 @@ export declare namespace MkBrowser.tabs {
     export type MoveProperties = chrome.tabs.MoveProperties;
     export type OnActivated = typeof chrome.tabs.onActivated;
     export type OnUpdated = typeof chrome.tabs.onUpdated;
+    export type OnRemoved = typeof chrome.tabs.onRemoved;
     export type Query = typeof chrome.tabs.query;
     export type QueryInfo = chrome.tabs.QueryInfo;
     export type Tab = chrome.tabs.Tab;

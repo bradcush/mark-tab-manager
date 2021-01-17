@@ -15,6 +15,7 @@ const browserMockContextMenusListeners = {
 const browserMockTabsListeners = {
     onActivatedListeners: [],
     onUpdatedListeners: [],
+    onRemovedListeners: [],
 };
 
 export const browserMockListeners: MkBrowserListeners = {
@@ -31,4 +32,5 @@ export function browserMockRemoveListeners() {
     browserMockListeners.contextMenus.onClickedListeners = [];
     browserMockListeners.tabs.onActivatedListeners = [];
     browserMockListeners.tabs.onUpdatedListeners = [];
+    browserMockListeners.tabs.onRemovedListeners = [];
 }

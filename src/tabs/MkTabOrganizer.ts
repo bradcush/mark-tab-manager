@@ -39,6 +39,7 @@ interface MkToBrowserTabs {
     group: MkBrowser.tabs.Group;
     move: MkBrowser.tabs.Move;
     onUpdated: MkBrowser.tabs.OnUpdated;
+    onRemoved: MkBrowser.tabs.OnRemoved;
     query: MkBrowser.tabs.Query;
     ungroup: MkBrowser.tabs.Ungroup;
 }
