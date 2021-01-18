@@ -1,17 +1,15 @@
 {
   "name": "mark",
   "version": "0.1.0",
-  "description": "Better bookmarking",
+  "description": "Automated tab management",
   "main": "dist/background.js",
   "repository": "https://github.com/bradcush/mark.git",
   "author": "Bradley <bradleycushing@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "build": "webpack --config meta/webpack.config.js",
-    "test": "yarn test:unit && yarn test:integration",
-    "test:integration": "jest '/__tests__/.*\\.integration\\.(js|ts)$' --config=./jest.config.json",
-    "test:integration:coverage": "yarn test:integration --coverage --no-cache",
+    "build:dev": "webpack --config meta/webpack.config.dev.js",
+    "build:prod": "webpack --config meta/webpack.config.prod.js",
     "test:unit": "jest '/__tests__/.*\\.unit\\.(js|ts)$' --config=./jest.config.json",
     "test:unit:coverage": "yarn test:unit --coverage --no-cache"
   },

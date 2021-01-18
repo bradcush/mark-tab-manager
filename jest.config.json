@@ -8,7 +8,7 @@
     "transform": {
         "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "/__tests__/.*\\.(unit|integration)\\.(js|ts)$",
+    "testRegex": "/__tests__/.*\\.(unit)\\.(js|ts)$",
     "moduleFileExtensions": ["js", "json", "node", "ts"],
     "moduleNameMapper": {
         "^src(.*)$": "<rootDir>/src$1"
