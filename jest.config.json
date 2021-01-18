@@ -5,6 +5,9 @@
         "<rootDir>/**/*.ts",
         "!<rootDir>/**node_modules/**"
     ],
+    "globals": {
+        "ENABLE_BOOKMARK_COUNTER": true
+    },
     "transform": {
         "^.+\\.tsx?$": "ts-jest"
     },

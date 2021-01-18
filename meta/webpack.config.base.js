@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
@@ -21,6 +22,9 @@ module.exports = {
         ],
     },
     plugins: [
+        new webpack.DefinePlugin({
+            ENABLE_BOOKMARK_COUNTER: JSON.stringify(false),
+        }),
         new CopyPlugin({
             patterns: [
                 {
