@@ -8,7 +8,8 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "build": "webpack --config meta/webpack.config.js",
+    "build:dev": "webpack --config meta/webpack.config.dev.js",
+    "build:prod": "webpack --config meta/webpack.config.prod.js",
     "test:unit": "jest '/__tests__/.*\\.unit\\.(js|ts)$' --config=./jest.config.json",
     "test:unit:coverage": "yarn test:unit --coverage --no-cache"
   },

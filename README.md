@@ -15,7 +15,8 @@ version but there is no stable release with support at this time.
 
 ## Building
 
-`yarn build`
+- Not minified with source maps: `yarn build:dev`
+- Minified without source maps: `yarn build:prod`
 
 ## Testing
 
