@@ -1,13 +1,19 @@
 {
-    "name": "mark",
+    "name": "Mark (Alpha) (Tab manager)",
+    "description": "Automated tab management",
     "version": "0.1.0",
     "manifest_version": 3,
+    "action": {
+        "default_title": "Mark"
+    },
     "background": {
         "service_worker": "background.js"
     },
-    "action": {
-        "default_title": "Better bookmarks"
+    "icons": {
+        "16": "icons/icon-mark-16.png",
+        "48": "icons/icon-mark-48.png",
+        "128": "icons/icon-mark-128.png"
     },
     "host_permissions": ["http://*/", "https://*/"],
-    "permissions": ["bookmarks", "contextMenus", "storage", "tabGroups", "tabs"]
+    "permissions": ["bookmarks", "contextMenus", "storage", "tabs", "tabGroups"]
 }

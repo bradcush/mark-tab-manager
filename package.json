@@ -1,7 +1,7 @@
 {
   "name": "mark",
   "version": "0.1.0",
-  "description": "Better bookmarking",
+  "description": "Automated tab management",
   "main": "dist/background.js",
   "repository": "https://github.com/bradcush/mark.git",
   "author": "Bradley <bradleycushing@gmail.com>",
