@@ -36,10 +36,14 @@ export class StorageService implements MkStorageService {
         try {
             const { storage } = this.browser;
             const { settings } = await storage.sync.get('settings');
+            console.log('StorageService.cacheStorage', settings);
+            // If there is no storage we don't cache anything
+            if (typeof settings === 'undefined') {
+                return;
+            }
             if (typeof settings !== 'string') {
                 throw new Error('Invalid settings storage');
             }
-            console.log('StorageService.cacheStorage', settings);
             const validState = this.parseValidState(settings);
             this.setInternalState(validState);
         } catch (error) {
