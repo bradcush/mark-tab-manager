@@ -9,9 +9,6 @@
   "private": true,
   "scripts": {
     "build": "webpack --config meta/webpack.config.js",
-    "test": "yarn test:unit && yarn test:integration",
-    "test:integration": "jest '/__tests__/.*\\.integration\\.(js|ts)$' --config=./jest.config.json",
-    "test:integration:coverage": "yarn test:integration --coverage --no-cache",
     "test:unit": "jest '/__tests__/.*\\.unit\\.(js|ts)$' --config=./jest.config.json",
     "test:unit:coverage": "yarn test:unit --coverage --no-cache"
   },
