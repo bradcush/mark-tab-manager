@@ -4,7 +4,7 @@
   "description": "Automated tab management",
   "main": "dist/background.js",
   "repository": "https://github.com/bradcush/mark.git",
-  "author": "Bradley <bradleycushing@gmail.com>",
+  "author": "Bradley Cushing <bradleycushing@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {

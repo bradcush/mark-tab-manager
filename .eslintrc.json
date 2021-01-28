@@ -21,7 +21,6 @@
         "no-caller": "error",
         "no-duplicate-imports": "error",
         "no-eval": "error",
-        "no-floating-promises": false,
         "no-var": "error",
         "sort-imports": [
             "error",
