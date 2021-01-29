@@ -1,2 +1,2 @@
-export type MkSyncGetKeys = string | string[] | Object | null;
-export type MkSyncGetItems = { [key: string]: unknown };
+export type MkSyncGetKeys = string | string[] | Record<string, any> | null;
+export type MkSyncGetItems = Record<string, unknown>;

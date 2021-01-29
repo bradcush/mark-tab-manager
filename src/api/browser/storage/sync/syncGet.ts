@@ -1,4 +1,4 @@
-import { MkSyncGetKeys, MkSyncGetItems } from './MkSync';
+import { MkSyncGetItems, MkSyncGetKeys } from './MkSync';
 
 export function get(keys: MkSyncGetKeys) {
     return new Promise<MkSyncGetItems>((resolve, reject) => {

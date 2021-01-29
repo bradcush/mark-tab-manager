@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce';
-import { MkBookmarkCounter, MkBcBrowser } from './MkBookmarkCounter';
+import { MkBcBrowser, MkBookmarkCounter } from './MkBookmarkCounter';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
 

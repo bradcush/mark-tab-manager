@@ -1,4 +1,4 @@
-import { MkSyncGetKeys, MkSyncGetItems } from './browser/storage/sync/MkSync';
+import { MkSyncGetItems, MkSyncGetKeys } from './browser/storage/sync/MkSync';
 
 interface MkBrowserAction {
     onClicked: MkBrowser.action.OnClicked;
@@ -96,11 +96,11 @@ export declare namespace MkBrowser.storage {
 
 export declare namespace MkBrowser.tabGroups {
     // TODO: Replace by types when possible
-    export type Color = { [key: string]: string };
+    export type Color = Record<string, string>;
     // TODO: Replace by types when possible
     export type Update = (
         groupId: number,
-        updateProperties: object,
+        updateProperties: Record<string, any>,
         callback?: () => void
     ) => void;
 }
@@ -110,7 +110,7 @@ export declare namespace MkBrowser.tabs {
     export type Get = typeof chrome.tabs.get;
     // TODO: Replace by types when possible
     export type Group = (
-        options: object,
+        options: Record<string, any>,
         callback?: (groupId: number) => void
     ) => void;
     export type Move = typeof chrome.tabs.move;

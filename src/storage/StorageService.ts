@@ -1,4 +1,4 @@
-import { MkStorageService, MkSsBrowser, MkSsState } from './MkStorageService';
+import { MkSsBrowser, MkSsState, MkStorageService } from './MkStorageService';
 
 /**
  * Loading, caching, and setting storage
@@ -33,22 +33,18 @@ export class StorageService implements MkStorageService {
      */
     private async cacheStorage() {
         console.log('StorageService.cacheStorage');
-        try {
-            const { storage } = this.browser;
-            const { settings } = await storage.sync.get('settings');
-            console.log('StorageService.cacheStorage', settings);
-            // If there is no storage we don't cache anything
-            if (typeof settings === 'undefined') {
-                return;
-            }
-            if (typeof settings !== 'string') {
-                throw new Error('Invalid settings storage');
-            }
-            const validState = this.parseValidState(settings);
-            this.setInternalState(validState);
-        } catch (error) {
-            throw error;
+        const { storage } = this.browser;
+        const { settings } = await storage.sync.get('settings');
+        console.log('StorageService.cacheStorage', settings);
+        // If there is no storage we don't cache anything
+        if (typeof settings === 'undefined') {
+            return;
         }
+        if (typeof settings !== 'string') {
+            throw new Error('Invalid settings storage');
+        }
+        const validState = this.parseValidState(settings);
+        this.setInternalState(validState);
     }
 
     /**
@@ -88,10 +84,10 @@ export class StorageService implements MkStorageService {
         if (!state) {
             throw new Error('No state to parse');
         }
-        const parsedState = JSON.parse(state);
-        const stateKeys = Object.keys(parsedState);
-        // TODO: Is there a way to actually make
-        // this more statically type safe
+        // TODO: Avoid unsafe casting to what we expect
+        const parsedState = JSON.parse(state) as MkSsState;
+        // TODO: Avoid unsafe casting to make TS happy
+        const stateKeys = Object.keys(parsedState) as (keyof MkSsState)[];
         const validState: Partial<MkSsState> = {};
         stateKeys.forEach((stateKey) => {
             const isKeyValid = this.isKeyValid(stateKey);
@@ -123,16 +119,12 @@ export class StorageService implements MkStorageService {
      */
     public async setState(state: Partial<MkSsState>) {
         console.log('StorageService.setState');
-        try {
-            // Best to set in memory state immediately instead of relying on on
-            // storage updated event so we can be sure our state is accurate at
-            // the right time when it may be accessed.
-            const internalState = this.setInternalState(state);
-            const serializedState = JSON.stringify(internalState);
-            const items = { settings: serializedState };
-            await this.browser.storage.sync.set(items);
-        } catch (error) {
-            throw error;
-        }
+        // Best to set in memory state immediately instead of relying on on
+        // storage updated event so we can be sure our state is accurate at
+        // the right time when it may be accessed.
+        const internalState = this.setInternalState(state);
+        const serializedState = JSON.stringify(internalState);
+        const items = { settings: serializedState };
+        await this.browser.storage.sync.set(items);
     }
 }

@@ -10,8 +10,15 @@
   "scripts": {
     "build:dev": "webpack --config meta/webpack.config.dev.js",
     "build:prod": "webpack --config meta/webpack.config.prod.js",
+    "lint": "eslint --ext .ts,.json .",
+    "lint:fix": "yarn lint --fix",
     "test:unit": "jest '/__tests__/.*\\.unit\\.(js|ts)$' --config=./jest.config.json",
     "test:unit:coverage": "yarn test:unit --coverage --no-cache"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
   },
   "dependencies": {
     "lodash": "^4.17.20",
@@ -31,6 +38,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-json": "^2.1.1",
     "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^4.3.8",
     "jest": "^24.0.13",
     "jest-junit-reporter": "^1.1.0",
     "prettier": "^2.0.5",
