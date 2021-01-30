@@ -1,6 +1,6 @@
 import {
-    browserMockRemoveListeners,
     browserMockListeners,
+    browserMockRemoveListeners,
 } from 'src/api/__mocks__/browserMockListeners';
 import { browserMockTriggers } from 'src/api/__mocks__/browserMock';
 import { MkBrowser } from 'src/api/MkBrowser';
@@ -79,10 +79,11 @@ describe('ContextMenusService', () => {
                     checked: true,
                 } as MkBrowser.contextMenus.OnClickedData;
                 browserMockTriggers.contextMenus.onClicked.trigger(info);
-                const { setState } = storageMock;
-                expect(setState).toHaveBeenCalledTimes(1);
+                /* eslint-disable @typescript-eslint/unbound-method */
+                expect(storageMock.setState).toHaveBeenCalledTimes(1);
                 const data = { enableAutomaticSorting: true };
-                expect(setState).toHaveBeenCalledWith(data);
+                /* eslint-disable @typescript-eslint/unbound-method */
+                expect(storageMock.setState).toHaveBeenCalledWith(data);
             });
         });
     });

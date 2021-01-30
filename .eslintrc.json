@@ -1,7 +1,7 @@
 {
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "project": "./tsconfig.json",
+        "project": "./tsconfig.eslint.json",
         "extraFileExtensions": [".json"]
     },
     "plugins": ["@typescript-eslint", "json"],
@@ -14,9 +14,14 @@
         "prettier/@typescript-eslint"
     ],
     "rules": {
+        "@typescript-eslint/ban-ts-comment": "warn",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-floating-promises": 1,
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-unsafe-member-access": "warn",
+        "@typescript-eslint/no-unsafe-assignment": "warn",
         "@typescript-eslint/no-use-before-define": 0,
         "@typescript-eslint/no-var-requires": "warn",
-        "@typescript-eslint/no-empty-function": "off",
         "curly": ["error", "all"],
         "no-caller": "error",
         "no-duplicate-imports": "error",
@@ -33,6 +38,7 @@
     "env": {
         "browser": true,
         "es6": true,
+        "node": true,
         "webextensions": true
     }
 }

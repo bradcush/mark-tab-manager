@@ -1,10 +1,10 @@
 import debounce from 'lodash/debounce';
 import {
-    MkToBrowser,
     MkTabOrganizer,
     MkToAddNewGroupParams,
-    MkToUpdateGroupTitleParams,
+    MkToBrowser,
     MkToContstructorParams,
+    MkToUpdateGroupTitleParams,
 } from './MkTabOrganizer';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
@@ -192,7 +192,7 @@ export class TabOrganizer implements MkTabOrganizer {
      * Set groups and non-groups using their tab id where
      * groups must contain at least two or more tabs
      */
-    private renderBrowserTabGroups(tabIdsByGroup: { [key: string]: number[] }) {
+    private renderBrowserTabGroups(tabIdsByGroup: Record<string, number[]>) {
         console.log('TabOrganizer.renderBrowserTabGroups', tabIdsByGroup);
         const groups = Object.keys(tabIdsByGroup);
         const isRealGroup = (group: string) => tabIdsByGroup[group].length > 1;
@@ -220,7 +220,7 @@ export class TabOrganizer implements MkTabOrganizer {
         tabs.forEach((tab) => {
             const { id } = tab;
             if (!id) {
-                throw new Error(`No id for sorted tab: ${id}`);
+                throw new Error('No id for sorted tab');
             }
             const moveProperties = { index: -1 };
             this.browser.tabs.move(id, moveProperties, () => {
@@ -238,9 +238,12 @@ export class TabOrganizer implements MkTabOrganizer {
      */
     private sortTabIdsByDomain(tabs: MkBrowser.tabs.Tab[]) {
         console.log('TabOrganizer.sortTabIdsByDomain');
-        const tabIdsByDomain = {};
+        const tabIdsByDomain: Record<string, number[]> = {};
         tabs.forEach((tab) => {
-            const { url } = tab;
+            const { id, url } = tab;
+            if (!id) {
+                throw new Error('No id for tab');
+            }
             // Don't group tabs without a URL
             // TODO: Depending on what these are we should reconsider
             if (!url) {
@@ -250,9 +253,9 @@ export class TabOrganizer implements MkTabOrganizer {
             const { hostname } = parsedUrl;
             const domain = parseSharedDomain(hostname);
             if (!tabIdsByDomain[domain]) {
-                tabIdsByDomain[domain] = [tab.id];
+                tabIdsByDomain[domain] = [id];
             } else {
-                tabIdsByDomain[domain].push(tab.id);
+                tabIdsByDomain[domain].push(id);
             }
         });
         console.log('TabOrganizer.sortTabIdsByDomain', tabIdsByDomain);

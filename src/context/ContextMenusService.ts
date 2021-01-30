@@ -1,9 +1,9 @@
 import { v4 as uuid } from 'uuid';
 import {
     MkCmBrowser,
-    MkContextMenusService,
-    MkCmHandleToggleParams,
     MkCmConstructorParams,
+    MkCmHandleToggleParams,
+    MkContextMenusService,
 } from './MkContextMenusService';
 import { MkStorageService } from 'src/storage/MkStorageService';
 
@@ -77,7 +77,7 @@ export class ContextMenusService implements MkContextMenusService {
         // Rely on the menu item to automatically update itself
         // TODO: Remove specific reference to this particular setting
         const data = { enableAutomaticSorting: checked };
-        this.storage.setState(data);
+        void this.storage.setState(data);
     }
 
     /**

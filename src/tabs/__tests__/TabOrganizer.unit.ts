@@ -1,6 +1,6 @@
 import {
-    browserMockRemoveListeners,
     browserMockListeners,
+    browserMockRemoveListeners,
 } from 'src/api/__mocks__/browserMockListeners';
 import { TabOrganizer } from '../TabOrganizer';
 import { organizerBrowserMock } from '../__mocks__/organizerBrowserMock';

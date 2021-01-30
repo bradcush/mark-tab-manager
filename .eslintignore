@@ -1,2 +1,4 @@
 # node_modules ignored by default
 dist
+tsconfig.eslint.json
+.eslintrc.json
