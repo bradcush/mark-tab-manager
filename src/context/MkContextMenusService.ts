@@ -1,5 +1,5 @@
 import { MkBrowser } from 'src/api/MkBrowser';
-import { MkStorageService } from 'src/storage/MkStorageService';
+import { MkStore } from 'src/storage/MkStore';
 
 export interface MkContextMenusService {
     init(): void;
@@ -22,7 +22,7 @@ export interface MkCmBrowser {
 
 export interface MkCmConstructorParams {
     browser: MkCmBrowser;
-    storage: MkStorageService;
+    storage: MkStore;
 }
 
 export interface MkCmHandleToggleParams {

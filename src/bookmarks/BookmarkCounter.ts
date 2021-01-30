@@ -23,7 +23,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
      * Init handlers for when the bookmark
      * count needs to be updated
      */
-    public init() {
+    public init(): void {
         console.log('BookmarkCounter.init');
         // Set the initial count based the current tab
         this.resetCurrentTabBookmarkCount();

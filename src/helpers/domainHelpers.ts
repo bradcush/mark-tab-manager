@@ -4,7 +4,7 @@ import { parseDomain, ParseResultType } from 'parse-domain';
  * general and shared part of a given domain
  * TODO: Make sure to revisit with the docs
  */
-export function parseSharedDomain(host: string) {
+export function parseSharedDomain(host: string): string {
     console.log('parseSharedDomain', host);
     const parseResult = parseDomain(host);
     console.log('parseSharedDomain', parseResult);

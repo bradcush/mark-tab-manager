@@ -1,39 +1,46 @@
 import { BookmarkCounter } from './bookmarks/BookmarkCounter';
-import { counterBrowser } from './bookmarks/counterBrowser';
-import { TabOrganizer } from './tabs/TabOrganizer';
-import { tabOrganizerBrowser } from './tabs/tabOrganizerBrowser';
+import { bookmarkCounterBrowser } from './bookmarks/bookmarkCounterBrowser';
+import { SiteOrganizer } from './tabs/SiteOrganizer';
+import { siteOrganizerBrowser } from './tabs/siteOrganizerBrowser';
 import { ContextMenusService } from './context/ContextMenusService';
 import { contextBrowser } from './context/contextBrowser';
-import { StorageService } from './storage/StorageService';
-import { storageBrowser } from './storage/storageBrowser';
+import { Store } from './storage/Store';
+import { storeBrowser } from './storage/storeBrowser';
 
 // When the service worker starts
 console.log('Service worker started');
 
 async function initBackground() {
     // Load settings from storage into state
-    const storageService = new StorageService(storageBrowser);
-    await storageService.init();
+    const storeInstance = new Store(storeBrowser);
+    await storeInstance.load();
 
     // Create various context menus that dictate client behaviour
     const contextMenusService = new ContextMenusService({
         browser: contextBrowser,
-        storage: storageService,
+        storage: storeInstance,
     });
     contextMenusService.init();
 
     // Start bookmark counter to track criteria matches
     if (ENABLE_BOOKMARK_COUNTER) {
-        const bookmarkCounter = new BookmarkCounter(counterBrowser);
+        const bookmarkCounter = new BookmarkCounter(bookmarkCounterBrowser);
         bookmarkCounter.init();
     }
 
     // Start tab organizer for sorting tabs
-    const tabOrganizer = new TabOrganizer({
-        browser: tabOrganizerBrowser,
-        storage: storageService,
+    const siteOrganizer = new SiteOrganizer({
+        browser: siteOrganizerBrowser,
+        store: storeInstance,
     });
-    tabOrganizer.init();
+    siteOrganizer.connect();
+
+    // Organize on extension initialization
+    const state = storeInstance.getState();
+    const isAutomaticSortingEnabled = state.enableAutomaticSorting;
+    if (isAutomaticSortingEnabled) {
+        siteOrganizer.organize();
+    }
 }
 
-initBackground();
+void initBackground();

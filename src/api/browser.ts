@@ -1,6 +1,6 @@
 import { MkBrowser } from 'src/api/MkBrowser';
-import { get as storageSyncGet } from './browser/storage/sync/syncGet';
-import { set as storageSyncSet } from './browser/storage/sync/syncSet';
+import { get as storageGet } from './browser/storage/sync/get';
+import { set as storageSet } from './browser/storage/sync/set';
 
 // For MV3 browserAction should be replaced by action
 // but types don't yet support this change
@@ -31,13 +31,13 @@ const runtime = {
     lastError: chrome.runtime.lastError,
 };
 
-const storageSync = {
-    get: storageSyncGet,
-    set: storageSyncSet,
+const syncStorage = {
+    get: storageGet,
+    set: storageSet,
 };
 
 const storage = {
-    sync: storageSync,
+    sync: syncStorage,
 };
 
 // See the proposed API for tabGroups and tabs related to groups

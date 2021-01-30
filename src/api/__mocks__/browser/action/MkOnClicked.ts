@@ -1,0 +1,1 @@
+export type MkOnClickedHandler = () => void;

@@ -5,7 +5,7 @@ import {
     MkCmHandleToggleParams,
     MkContextMenusService,
 } from './MkContextMenusService';
-import { MkStorageService } from 'src/storage/MkStorageService';
+import { MkStore } from 'src/storage/MkStore';
 
 /**
  * Context menu creation and updating
@@ -27,12 +27,12 @@ export class ContextMenusService implements MkContextMenusService {
     }
 
     private readonly browser: MkCmBrowser;
-    private readonly storage: MkStorageService;
+    private readonly storage: MkStore;
 
     /**
      * Initialize creation of and interaction with all context menus
      */
-    public init() {
+    public init(): void {
         console.log('ContextMenusService.init');
 
         // Create the browser action context menu
