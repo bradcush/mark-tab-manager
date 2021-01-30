@@ -1,6 +1,6 @@
 import { browser } from 'src/api/browser';
 
-export const contextBrowser = {
+export const contextMenuBrowser = {
     contextMenus: {
         create: browser.contextMenus.create,
         onClicked: browser.contextMenus.onClicked,

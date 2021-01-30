@@ -2,8 +2,8 @@ import { BookmarkCounter } from './bookmarks/BookmarkCounter';
 import { bookmarkCounterBrowser } from './bookmarks/bookmarkCounterBrowser';
 import { SiteOrganizer } from './tabs/SiteOrganizer';
 import { siteOrganizerBrowser } from './tabs/siteOrganizerBrowser';
-import { ContextMenusService } from './context/ContextMenusService';
-import { contextBrowser } from './context/contextBrowser';
+import { ContextMenu } from './context/ContextMenu';
+import { contextMenuBrowser } from './context/contextMenuBrowser';
 import { Store } from './storage/Store';
 import { storeBrowser } from './storage/storeBrowser';
 
@@ -16,11 +16,11 @@ async function initBackground() {
     await storeInstance.load();
 
     // Create various context menus that dictate client behaviour
-    const contextMenusService = new ContextMenusService({
-        browser: contextBrowser,
-        storage: storeInstance,
+    const contextMenu = new ContextMenu({
+        browser: contextMenuBrowser,
+        store: storeInstance,
     });
-    contextMenusService.init();
+    contextMenu.create();
 
     // Start bookmark counter to track criteria matches
     if (ENABLE_BOOKMARK_COUNTER) {

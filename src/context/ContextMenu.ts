@@ -1,49 +1,48 @@
 import { v4 as uuid } from 'uuid';
 import {
-    MkCmBrowser,
-    MkCmConstructorParams,
-    MkCmHandleToggleParams,
-    MkContextMenusService,
-} from './MkContextMenusService';
+    MkConstructorParams,
+    MkContextMenu,
+    MkContextMenuBrowser,
+    MkHandleToggleParams,
+} from './MkContextMenu';
 import { MkStore } from 'src/storage/MkStore';
 
 /**
  * Context menu creation and updating
- * TODO: Make general to handle other checkbox menus
  */
-export class ContextMenusService implements MkContextMenusService {
-    public constructor({ browser, storage }: MkCmConstructorParams) {
-        console.log('ContextMenusService.constructor');
+export class ContextMenu implements MkContextMenu {
+    public constructor({ browser, store }: MkConstructorParams) {
+        console.log('ContextMenu.constructor');
 
         if (!browser) {
             throw new Error('No browser');
         }
         this.browser = browser;
 
-        if (!storage) {
-            throw new Error('No storage');
+        if (!store) {
+            throw new Error('No store');
         }
-        this.storage = storage;
+        this.store = store;
     }
 
-    private readonly browser: MkCmBrowser;
-    private readonly storage: MkStore;
+    private readonly browser: MkContextMenuBrowser;
+    private readonly store: MkStore;
 
     /**
      * Initialize creation of and interaction with all context menus
      */
-    public init(): void {
-        console.log('ContextMenusService.init');
+    public create(): void {
+        console.log('ContextMenu.init');
 
         // Create the browser action context menu
         // for toggling automatic sorting
-        const { enableAutomaticSorting } = this.storage.getState();
-        console.log('ContextMenusService.init', enableAutomaticSorting);
+        const { enableAutomaticSorting } = this.store.getState();
+        console.log('ContextMenu.init', enableAutomaticSorting);
         this.replaceMenuItem(enableAutomaticSorting);
 
         // Handle clicks on any context menu item
         this.browser.contextMenus.onClicked.addListener((info, tab) => {
-            console.log('ContextMenusService.browser.contextMenus.onClicked');
+            console.log('ContextMenu.browser.contextMenus.onClicked');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -56,10 +55,10 @@ export class ContextMenusService implements MkContextMenusService {
      * Create a new menu item
      */
     private createMenuItem(isChecked: boolean) {
-        console.log('ContextMenusService.createMenuItem');
+        console.log('ContextMenu.createMenuItem');
         const autoSortCreateProperties = this.makeCreateProperties(isChecked);
         this.browser.contextMenus.create(autoSortCreateProperties, () => {
-            console.log('ContextMenusService.browser.contextMenus.create');
+            console.log('ContextMenu.browser.contextMenus.create');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -71,13 +70,13 @@ export class ContextMenusService implements MkContextMenusService {
      * Handle auto sort context menu setting clicks by
      * updating a temporary internal state only for now
      */
-    private handleToggle({ info }: MkCmHandleToggleParams) {
-        console.log('ContextMenusService.handleToggle', info);
+    private handleToggle({ info }: MkHandleToggleParams) {
+        console.log('ContextMenu.handleToggle', info);
         const { checked } = info;
         // Rely on the menu item to automatically update itself
         // TODO: Remove specific reference to this particular setting
         const data = { enableAutomaticSorting: checked };
-        void this.storage.setState(data);
+        void this.store.setState(data);
     }
 
     /**
@@ -99,11 +98,11 @@ export class ContextMenusService implements MkContextMenusService {
      * new item with the given initial state
      */
     private replaceMenuItem(checked: boolean) {
-        console.log('ContextMenusService.replaceMenuItem', checked);
+        console.log('ContextMenu.replaceMenuItem', checked);
         // TODO; Remove only the specific menu item or
         // don't remove at all if you don't need to
         this.browser.contextMenus.removeAll(() => {
-            console.log('ContextMenusService.browser.contextMenus.removeAll');
+            console.log('ContextMenu.browser.contextMenus.removeAll');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
