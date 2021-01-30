@@ -28,6 +28,16 @@ is currently no need for any at the moment.
 - Unit testing: `yarn test:unit`
 - Unit testing w/ coverage: `yarn test:unit:coverage`
 
+## Linting
+
+Linting using `eslist` is also automatically run as part of the GitHub CI for
+both a commit push and pull request. They are also run locally before
+committing using a pre-commit hook. The must be no errors for any pull
+request to be merged into the main branch.
+
+- Linting: `yarn lint`
+- Lint auto-fix: `yarn lint:fix`
+
 ## Running
 
 After having built the extension locally, using Chrome greater than version 88,
