@@ -15,7 +15,7 @@ describe('Store', () => {
             const browserMock = makeStoreBrowser(syncGetMock);
             const storageService = new Store(browserMock);
             await storageService.load();
-            const state = storageService.getState();
+            const state = await storageService.getState();
             const expectedState = { enableAutomaticSorting: false };
             expect(state).toStrictEqual(expectedState);
         });
@@ -28,7 +28,7 @@ describe('Store', () => {
             const browserMock = makeStoreBrowser(syncGetMock);
             const storageService = new Store(browserMock);
             await storageService.load();
-            const state = storageService.getState();
+            const state = await storageService.getState();
             const expectedState = { enableAutomaticSorting: false };
             expect(state).toStrictEqual(expectedState);
         });
@@ -38,7 +38,7 @@ describe('Store', () => {
             const browserMock = makeStoreBrowser(syncGetMock);
             const storageService = new Store(browserMock);
             await storageService.load();
-            const state = storageService.getState();
+            const state = await storageService.getState();
             const expectedState = { enableAutomaticSorting: true };
             expect(state).toStrictEqual(expectedState);
         });
@@ -51,7 +51,7 @@ describe('Store', () => {
             await storageService.load();
             const state = { enableAutomaticSorting: false };
             await storageService.setState(state);
-            const newState = storageService.getState();
+            const newState = await storageService.getState();
             expect(newState).toStrictEqual(state);
             const storage = { settings: JSON.stringify(state) };
             expect(browserMock.storage.sync.set).toBeCalledWith(storage);
@@ -64,7 +64,7 @@ describe('Store', () => {
 
             const firstState = { enableAutomaticSorting: false };
             await storageService.setState(firstState);
-            const firstNewState = storageService.getState();
+            const firstNewState = await storageService.getState();
             expect(firstNewState).toStrictEqual(firstState);
             const firstItems = { settings: JSON.stringify(firstState) };
             const { set } = browserMock.storage.sync;
@@ -72,7 +72,7 @@ describe('Store', () => {
 
             const secondState = { enableAutomaticSorting: true };
             await storageService.setState(secondState);
-            const secondNewState = storageService.getState();
+            const secondNewState = await storageService.getState();
             expect(secondNewState).toStrictEqual(secondState);
             const secondItems = { settings: JSON.stringify(secondState) };
             expect(set).toBeCalledWith(secondItems);
@@ -85,7 +85,7 @@ describe('Store', () => {
             const browserMock = makeStoreBrowser(syncGetMock);
             const storageService = new Store(browserMock);
             await storageService.load();
-            const state = storageService.getState();
+            const state = await storageService.getState();
             const expectedState = { enableAutomaticSorting: true };
             expect(state).toStrictEqual(expectedState);
         });

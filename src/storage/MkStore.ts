@@ -14,6 +14,6 @@ export interface MkState {
 
 export interface MkStore {
     load(): void;
-    getState(): MkState;
+    getState(): Promise<MkState>;
     setState(state: Partial<MkState>): Promise<void>;
 }

@@ -2,6 +2,8 @@ import { MkState, MkStore, MkStoreBrowser } from './MkStore';
 
 /**
  * Loading, caching, and setting storage
+ * TODO: Store should specify a "GenericStorage"
+ * port and be passed a "SyncStorage" adapter
  */
 export class Store implements MkStore {
     public constructor(browser: MkStoreBrowser) {
@@ -59,9 +61,9 @@ export class Store implements MkStore {
     /**
      * Retrieve the current in memory state
      */
-    public getState(): MkState {
+    public getState(): Promise<MkState> {
         console.log('Store.getState', this.state);
-        return this.state;
+        return Promise.resolve(this.state);
     }
 
     /**

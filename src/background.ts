@@ -20,7 +20,7 @@ async function initBackground() {
         browser: contextMenuBrowser,
         store: storeInstance,
     });
-    contextMenu.create();
+    void contextMenu.create();
 
     // Start bookmark counter to track criteria matches
     if (ENABLE_BOOKMARK_COUNTER) {
@@ -38,7 +38,7 @@ async function initBackground() {
     siteOrganizer.connect();
 
     // Organize on extension initialization
-    const state = storeInstance.getState();
+    const state = await storeInstance.getState();
     const isAutomaticSortingEnabled = state.enableAutomaticSorting;
     if (isAutomaticSortingEnabled) {
         void siteOrganizer.organize();

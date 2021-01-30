@@ -25,7 +25,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
      * the bookmark count needs to be updated
      */
     public connect(): void {
-        console.log('BookmarkCounter.init');
+        console.log('BookmarkCounter.connect');
 
         // Handle already loaded tabs that are focused
         this.browser.tabs.onActivated.addListener((activeInfo) => {

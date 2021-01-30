@@ -57,14 +57,15 @@ export class SiteOrganizer implements MkSiteOrganizer {
          * TODO: Handle funky case where the browser is relaunched and
          * multiple tabs are updating at once causing multiple re-renders
          */
-        this.browser.tabs.onUpdated.addListener((_tabId, changeInfo) => {
+        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
+        this.browser.tabs.onUpdated.addListener(async (_tabId, changeInfo) => {
             console.log('SiteOrganizer.browser.tabs.onUpdated', changeInfo);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
             }
             // We only want automatic sort if enabled
-            const state = this.store.getState();
+            const state = await this.store.getState();
             const isAutomaticSortingEnabled = state.enableAutomaticSorting;
             if (!isAutomaticSortingEnabled) {
                 return;
@@ -81,9 +82,10 @@ export class SiteOrganizer implements MkSiteOrganizer {
         });
 
         // Handle removed tabs
-        this.browser.tabs.onRemoved.addListener(() => {
+        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
+        this.browser.tabs.onRemoved.addListener(async () => {
             // We only want automatic sort if enabled
-            const state = this.store.getState();
+            const state = await this.store.getState();
             const isAutomaticSortingEnabled = state.enableAutomaticSorting;
             if (!isAutomaticSortingEnabled) {
                 return;

@@ -31,12 +31,12 @@ export class ContextMenu implements MkContextMenu {
     /**
      * Initialize creation of and interaction with all context menus
      */
-    public create(): void {
+    public async create(): Promise<void> {
         console.log('ContextMenu.init');
 
         // Create the browser action context menu
         // for toggling automatic sorting
-        const { enableAutomaticSorting } = this.store.getState();
+        const { enableAutomaticSorting } = await this.store.getState();
         console.log('ContextMenu.init', enableAutomaticSorting);
         this.replaceMenuItem(enableAutomaticSorting);
 
