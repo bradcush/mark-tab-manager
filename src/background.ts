@@ -20,7 +20,8 @@ async function initBackground() {
         browser: contextMenuBrowser,
         store: storeInstance,
     });
-    void contextMenu.create();
+    await contextMenu.create();
+    contextMenu.connect();
 
     // Start bookmark counter to track criteria matches
     if (ENABLE_BOOKMARK_COUNTER) {

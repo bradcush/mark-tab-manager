@@ -29,16 +29,10 @@ export class ContextMenu implements MkContextMenu {
     private readonly store: MkStore;
 
     /**
-     * Initialize creation of and interaction with all context menus
+     * Connect handler for context menu updates
      */
-    public async create(): Promise<void> {
-        console.log('ContextMenu.init');
-
-        // Create the browser action context menu
-        // for toggling automatic sorting
-        const { enableAutomaticSorting } = await this.store.getState();
-        console.log('ContextMenu.init', enableAutomaticSorting);
-        this.replaceMenuItem(enableAutomaticSorting);
+    public connect(): void {
+        console.log('ContextMenu.connect');
 
         // Handle clicks on any context menu item
         this.browser.contextMenus.onClicked.addListener((info, tab) => {
@@ -49,6 +43,19 @@ export class ContextMenu implements MkContextMenu {
             }
             this.handleToggle({ info, tab });
         });
+    }
+
+    /**
+     * Initialize creation of and interaction with all context menus
+     */
+    public async create(): Promise<void> {
+        console.log('ContextMenu.create');
+
+        // Create the browser action context menu
+        // for toggling automatic sorting
+        const { enableAutomaticSorting } = await this.store.getState();
+        console.log('ContextMenu.create', enableAutomaticSorting);
+        this.replaceMenuItem(enableAutomaticSorting);
     }
 
     /**
@@ -83,6 +90,7 @@ export class ContextMenu implements MkContextMenu {
      * Make properties used for specifying a created menu item
      */
     private makeCreateProperties(checked: boolean) {
+        console.log('ContextMenu.makeCreateProperties');
         return {
             checked,
             contexts: ['action'],

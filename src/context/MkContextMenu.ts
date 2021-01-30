@@ -2,7 +2,8 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStore } from 'src/storage/MkStore';
 
 export interface MkContextMenu {
-    create(): void;
+    connect(): void;
+    create(): Promise<void>;
 }
 
 interface MkContextMenus {
