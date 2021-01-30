@@ -10,6 +10,7 @@ import {
 import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
 import { MkStore } from 'src/storage/MkStore';
+import { MkColor as MkTabGroupsColor } from 'src/api/browser/tabGroups/MkColor';
 
 /**
  * Organize open tabs
@@ -37,7 +38,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * Connect site organizer to triggering browser events
      */
     public connect(): void {
-        console.log('SiteOrganizer.init');
+        console.log('SiteOrganizer.connect');
 
         // Handle when the extension icon is clicked
         this.browser.action.onClicked.addListener(() => {
@@ -100,19 +101,13 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * group has been created. Ordering of colors should also be predictable
      * so it doesn't change on every resort.
      */
-    private addNewGroup({ idx, name, tabIds }: MkAddNewGroupParams) {
+    private async addNewGroup({ idx, name, tabIds }: MkAddNewGroupParams) {
         console.log('SiteOrganizer.addNewGroup', name);
         const options = { tabIds };
-        this.browser.tabs.group(options, (groupId) => {
-            console.log('SiteOrganizer.browser.tabs.group', groupId);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-            const title = `${name} (${tabIds.length})`;
-            const color = this.getColorForGroup(idx);
-            this.updateGroupTitle({ color, groupId, title });
-        });
+        const groupId = await this.browser.tabs.group(options);
+        const title = `${name} (${tabIds.length})`;
+        const color = this.getColorForGroup(idx);
+        this.updateGroupTitle({ color, groupId, title });
     }
 
     /**
@@ -134,7 +129,10 @@ export class SiteOrganizer implements MkSiteOrganizer {
         const colorsByEnum = this.browser.tabGroups.Color;
         console.log('SiteOrganizer.getColorForGroup', colorsByEnum);
         const colorKeys = Object.keys(colorsByEnum);
-        const colors = colorKeys.map((colorKey) => colorsByEnum[colorKey]);
+        // TODO: Remove type assertion in favor of real types
+        const colors = colorKeys.map(
+            (colorKey) => colorsByEnum[colorKey] as MkTabGroupsColor
+        );
         const colorIdx = index % colorKeys.length;
         const color = colors[colorIdx];
         console.log('SiteOrganizer.getColorForGroup', color);
@@ -171,13 +169,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      */
     private removeExistingGroup(ids: number[]) {
         console.log('SiteOrganizer.removeExistingGroup', ids);
-        this.browser.tabs.ungroup(ids, () => {
-            console.log('SiteOrganizer.browser.tabs.ungroup');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-        });
+        void this.browser.tabs.ungroup(ids);
     }
 
     /**
@@ -199,7 +191,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
                 this.removeExistingGroup(tabIds);
                 return;
             }
-            this.addNewGroup({ idx, name: group, tabIds });
+            void this.addNewGroup({ idx, name: group, tabIds });
         });
     }
 
@@ -302,12 +294,6 @@ export class SiteOrganizer implements MkSiteOrganizer {
     }: MkUpdateGroupTitleParams) {
         console.log('SiteOrganizer.updateGroupTitle');
         const updateProperties = { color, title };
-        this.browser.tabGroups.update(groupId, updateProperties, () => {
-            console.log('SiteOrganizer.browser.tabGroups.update');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-        });
+        void this.browser.tabGroups.update(groupId, updateProperties);
     }
 }

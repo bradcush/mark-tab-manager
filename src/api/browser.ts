@@ -2,16 +2,19 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { get as storageGet } from './browser/storage/sync/get';
 import { set as storageSet } from './browser/storage/sync/set';
 import { query as tabsQuery } from './browser/tabs/query';
+import { Color as tabGroupsColor } from './browser/tabGroups/Color';
+import { update as tabGroupsUpdate } from './browser/tabGroups/update';
+import { group as tabsGroup } from './browser/tabs/group';
+import { ungroup as tabsUngroup } from './browser/tabs/ungroup';
 
-// For MV3 browserAction should be replaced by action
-// but types don't yet support this change
+// For MV3 "browserAction" should be replaced by "action"
 // https://developers.chrome.com/extensions/migrating_to_manifest_v3#actions
 const action = {
-    // @ts-expect-error Due to recent MV3 API change
+    // @ts-expect-error Recent Manifest v3 change
     onClicked: chrome.action.onClicked,
-    // @ts-expect-error Due to recent MV3 API change
+    // @ts-expect-error Recent Manifest v3 change
     setBadgeBackgroundColor: chrome.action.setBadgeBackgroundColor,
-    // @ts-expect-error Due to recent MV3 API change
+    // @ts-expect-error Recent Manifest v3 change
     setBadgeText: chrome.action.setBadgeText,
 };
 
@@ -44,23 +47,19 @@ const storage = {
 // See the proposed API for tabGroups and tabs related to groups
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1106846
 const tabGroups = {
-    // @ts-expect-error Still in preview
-    update: chrome.tabGroups.update,
-    // @ts-expect-error Still in preview
-    Color: chrome.tabGroups.Color,
+    update: tabGroupsUpdate,
+    Color: tabGroupsColor,
 };
 
 const tabs = {
     get: chrome.tabs.get,
-    // @ts-expect-error Still in preview
-    group: chrome.tabs.group,
+    group: tabsGroup,
     move: chrome.tabs.move,
     onActivated: chrome.tabs.onActivated,
     onUpdated: chrome.tabs.onUpdated,
     onRemoved: chrome.tabs.onRemoved,
     query: tabsQuery,
-    // @ts-expect-error Still in preview
-    ungroup: chrome.tabs.ungroup,
+    ungroup: tabsUngroup,
 };
 
 export const browser: MkBrowser = {
