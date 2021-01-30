@@ -23,7 +23,7 @@ module.exports = {
     },
     plugins: [
         new webpack.DefinePlugin({
-            ENABLE_BOOKMARK_COUNTER: JSON.stringify(false),
+            ENABLE_BOOKMARK_COUNTER: JSON.stringify(true),
         }),
         new CopyPlugin({
             patterns: [

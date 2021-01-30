@@ -118,7 +118,9 @@ export declare namespace MkBrowser.tabs {
     export type OnActivated = typeof chrome.tabs.onActivated;
     export type OnUpdated = typeof chrome.tabs.onUpdated;
     export type OnRemoved = typeof chrome.tabs.onRemoved;
-    export type Query = typeof chrome.tabs.query;
+    export type Query = (
+        queryInfo: MkBrowser.tabs.QueryInfo
+    ) => Promise<MkBrowser.tabs.Tab[]>;
     export type QueryInfo = chrome.tabs.QueryInfo;
     export type Tab = chrome.tabs.Tab;
     export type TabActiveInfo = chrome.tabs.TabActiveInfo;

@@ -1,6 +1,7 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 import { get as storageGet } from './browser/storage/sync/get';
 import { set as storageSet } from './browser/storage/sync/set';
+import { query as tabsQuery } from './browser/tabs/query';
 
 // For MV3 browserAction should be replaced by action
 // but types don't yet support this change
@@ -57,7 +58,7 @@ const tabs = {
     onActivated: chrome.tabs.onActivated,
     onUpdated: chrome.tabs.onUpdated,
     onRemoved: chrome.tabs.onRemoved,
-    query: chrome.tabs.query,
+    query: tabsQuery,
     // @ts-expect-error Still in preview
     ungroup: chrome.tabs.ungroup,
 };

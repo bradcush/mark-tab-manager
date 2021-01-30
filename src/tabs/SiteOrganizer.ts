@@ -46,7 +46,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
             if (lastError) {
                 throw lastError;
             }
-            this.organize();
+            void this.organize();
         });
 
         // Prevent too many repetitive calls to organize
@@ -77,7 +77,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
             if (!hasUrlChanged && !hasPinnedChanged) {
                 return;
             }
-            organize();
+            void organize();
         });
 
         // Handle removed tabs
@@ -88,7 +88,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
             if (!isAutomaticSortingEnabled) {
                 return;
             }
-            organize();
+            void organize();
         });
     }
 
@@ -152,18 +152,16 @@ export class SiteOrganizer implements MkSiteOrganizer {
     /**
      * Order and group all tabs
      */
-    public organize = (): void => {
+    public organize = async (): Promise<void> => {
         console.log('SiteOrganizer.organize');
-        this.browser.tabs.query({}, (tabs) => {
-            console.log('SiteOrganizer.browser.tabs.query', tabs);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-            const sortedTabs = this.sortTabsAlphabetically(tabs);
-            this.reorderBrowserTabs(sortedTabs);
-            this.groupBrowserTabs(sortedTabs);
-        });
+        const tabs = await this.browser.tabs.query({});
+        const lastError = this.browser.runtime.lastError;
+        if (lastError) {
+            throw lastError;
+        }
+        const sortedTabs = this.sortTabsAlphabetically(tabs);
+        this.reorderBrowserTabs(sortedTabs);
+        this.groupBrowserTabs(sortedTabs);
     };
 
     /**

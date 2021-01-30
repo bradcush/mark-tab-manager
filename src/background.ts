@@ -25,7 +25,9 @@ async function initBackground() {
     // Start bookmark counter to track criteria matches
     if (ENABLE_BOOKMARK_COUNTER) {
         const bookmarkCounter = new BookmarkCounter(bookmarkCounterBrowser);
-        bookmarkCounter.init();
+        bookmarkCounter.connect();
+        // Set the initial count based the current tab
+        void bookmarkCounter.setActiveTabBookmarkCount();
     }
 
     // Start tab organizer for sorting tabs
@@ -39,7 +41,7 @@ async function initBackground() {
     const state = storeInstance.getState();
     const isAutomaticSortingEnabled = state.enableAutomaticSorting;
     if (isAutomaticSortingEnabled) {
-        siteOrganizer.organize();
+        void siteOrganizer.organize();
     }
 }
 
