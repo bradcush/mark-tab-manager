@@ -1,4 +1,7 @@
 import { MkSyncGetItems, MkSyncGetKeys } from './browser/storage/sync/MkSync';
+import { MkColor as MkTabGroupsColor } from './browser/tabGroups/MkColor';
+import { MkUpdateProperties as MkTabGroupsUpdateProperties } from './browser/tabGroups/MkUpdate';
+import { MkOptions as MkTabsGroupOptions } from './browser/tabs/MkGroup';
 
 interface MkBrowserAction {
     onClicked: MkBrowser.action.OnClicked;
@@ -95,33 +98,27 @@ export declare namespace MkBrowser.storage {
 }
 
 export declare namespace MkBrowser.tabGroups {
-    // TODO: Replace by types when possible
-    export type Color = Record<string, string>;
-    // TODO: Replace by types when possible
+    export type Color = MkTabGroupsColor;
     export type Update = (
         groupId: number,
-        updateProperties: Record<string, any>,
-        callback?: () => void
-    ) => void;
+        updateProperties: MkTabGroupsUpdateProperties
+    ) => Promise<void>;
 }
 
 export declare namespace MkBrowser.tabs {
     export type ChangeInfo = chrome.tabs.TabChangeInfo;
     export type Get = typeof chrome.tabs.get;
-    // TODO: Replace by types when possible
-    export type Group = (
-        options: Record<string, any>,
-        callback?: (groupId: number) => void
-    ) => void;
+    export type Group = (options: MkTabsGroupOptions) => Promise<number>;
     export type Move = typeof chrome.tabs.move;
     export type MoveProperties = chrome.tabs.MoveProperties;
     export type OnActivated = typeof chrome.tabs.onActivated;
     export type OnUpdated = typeof chrome.tabs.onUpdated;
     export type OnRemoved = typeof chrome.tabs.onRemoved;
-    export type Query = typeof chrome.tabs.query;
+    export type Query = (
+        queryInfo: MkBrowser.tabs.QueryInfo
+    ) => Promise<MkBrowser.tabs.Tab[]>;
     export type QueryInfo = chrome.tabs.QueryInfo;
     export type Tab = chrome.tabs.Tab;
     export type TabActiveInfo = chrome.tabs.TabActiveInfo;
-    // TODO: Replace by types when possible
-    export type Ungroup = (tabIds: number[], callback?: () => void) => void;
+    export type Ungroup = (tabIds: number[]) => Promise<void>;
 }

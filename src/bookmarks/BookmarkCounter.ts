@@ -1,14 +1,16 @@
-import debounce from 'lodash/debounce';
-import { MkBcBrowser, MkBookmarkCounter } from './MkBookmarkCounter';
+import {
+    MkBookmarkCounter,
+    MkBookmarkCounterBrowser,
+} from './MkBookmarkCounter';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
 
 /*
- * Responsible for tracking matching bookmark relevant to the current tab
+ * Responsible for tracking matching bookmarks relevant to the current tab
  * and displaying that count information in the extension icon badge
  */
 export class BookmarkCounter implements MkBookmarkCounter {
-    public constructor(browser: MkBcBrowser) {
+    public constructor(browser: MkBookmarkCounterBrowser) {
         console.log('BookmarkCounter.constructor');
         if (!browser) {
             throw new Error('No browser');
@@ -16,17 +18,14 @@ export class BookmarkCounter implements MkBookmarkCounter {
         this.browser = browser;
     }
 
-    private readonly browser: MkBcBrowser;
-    private readonly DEBOUNCE_TIMEOUT = 50;
+    private readonly browser: MkBookmarkCounterBrowser;
 
     /**
-     * Init handlers for when the bookmark
-     * count needs to be updated
+     * Connect handlers to browser events for when
+     * the bookmark count needs to be updated
      */
-    public init() {
-        console.log('BookmarkCounter.init');
-        // Set the initial count based the current tab
-        this.resetCurrentTabBookmarkCount();
+    public connect(): void {
+        console.log('BookmarkCounter.connect');
 
         // Handle already loaded tabs that are focused
         this.browser.tabs.onActivated.addListener((activeInfo) => {
@@ -39,20 +38,18 @@ export class BookmarkCounter implements MkBookmarkCounter {
             this.setTabBookmarkCount(tabId);
         });
 
-        // Handle already focused tabs where the URL has changed
-        const updateBookmarkCount = debounce(
-            this.updateBookmarkCount,
-            this.DEBOUNCE_TIMEOUT
-        );
         this.browser.tabs.onUpdated.addListener((_tabId, _changeInfo, tab) => {
             console.log('BookmarkCounter.browser.tabs.onUpdated', tab);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
             }
-            // Grouping tabs causes onUpdated to fire multiple times
-            // with changeInfo indicating the URL has changed
-            updateBookmarkCount(tab);
+            // Only update the count for active tabs
+            // of which there should only be one
+            if (!tab.active) {
+                return;
+            }
+            this.updateBookmarkCount(tab);
         });
 
         // Handle when a bookmark has been added
@@ -62,25 +59,27 @@ export class BookmarkCounter implements MkBookmarkCounter {
             if (lastError) {
                 throw lastError;
             }
-            this.resetCurrentTabBookmarkCount();
+            void this.setActiveTabBookmarkCount();
         });
     }
 
     /**
-     * Update the bookmark count for the active tab
+     * Get the currently active browser tab
      */
-    private resetCurrentTabBookmarkCount() {
-        console.log('BookmarkCounter.resetCurrentTabBookmarkCount');
+    private async getActiveTab() {
+        console.log('BookmarkCounter.getActiveTab');
         const queryInfo = { active: true, lastFocusedWindow: true };
-        this.browser.tabs.query(queryInfo, (tabs) => {
-            console.log('BookmarkCounter.browser.tabs.query', tabs);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-            const tab = tabs[0];
-            this.updateBookmarkCount(tab);
-        });
+        const tabs = await this.browser.tabs.query(queryInfo);
+        return tabs[0];
+    }
+
+    /**
+     * Set the bookmark count for the active tab
+     */
+    public async setActiveTabBookmarkCount(): Promise<void> {
+        console.log('BookmarkCounter.setActiveTabBookmarkCount');
+        const activeTab = await this.getActiveTab();
+        this.updateBookmarkCount(activeTab);
     }
 
     /**

@@ -1,33 +1,34 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 
 export interface MkBookmarkCounter {
-    init(): void;
+    connect(): void;
+    setActiveTabBookmarkCount(): Promise<void>;
 }
 
-interface MkBcBrowserBookmarks {
+interface MkBrowserBookmarks {
     onCreated: MkBrowser.bookmarks.OnCreated;
     search: MkBrowser.bookmarks.Search;
 }
 
-interface MkBcBrowserAction {
+interface MkBrowserAction {
     setBadgeBackgroundColor: MkBrowser.action.SetBadgeBackgroundColor;
     setBadgeText: MkBrowser.action.SetBadgeText;
 }
 
-interface MkBcBrowserRuntime {
+interface MkBrowserRuntime {
     lastError: MkBrowser.runtime.LastError;
 }
 
-interface MkBcBrowserTabs {
+interface MkBrowserTabs {
     get: MkBrowser.tabs.Get;
     onActivated: MkBrowser.tabs.OnActivated;
     onUpdated: MkBrowser.tabs.OnUpdated;
     query: MkBrowser.tabs.Query;
 }
 
-export interface MkBcBrowser {
-    action: MkBcBrowserAction;
-    bookmarks: MkBcBrowserBookmarks;
-    runtime: MkBcBrowserRuntime;
-    tabs: MkBcBrowserTabs;
+export interface MkBookmarkCounterBrowser {
+    action: MkBrowserAction;
+    bookmarks: MkBrowserBookmarks;
+    runtime: MkBrowserRuntime;
+    tabs: MkBrowserTabs;
 }
