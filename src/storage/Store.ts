@@ -1,4 +1,10 @@
-import { MkState, MkStore, MkStoreBrowser } from './MkStore';
+import {
+    MkConstructorParams,
+    MkState,
+    MkStore,
+    MkStoreBrowser,
+} from './MkStore';
+import { MkLogger } from 'src/logs/MkLogger';
 
 /**
  * Loading, caching, and setting storage
@@ -6,18 +12,24 @@ import { MkState, MkStore, MkStoreBrowser } from './MkStore';
  * port and be passed a "SyncStorage" adapter
  */
 export class Store implements MkStore {
-    public constructor(browser: MkStoreBrowser) {
-        console.log('Store.constructor');
+    public constructor({ browser, Logger }: MkConstructorParams) {
         if (!browser) {
             throw new Error('No browser');
         }
         this.browser = browser;
+
+        if (!Logger) {
+            throw new Error('No Logger');
+        }
+        this.logger = new Logger('Store');
+        this.logger.log('constructor');
 
         // Set defaults to be overridden
         this.state = this.makeDefaultState();
     }
 
     private readonly browser: MkStoreBrowser;
+    private readonly logger: MkLogger;
     private state: MkState;
 
     /**
@@ -25,7 +37,7 @@ export class Store implements MkStore {
      * and provide defaults for what hasn't been set
      */
     public async load(): Promise<void> {
-        console.log('Store.load');
+        this.logger.log('load');
         await this.cacheStorage();
     }
 
@@ -34,10 +46,10 @@ export class Store implements MkStore {
      * appropriate values in memory for access
      */
     private async cacheStorage() {
-        console.log('Store.cacheStorage');
+        this.logger.log('cacheStorage');
         const { storage } = this.browser;
         const { settings } = await storage.sync.get('settings');
-        console.log('Store.cacheStorage', settings);
+        this.logger.log('cacheStorage', settings);
         // If there is no storage we don't cache anything
         if (typeof settings === 'undefined') {
             return;
@@ -53,7 +65,7 @@ export class Store implements MkStore {
      * Whether the key in storage should be in state
      */
     private isKeyValid(key: string) {
-        console.log('Store.isKeyValid');
+        this.logger.log('isKeyValid');
         const defaultState = this.makeDefaultState();
         const defaultStateKeys = Object.keys(defaultState);
         return defaultStateKeys.includes(key);
@@ -62,7 +74,7 @@ export class Store implements MkStore {
      * Retrieve the current in memory state
      */
     public getState(): Promise<MkState> {
-        console.log('Store.getState', this.state);
+        this.logger.log('getState', this.state);
         return Promise.resolve(this.state);
     }
 
@@ -71,7 +83,7 @@ export class Store implements MkStore {
      * store and persistent storage should contain
      */
     private makeDefaultState() {
-        console.log('Store.makeDefaultState');
+        this.logger.log('makeDefaultState');
         return {
             enableAutomaticSorting: true,
         };
@@ -82,7 +94,7 @@ export class Store implements MkStore {
      * checking if the types of values are what we expect
      */
     private parseValidState(state: string) {
-        console.log('Store.parseValidState', state);
+        this.logger.log('parseValidState', state);
         if (!state) {
             throw new Error('No state to parse');
         }
@@ -98,7 +110,7 @@ export class Store implements MkStore {
             }
             validState[stateKey] = parsedState[stateKey];
         });
-        console.log('Store.parseValidState', validState);
+        this.logger.log('parseValidState', validState);
         return validState;
     }
 
@@ -107,7 +119,7 @@ export class Store implements MkStore {
      * expected to be only one level and not support deep copies
      */
     private setInternalState(internalState: Partial<MkState>) {
-        console.log('Store.setInternalState', internalState);
+        this.logger.log('setInternalState', internalState);
         const state = {
             ...this.state,
             ...internalState,
@@ -120,7 +132,7 @@ export class Store implements MkStore {
      * Store a value directly in persistent storage
      */
     public async setState(state: Partial<MkState>): Promise<void> {
-        console.log('Store.setState');
+        this.logger.log('setState');
         // Best to set in memory state immediately instead of relying on on
         // storage updated event so we can be sure our state is accurate at
         // the right time when it may be accessed.

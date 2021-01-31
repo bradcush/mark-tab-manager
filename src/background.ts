@@ -6,26 +6,35 @@ import { ContextMenu } from './context/ContextMenu';
 import { contextMenuBrowser } from './context/contextMenuBrowser';
 import { Store } from './storage/Store';
 import { storeBrowser } from './storage/storeBrowser';
+import { ConsoleLogger } from './logs/ConsoleLogger';
 
 // When the service worker starts
-console.log('Service worker started');
+const logger = new ConsoleLogger();
+logger.log('Service worker started');
 
 async function initBackground() {
     // Load settings from storage into state
-    const storeInstance = new Store(storeBrowser);
+    const storeInstance = new Store({
+        browser: storeBrowser,
+        Logger: ConsoleLogger,
+    });
     await storeInstance.load();
 
     // Create various context menus that dictate client behaviour
     const contextMenu = new ContextMenu({
         browser: contextMenuBrowser,
         store: storeInstance,
+        Logger: ConsoleLogger,
     });
     await contextMenu.create();
     contextMenu.connect();
 
     // Start bookmark counter to track criteria matches
     if (ENABLE_BOOKMARK_COUNTER) {
-        const bookmarkCounter = new BookmarkCounter(bookmarkCounterBrowser);
+        const bookmarkCounter = new BookmarkCounter({
+            browser: bookmarkCounterBrowser,
+            Logger: ConsoleLogger,
+        });
         bookmarkCounter.connect();
         // Set the initial count based the current tab
         void bookmarkCounter.setActiveTabBookmarkCount();
@@ -35,6 +44,7 @@ async function initBackground() {
     const siteOrganizer = new SiteOrganizer({
         browser: siteOrganizerBrowser,
         store: storeInstance,
+        Logger: ConsoleLogger,
     });
     siteOrganizer.connect();
 

@@ -6,14 +6,13 @@ import {
     MkHandleToggleParams,
 } from './MkContextMenu';
 import { MkStore } from 'src/storage/MkStore';
+import { MkLogger } from 'src/logs/MkLogger';
 
 /**
  * Context menu creation and updating
  */
 export class ContextMenu implements MkContextMenu {
-    public constructor({ browser, store }: MkConstructorParams) {
-        console.log('ContextMenu.constructor');
-
+    public constructor({ browser, store, Logger }: MkConstructorParams) {
         if (!browser) {
             throw new Error('No browser');
         }
@@ -23,20 +22,27 @@ export class ContextMenu implements MkContextMenu {
             throw new Error('No store');
         }
         this.store = store;
+
+        if (!Logger) {
+            throw new Error('No Logger');
+        }
+        this.logger = new Logger('ContextMenu');
+        this.logger.log('constructor');
     }
 
     private readonly browser: MkContextMenuBrowser;
     private readonly store: MkStore;
+    private readonly logger: MkLogger;
 
     /**
      * Connect handler for context menu updates
      */
     public connect(): void {
-        console.log('ContextMenu.connect');
+        this.logger.log('connect');
 
         // Handle clicks on any context menu item
         this.browser.contextMenus.onClicked.addListener((info, tab) => {
-            console.log('ContextMenu.browser.contextMenus.onClicked');
+            this.logger.log('browser.contextMenus.onClicked');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -49,12 +55,12 @@ export class ContextMenu implements MkContextMenu {
      * Initialize creation of and interaction with all context menus
      */
     public async create(): Promise<void> {
-        console.log('ContextMenu.create');
+        this.logger.log('create');
 
         // Create the browser action context menu
         // for toggling automatic sorting
         const { enableAutomaticSorting } = await this.store.getState();
-        console.log('ContextMenu.create', enableAutomaticSorting);
+        this.logger.log('create', enableAutomaticSorting);
         this.replaceMenuItem(enableAutomaticSorting);
     }
 
@@ -62,10 +68,10 @@ export class ContextMenu implements MkContextMenu {
      * Create a new menu item
      */
     private createMenuItem(isChecked: boolean) {
-        console.log('ContextMenu.createMenuItem');
+        this.logger.log('createMenuItem');
         const autoSortCreateProperties = this.makeCreateProperties(isChecked);
         this.browser.contextMenus.create(autoSortCreateProperties, () => {
-            console.log('ContextMenu.browser.contextMenus.create');
+            this.logger.log('browser.contextMenus.create');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -78,7 +84,7 @@ export class ContextMenu implements MkContextMenu {
      * updating a temporary internal state only for now
      */
     private handleToggle({ info }: MkHandleToggleParams) {
-        console.log('ContextMenu.handleToggle', info);
+        this.logger.log('handleToggle', info);
         const { checked } = info;
         // Rely on the menu item to automatically update itself
         // TODO: Remove specific reference to this particular setting
@@ -90,7 +96,7 @@ export class ContextMenu implements MkContextMenu {
      * Make properties used for specifying a created menu item
      */
     private makeCreateProperties(checked: boolean) {
-        console.log('ContextMenu.makeCreateProperties');
+        this.logger.log('makeCreateProperties');
         return {
             checked,
             contexts: ['action'],
@@ -106,11 +112,11 @@ export class ContextMenu implements MkContextMenu {
      * new item with the given initial state
      */
     private replaceMenuItem(checked: boolean) {
-        console.log('ContextMenu.replaceMenuItem', checked);
+        this.logger.log('replaceMenuItem', checked);
         // TODO; Remove only the specific menu item or
         // don't remove at all if you don't need to
         this.browser.contextMenus.removeAll(() => {
-            console.log('ContextMenu.browser.contextMenus.removeAll');
+            this.logger.log('browser.contextMenus.removeAll');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;

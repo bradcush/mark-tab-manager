@@ -1,5 +1,6 @@
 import { Store } from '../Store';
 import { makeStoreBrowser, makeSyncGet } from '../__mocks__/storeBrowser';
+import { ConsoleLogger } from 'src/logs/ConsoleLogger';
 
 describe('Store', () => {
     afterEach(() => {
@@ -13,7 +14,10 @@ describe('Store', () => {
                 invalidSetting: true,
             });
             const browserMock = makeStoreBrowser(syncGetMock);
-            const storageService = new Store(browserMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = { enableAutomaticSorting: false };
@@ -26,7 +30,10 @@ describe('Store', () => {
                 invalidSetting: true,
             });
             const browserMock = makeStoreBrowser(syncGetMock);
-            const storageService = new Store(browserMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = { enableAutomaticSorting: false };
@@ -36,7 +43,10 @@ describe('Store', () => {
         it('should cache default state in memory without storage', async () => {
             const syncGetMock = makeSyncGet({});
             const browserMock = makeStoreBrowser(syncGetMock);
-            const storageService = new Store(browserMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = { enableAutomaticSorting: true };
@@ -47,7 +57,10 @@ describe('Store', () => {
     describe('when state is persisted to storage', () => {
         it('should add new keys in storage and state', async () => {
             const browserMock = makeStoreBrowser();
-            const storageService = new Store(browserMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
             await storageService.load();
             const state = { enableAutomaticSorting: false };
             await storageService.setState(state);
@@ -59,7 +72,10 @@ describe('Store', () => {
 
         it('should update existing keys in storage and state', async () => {
             const browserMock = makeStoreBrowser();
-            const storageService = new Store(browserMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
             await storageService.load();
 
             const firstState = { enableAutomaticSorting: false };
@@ -83,7 +99,10 @@ describe('Store', () => {
         it('should return current state in memory', async () => {
             const syncGetMock = makeSyncGet();
             const browserMock = makeStoreBrowser(syncGetMock);
-            const storageService = new Store(browserMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = { enableAutomaticSorting: true };
