@@ -13,3 +13,8 @@ export function ungroup(tabIds: number[]): Promise<void> {
         });
     });
 }
+
+export function isSupported(): boolean {
+    // @ts-expect-error Currently in Beta channel
+    return !!chrome.tabs.ungroup;
+}

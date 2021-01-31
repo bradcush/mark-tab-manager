@@ -11,6 +11,9 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
 import { MkStore } from 'src/storage/MkStore';
 import { MkColor as MkTabGroupsColor } from 'src/api/browser/tabGroups/MkColor';
+import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
+import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
+import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 
 /**
  * Organize open tabs
@@ -150,6 +153,17 @@ export class SiteOrganizer implements MkSiteOrganizer {
     }
 
     /**
+     * Check if all used tab grouping APIs are supported
+     */
+    private isTabGroupingSupported() {
+        return (
+            isTabGroupsUpdateSupported() &&
+            isTabsGroupSupported() &&
+            isTabsUngroupSupported()
+        );
+    }
+
+    /**
      * Order and group all tabs
      */
     public organize = async (): Promise<void> => {
@@ -161,6 +175,11 @@ export class SiteOrganizer implements MkSiteOrganizer {
         }
         const sortedTabs = this.sortTabsAlphabetically(tabs);
         this.reorderBrowserTabs(sortedTabs);
+        const isTabGroupingSupported = this.isTabGroupingSupported();
+        if (!isTabGroupingSupported) {
+            console.log('Tab grouping is not supported');
+            return;
+        }
         this.groupBrowserTabs(sortedTabs);
     };
 

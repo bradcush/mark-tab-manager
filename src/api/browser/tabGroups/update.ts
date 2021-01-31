@@ -18,3 +18,8 @@ export function update(
         });
     });
 }
+
+export function isSupported(): boolean {
+    // @ts-expect-error Currently in Beta channel
+    return !!chrome.tabGroups?.update;
+}

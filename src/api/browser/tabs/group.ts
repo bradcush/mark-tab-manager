@@ -15,3 +15,8 @@ export function group(options: MkOptions): Promise<number> {
         });
     });
 }
+
+export function isSupported(): boolean {
+    // @ts-expect-error Currently in Beta channel
+    return !!chrome.tabs.group;
+}
