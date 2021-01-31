@@ -33,6 +33,9 @@ export class ConsoleLogger implements MkLogger {
      * Log notable information
      */
     public info(param: unknown, ...rest: unknown[]): void {
+        if (!ENABLE_LOGGING) {
+            return;
+        }
         const treatedIdentifier = this.treatPotentialIdentifier(param);
         const params = [treatedIdentifier, ...rest];
         console.info(...params);
@@ -42,6 +45,9 @@ export class ConsoleLogger implements MkLogger {
      * Log errors that are considered harmful
      */
     public error(param: unknown, ...rest: unknown[]): void {
+        if (!ENABLE_LOGGING) {
+            return;
+        }
         const treatedIdentifier = this.treatPotentialIdentifier(param);
         const params = [treatedIdentifier, ...rest];
         console.error(...params);
@@ -51,6 +57,9 @@ export class ConsoleLogger implements MkLogger {
      * Log generic information
      */
     public log(param: unknown, ...rest: unknown[]): void {
+        if (!ENABLE_LOGGING) {
+            return;
+        }
         const treatedIdentifier = this.treatPotentialIdentifier(param);
         const params = [treatedIdentifier, ...rest];
         console.log(...params);
@@ -60,6 +69,9 @@ export class ConsoleLogger implements MkLogger {
      * Log warnings that could be harmful
      */
     public warn(param: unknown, ...rest: unknown[]): void {
+        if (!ENABLE_LOGGING) {
+            return;
+        }
         const treatedIdentifier = this.treatPotentialIdentifier(param);
         const params = [treatedIdentifier, ...rest];
         console.warn(...params);

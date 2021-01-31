@@ -1,9 +1,11 @@
-const baseConfig = require('./webpack.config.base');
+const makeBaseConfig = require('./webpack.config.base');
 const TerserPlugin = require('terser-webpack-plugin');
 
+const MODE = 'production';
+
 module.exports = {
-    ...baseConfig,
-    mode: 'production',
+    ...makeBaseConfig({ mode: MODE }),
+    mode: MODE,
     optimization: {
         minimize: true,
         minimizer: [

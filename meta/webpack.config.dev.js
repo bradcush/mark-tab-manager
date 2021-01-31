@@ -1,7 +1,9 @@
-const baseConfig = require('./webpack.config.base');
+const makeBaseConfig = require('./webpack.config.base');
+
+const MODE = 'development';
 
 module.exports = {
-    ...baseConfig,
-    mode: 'development',
+    ...makeBaseConfig({ mode: MODE }),
+    mode: MODE,
     devtool: 'inline-source-map',
 };

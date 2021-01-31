@@ -6,7 +6,8 @@
         "!<rootDir>/**node_modules/**"
     ],
     "globals": {
-        "ENABLE_BOOKMARK_COUNTER": true
+        "ENABLE_BOOKMARK_COUNTER": false,
+        "ENABLE_LOGGING": false
     },
     "transform": {
         "^.+\\.tsx?$": "ts-jest"
