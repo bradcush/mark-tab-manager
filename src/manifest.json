@@ -1,7 +1,8 @@
 {
-    "name": "Mark Alpha (Tab manager)",
+    "name": "Mark tab manager",
     "description": "Automated tab management",
     "version": "0.1.1",
+    "default_locale": "en",
     "manifest_version": 3,
     "action": {
         "default_title": "Mark"
