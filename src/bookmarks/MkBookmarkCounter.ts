@@ -1,4 +1,5 @@
 import { MkBrowser } from 'src/api/MkBrowser';
+import { MkLoggerConstructor } from 'src/logs/MkLogger';
 
 export interface MkBookmarkCounter {
     connect(): void;
@@ -31,4 +32,9 @@ export interface MkBookmarkCounterBrowser {
     bookmarks: MkBrowserBookmarks;
     runtime: MkBrowserRuntime;
     tabs: MkBrowserTabs;
+}
+
+export interface MkConstructorParams {
+    browser: MkBookmarkCounterBrowser;
+    Logger: MkLoggerConstructor;
 }

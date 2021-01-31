@@ -1,35 +1,43 @@
 import {
     MkBookmarkCounter,
     MkBookmarkCounterBrowser,
+    MkConstructorParams,
 } from './MkBookmarkCounter';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
+import { MkLogger } from 'src/logs/MkLogger';
 
 /*
  * Responsible for tracking matching bookmarks relevant to the current tab
  * and displaying that count information in the extension icon badge
  */
 export class BookmarkCounter implements MkBookmarkCounter {
-    public constructor(browser: MkBookmarkCounterBrowser) {
-        console.log('BookmarkCounter.constructor');
+    public constructor({ browser, Logger }: MkConstructorParams) {
         if (!browser) {
             throw new Error('No browser');
         }
         this.browser = browser;
+
+        if (!Logger) {
+            throw new Error('No Logger');
+        }
+        this.logger = new Logger('BookmarkCounter');
+        this.logger.log('constructor');
     }
 
     private readonly browser: MkBookmarkCounterBrowser;
+    private readonly logger: MkLogger;
 
     /**
      * Connect handlers to browser events for when
      * the bookmark count needs to be updated
      */
     public connect(): void {
-        console.log('BookmarkCounter.connect');
+        this.logger.log('connect');
 
         // Handle already loaded tabs that are focused
         this.browser.tabs.onActivated.addListener((activeInfo) => {
-            console.log('BookmarkCounter.browser.tabs.onActivated', activeInfo);
+            this.logger.log('browser.tabs.onActivated', activeInfo);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -39,7 +47,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
         });
 
         this.browser.tabs.onUpdated.addListener((_tabId, _changeInfo, tab) => {
-            console.log('BookmarkCounter.browser.tabs.onUpdated', tab);
+            this.logger.log('browser.tabs.onUpdated', tab);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -54,7 +62,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
 
         // Handle when a bookmark has been added
         this.browser.bookmarks.onCreated.addListener(() => {
-            console.log('BookmarkCounter.browser.bookmarks.onCreated');
+            this.logger.log('browser.bookmarks.onCreated');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -67,7 +75,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
      * Get the currently active browser tab
      */
     private async getActiveTab() {
-        console.log('BookmarkCounter.getActiveTab');
+        this.logger.log('getActiveTab');
         const queryInfo = { active: true, lastFocusedWindow: true };
         const tabs = await this.browser.tabs.query(queryInfo);
         return tabs[0];
@@ -77,7 +85,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
      * Set the bookmark count for the active tab
      */
     public async setActiveTabBookmarkCount(): Promise<void> {
-        console.log('BookmarkCounter.setActiveTabBookmarkCount');
+        this.logger.log('setActiveTabBookmarkCount');
         const activeTab = await this.getActiveTab();
         this.updateBookmarkCount(activeTab);
     }
@@ -86,9 +94,9 @@ export class BookmarkCounter implements MkBookmarkCounter {
      * Update the bookmark count for a specific tab
      */
     private setTabBookmarkCount(id: number) {
-        console.log('setTabBookmarkCount', id);
+        this.logger.log('setTabBookmarkCount', id);
         this.browser.tabs.get(id, (tab) => {
-            console.log('BookmarkCounter.browser.tabs.get', tab);
+            this.logger.log('browser.tabs.get', tab);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -101,13 +109,11 @@ export class BookmarkCounter implements MkBookmarkCounter {
      * Update badge count and color
      */
     private updateBadge(count: number) {
-        console.log('BookmarkCounter.updateBadge', count);
+        this.logger.log('updateBadge', count);
         const color = count > 0 ? '#00F' : '#F00';
         const backgroundDetails = { color };
         this.browser.action.setBadgeBackgroundColor(backgroundDetails, () => {
-            console.log(
-                'BookmarkCounter.browser.action.setBadgeBackgroundColor'
-            );
+            this.logger.log('browser.action.setBadgeBackgroundColor');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -115,7 +121,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
         });
         const textDetails = { text: `${count}` };
         this.browser.action.setBadgeText(textDetails, () => {
-            console.log('BookmarkCounter.browser.action.setBadgeText');
+            this.logger.log('browser.action.setBadgeText');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -128,14 +134,14 @@ export class BookmarkCounter implements MkBookmarkCounter {
      * level domain and the URL of any bookmarked site
      */
     private updateBookmarkCount = (tab: MkBrowser.tabs.Tab) => {
-        console.log('BookmarkCounter.updateBookmarkCount', tab);
+        this.logger.log('updateBookmarkCount', tab);
         const url = tab.url || tab.pendingUrl;
         const { hostname } = url ? new URL(url) : { hostname: '' };
         const domainName = parseSharedDomain(hostname);
         // Show the count of bookmarks matching the same
         // second level domain next to the popup icon
         this.browser.bookmarks.search(domainName, (results) => {
-            console.log('BookmarkCounter.browser.bookmarks.search', results);
+            this.logger.log('browser.bookmarks.search', results);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;

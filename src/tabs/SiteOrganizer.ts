@@ -14,14 +14,13 @@ import { MkColor as MkTabGroupsColor } from 'src/api/browser/tabGroups/MkColor';
 import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
+import { MkLogger } from 'src/logs/MkLogger';
 
 /**
  * Organize open tabs
  */
 export class SiteOrganizer implements MkSiteOrganizer {
-    public constructor({ browser, store }: MkContstructorParams) {
-        console.log('SiteOrganizer.constructor');
-
+    public constructor({ browser, store, Logger }: MkContstructorParams) {
         if (!browser) {
             throw new Error('No browser');
         }
@@ -31,21 +30,28 @@ export class SiteOrganizer implements MkSiteOrganizer {
             throw new Error('No store');
         }
         this.store = store;
+
+        if (!Logger) {
+            throw new Error('No Logger');
+        }
+        this.logger = new Logger('SiteOrganizer');
+        this.logger.log('constructor');
     }
 
     private readonly browser: MkSiteOrganizerBrowser;
     private readonly store: MkStore;
     private readonly DEBOUNCE_TIMEOUT = 50;
+    private readonly logger: MkLogger;
 
     /**
      * Connect site organizer to triggering browser events
      */
     public connect(): void {
-        console.log('SiteOrganizer.connect');
+        this.logger.log('connect');
 
         // Handle when the extension icon is clicked
         this.browser.action.onClicked.addListener(() => {
-            console.log('SiteOrganizer.browser.action.onClicked');
+            this.logger.log('browser.action.onClicked');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -63,7 +69,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
          */
         /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
         this.browser.tabs.onUpdated.addListener(async (_tabId, changeInfo) => {
-            console.log('SiteOrganizer.browser.tabs.onUpdated', changeInfo);
+            this.logger.log('browser.tabs.onUpdated', changeInfo);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -105,7 +111,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * so it doesn't change on every resort.
      */
     private async addNewGroup({ idx, name, tabIds }: MkAddNewGroupParams) {
-        console.log('SiteOrganizer.addNewGroup', name);
+        this.logger.log('addNewGroup', name);
         const options = { tabIds };
         const groupId = await this.browser.tabs.group(options);
         const title = `${name} (${tabIds.length})`;
@@ -117,7 +123,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * Remove tabs that are pinned from the list
      */
     private filterNonPinnedTabs(tabs: MkBrowser.tabs.Tab[]) {
-        console.log('SiteOrganizer.filterNonPinnedTabs');
+        this.logger.log('filterNonPinnedTabs');
         const isTabPinned = (tab: MkBrowser.tabs.Tab) => !!tab.pinned;
         const nonPinnedTabs = tabs.filter((tab) => !isTabPinned(tab));
         return nonPinnedTabs;
@@ -128,9 +134,9 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * retain the same color regardless of a group re-render
      */
     private getColorForGroup(index: number) {
-        console.log('SiteOrganizer.getColorForGroup', index);
+        this.logger.log('getColorForGroup', index);
         const colorsByEnum = this.browser.tabGroups.Color;
-        console.log('SiteOrganizer.getColorForGroup', colorsByEnum);
+        this.logger.log('getColorForGroup', colorsByEnum);
         const colorKeys = Object.keys(colorsByEnum);
         // TODO: Remove type assertion in favor of real types
         const colors = colorKeys.map(
@@ -138,7 +144,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
         );
         const colorIdx = index % colorKeys.length;
         const color = colors[colorIdx];
-        console.log('SiteOrganizer.getColorForGroup', color);
+        this.logger.log('getColorForGroup', color);
         return color;
     }
 
@@ -146,7 +152,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * Group tabs in the browser with the same domain
      */
     private groupBrowserTabs(tabs: MkBrowser.tabs.Tab[]) {
-        console.log('SiteOrganizer.groupBrowserTabs');
+        this.logger.log('groupBrowserTabs');
         const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
         const tabIdsByDomain = this.sortTabIdsByDomain(nonPinnedTabs);
         this.renderBrowserTabGroups(tabIdsByDomain);
@@ -167,7 +173,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * Order and group all tabs
      */
     public organize = async (): Promise<void> => {
-        console.log('SiteOrganizer.organize');
+        this.logger.log('organize');
         const tabs = await this.browser.tabs.query({});
         const lastError = this.browser.runtime.lastError;
         if (lastError) {
@@ -177,7 +183,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
         this.reorderBrowserTabs(sortedTabs);
         const isTabGroupingSupported = this.isTabGroupingSupported();
         if (!isTabGroupingSupported) {
-            console.log('Tab grouping is not supported');
+            this.logger.log('Tab grouping is not supported');
             return;
         }
         this.groupBrowserTabs(sortedTabs);
@@ -187,7 +193,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * Remove a list of tab ids from any group
      */
     private removeExistingGroup(ids: number[]) {
-        console.log('SiteOrganizer.removeExistingGroup', ids);
+        this.logger.log('removeExistingGroup', ids);
         void this.browser.tabs.ungroup(ids);
     }
 
@@ -196,7 +202,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * groups must contain at least two or more tabs
      */
     private renderBrowserTabGroups(tabIdsByGroup: Record<string, number[]>) {
-        console.log('SiteOrganizer.renderBrowserTabGroups', tabIdsByGroup);
+        this.logger.log('renderBrowserTabGroups', tabIdsByGroup);
         const groups = Object.keys(tabIdsByGroup);
         const isRealGroup = (group: string) => tabIdsByGroup[group].length > 1;
         const realGroups = groups.filter(isRealGroup);
@@ -219,7 +225,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * window according to tabs list
      */
     private reorderBrowserTabs(tabs: MkBrowser.tabs.Tab[]) {
-        console.log('SiteOrganizer.reorderBrowserTabs', tabs);
+        this.logger.log('reorderBrowserTabs', tabs);
         tabs.forEach((tab) => {
             const { id } = tab;
             if (!id) {
@@ -240,7 +246,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * have a valid domain under the system nomenclature
      */
     private sortTabIdsByDomain(tabs: MkBrowser.tabs.Tab[]) {
-        console.log('SiteOrganizer.sortTabIdsByDomain');
+        this.logger.log('sortTabIdsByDomain');
         const tabIdsByDomain: Record<string, number[]> = {};
         tabs.forEach((tab) => {
             const { id, url } = tab;
@@ -261,7 +267,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
                 tabIdsByDomain[domain].push(id);
             }
         });
-        console.log('SiteOrganizer.sortTabIdsByDomain', tabIdsByDomain);
+        this.logger.log('sortTabIdsByDomain', tabIdsByDomain);
         return tabIdsByDomain;
     }
 
@@ -270,7 +276,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * exceptions for system tabs and most specifically "newtab"
      */
     private sortTabsAlphabetically(tabs: MkBrowser.tabs.Tab[]) {
-        console.log('SiteOrganizer.sortTabsAlphabetically', tabs);
+        this.logger.log('sortTabsAlphabetically', tabs);
         const sortedTabs = tabs.sort((a, b) => {
             if (!a.url || !b.url) {
                 throw new Error('No url for sorted tab');
@@ -311,7 +317,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
         groupId,
         title,
     }: MkUpdateGroupTitleParams) {
-        console.log('SiteOrganizer.updateGroupTitle');
+        this.logger.log('updateGroupTitle');
         const updateProperties = { color, title };
         void this.browser.tabGroups.update(groupId, updateProperties);
     }

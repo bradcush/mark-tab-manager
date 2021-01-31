@@ -1,5 +1,6 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStore } from 'src/storage/MkStore';
+import { MkLoggerConstructor } from 'src/logs/MkLogger';
 
 export interface MkContextMenu {
     connect(): void;
@@ -24,6 +25,7 @@ export interface MkContextMenuBrowser {
 export interface MkConstructorParams {
     browser: MkContextMenuBrowser;
     store: MkStore;
+    Logger: MkLoggerConstructor;
 }
 
 export interface MkHandleToggleParams {
