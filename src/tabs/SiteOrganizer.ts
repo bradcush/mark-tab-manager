@@ -1,5 +1,3 @@
-// TODO: Remove debounce in favor of in memory compare
-import debounce from 'lodash/debounce';
 import {
     MkAddNewGroupParams,
     MkContstructorParams,
@@ -43,8 +41,10 @@ export class SiteOrganizer implements MkSiteOrganizer {
 
     private readonly browser: MkSiteOrganizerBrowser;
     private readonly store: MkStore;
-    private readonly DEBOUNCE_TIMEOUT = 50;
     private readonly logger: MkLogger;
+
+    // Used to keep track of tabs changing groups
+    private groupByTabId = new Map<number, string>();
 
     /**
      * Connect site organizer to triggering browser events
@@ -62,48 +62,76 @@ export class SiteOrganizer implements MkSiteOrganizer {
             void this.organize();
         });
 
-        // Prevent too many repetitive calls to organize
-        const organize = debounce(this.organize, this.DEBOUNCE_TIMEOUT);
-
         /**
          * Handle tabs where a URL is updated
          * TODO: Handle funky case where the browser is relaunched and
          * multiple tabs are updating at once causing multiple re-renders
          */
         /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
-        this.browser.tabs.onUpdated.addListener(async (_tabId, changeInfo) => {
+        this.browser.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
             this.logger.log('browser.tabs.onUpdated', changeInfo);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
             }
+            // TODO: We could only update the order if the domain has changed
+            // but this would require keeping track of a tabs previous state
+            // which might not be worth the added complexity.
+
+            const { status, url } = changeInfo;
+            // Prevent triggering of updates when we aren't loading
+            // so we can treat tabs as early as possible
+            if (status !== 'loading') {
+                return;
+            }
+            // If there is no url change we don't consider updating its group.
+            // (It's observed that only loading tabs can have a url and that
+            // reloading a tab doesn't send a url)
+            if (!url) {
+                return;
+            }
+
+            // If the domain categorization didn't
+            // change then we don't both to organize
+            const parsedUrl = new URL(url);
+            const domain = parseSharedDomain(parsedUrl.hostname);
+            const hasGroupChanged = this.groupByTabId.get(tabId) !== domain;
+            this.logger.log('browser.tabs.onUpdated', hasGroupChanged);
+            if (!hasGroupChanged) {
+                return;
+            }
+            // Track the tab id with its current group regardless
+            // of if we are automatically sorting to stay updated
+            this.groupByTabId.set(tabId, domain);
+            this.logger.log('browser.tabs.onUpdated', this.groupByTabId);
+
             // We only want automatic sort if enabled
             const state = await this.store.getState();
             const isAutomaticSortingEnabled = state.enableAutomaticSorting;
             if (!isAutomaticSortingEnabled) {
                 return;
             }
-            // TODO: We could only update the order if the domain has changed
-            // but this would require keeping track of a tabs previous state
-            // which might not be worth the added complexity.
-            const hasUrlChanged = !!changeInfo.url;
-            const hasPinnedChanged = typeof changeInfo.pinned === 'boolean';
-            if (!hasUrlChanged && !hasPinnedChanged) {
-                return;
-            }
-            void organize();
+
+            void this.organize();
         });
 
         // Handle removed tabs
         /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
-        this.browser.tabs.onRemoved.addListener(async () => {
+        this.browser.tabs.onRemoved.addListener(async (tabId) => {
+            this.logger.log('browser.tabs.onRemoved', tabId);
+            // Remove the current tab id from group tracking regardless
+            // of if we are automatically sorting to stay updated
+            this.groupByTabId.delete(tabId);
+            this.logger.log('browser.tabs.onRemoved', this.groupByTabId);
+
             // We only want automatic sort if enabled
             const state = await this.store.getState();
             const isAutomaticSortingEnabled = state.enableAutomaticSorting;
             if (!isAutomaticSortingEnabled) {
                 return;
             }
-            void organize();
+
+            void this.organize();
         });
     }
 
@@ -317,8 +345,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
                 throw new Error('No tab url');
             }
             const parsedUrl = new URL(url);
-            const { hostname } = parsedUrl;
-            const domain = parseSharedDomain(hostname);
+            const domain = parseSharedDomain(parsedUrl.hostname);
             if (!tabIdsByDomain[domain]) {
                 tabIdsByDomain[domain] = {
                     [windowId]: [id],
