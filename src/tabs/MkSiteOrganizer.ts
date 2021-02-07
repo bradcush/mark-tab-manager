@@ -49,12 +49,17 @@ export interface MkContstructorParams {
 
 export interface MkAddNewGroupParams {
     idx: number;
-    tabIds: number[];
     name: string;
+    tabIds: number[];
+    windowId: number;
 }
 
 export interface MkUpdateGroupTitleParams {
     color: string;
     groupId: number;
     title: string;
+}
+
+export interface MkTabIdsByDomain {
+    [key: string]: Record<string, number[]>;
 }

@@ -5,6 +5,7 @@ import {
     MkContstructorParams,
     MkSiteOrganizer,
     MkSiteOrganizerBrowser,
+    MkTabIdsByDomain,
     MkUpdateGroupTitleParams,
 } from './MkSiteOrganizer';
 import { MkBrowser } from 'src/api/MkBrowser';
@@ -105,14 +106,20 @@ export class SiteOrganizer implements MkSiteOrganizer {
     }
 
     /**
-     * Add new tab groups for a given name and set of tab ids
+     * Add new tab groups for a given name, window id, and set of tab ids
      * TODO: Find a way to prevent the edit field from showing after a
      * group has been created. Ordering of colors should also be predictable
      * so it doesn't change on every resort.
      */
-    private async addNewGroup({ idx, name, tabIds }: MkAddNewGroupParams) {
+    private async addNewGroup({
+        idx,
+        name,
+        tabIds,
+        windowId,
+    }: MkAddNewGroupParams) {
         this.logger.log('addNewGroup', name);
-        const options = { tabIds };
+        const createProperties = { windowId };
+        const options = { createProperties, tabIds };
         const groupId = await this.browser.tabs.group(options);
         const title = `${name} (${tabIds.length})`;
         const color = this.getColorForGroup(idx);
@@ -201,22 +208,36 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * Set groups and non-groups using their tab id where
      * groups must contain at least two or more tabs
      */
-    private renderBrowserTabGroups(tabIdsByGroup: Record<string, number[]>) {
+    private renderBrowserTabGroups(tabIdsByGroup: MkTabIdsByDomain) {
         this.logger.log('renderBrowserTabGroups', tabIdsByGroup);
-        const groups = Object.keys(tabIdsByGroup);
-        const isRealGroup = (group: string) => tabIdsByGroup[group].length > 1;
-        const realGroups = groups.filter(isRealGroup);
-        const orphanGroups = groups.filter((group) => !isRealGroup(group));
-        // We treat real groups first so our index used to
-        // determine the color isn't affected by orphan groups
-        [...realGroups, ...orphanGroups].forEach((group, idx) => {
-            const tabIds = tabIdsByGroup[group];
-            // Ungroup existing collections of one tab
-            if (tabIds.length < 2) {
-                this.removeExistingGroup(tabIds);
-                return;
-            }
-            void this.addNewGroup({ idx, name: group, tabIds });
+        // Offset the index to ignore orphan groups
+        let groupIdxOffset = 0;
+        const names = Object.keys(tabIdsByGroup);
+        names.forEach((name, idx) => {
+            // Groups are represented by the window id
+            const group = Object.keys(tabIdsByGroup[name]);
+            const isRealGroup = (windowId: string) =>
+                tabIdsByGroup[name][windowId].length > 1;
+            const realGroups = group.filter(isRealGroup);
+            const orphanGroups = group.filter((group) => !isRealGroup(group));
+            // We treat real groups first so our index used to
+            // determine the color isn't affected by orphan groups
+            [...realGroups, ...orphanGroups].forEach((windowGroup) => {
+                const tabIds = tabIdsByGroup[name][windowGroup];
+                // Ungroup existing collections of one tab
+                if (tabIds.length < 2) {
+                    this.removeExistingGroup(tabIds);
+                    groupIdxOffset++;
+                    return;
+                }
+                const groupIdx = idx - groupIdxOffset;
+                void this.addNewGroup({
+                    idx: groupIdx,
+                    name,
+                    tabIds,
+                    windowId: Number(windowGroup),
+                });
+            });
         });
     }
 
@@ -227,6 +248,9 @@ export class SiteOrganizer implements MkSiteOrganizer {
     private reorderBrowserTabs(tabs: MkBrowser.tabs.Tab[]) {
         this.logger.log('reorderBrowserTabs', tabs);
         tabs.forEach((tab) => {
+            // TODO: Create option to organize each tab in the current
+            // window by overriding with "WINDOW_ID_CURRENT"
+            // Current default uses the window for the current tab
             const { id } = tab;
             if (!id) {
                 throw new Error('No id for sorted tab');
@@ -242,14 +266,16 @@ export class SiteOrganizer implements MkSiteOrganizer {
     }
 
     /**
-     * Sort tabs by their domain while grouping those that don't
-     * have a valid domain under the system nomenclature
+     * Sort tabs by their domain and window id while grouping those
+     * that don't have a valid domain under the system nomenclature
      */
     private sortTabIdsByDomain(tabs: MkBrowser.tabs.Tab[]) {
         this.logger.log('sortTabIdsByDomain');
-        const tabIdsByDomain: Record<string, number[]> = {};
+        const tabIdsByDomain: MkTabIdsByDomain = {};
         tabs.forEach((tab) => {
-            const { id, url } = tab;
+            // TODO: Create option to organize every group in the current
+            // window by overriding with "WINDOW_ID_CURRENT"
+            const { id, url, windowId } = tab;
             if (!id) {
                 throw new Error('No id for tab');
             }
@@ -262,9 +288,16 @@ export class SiteOrganizer implements MkSiteOrganizer {
             const { hostname } = parsedUrl;
             const domain = parseSharedDomain(hostname);
             if (!tabIdsByDomain[domain]) {
-                tabIdsByDomain[domain] = [id];
+                tabIdsByDomain[domain] = {
+                    [windowId]: [id],
+                };
+            } else if (!tabIdsByDomain[domain][windowId]) {
+                tabIdsByDomain[domain] = {
+                    ...tabIdsByDomain[domain],
+                    [windowId]: [id],
+                };
             } else {
-                tabIdsByDomain[domain].push(id);
+                tabIdsByDomain[domain][windowId].push(id);
             }
         });
         this.logger.log('sortTabIdsByDomain', tabIdsByDomain);
