@@ -14,12 +14,12 @@ export function parseSharedDomain(host: string): string {
     // Treat URLs with unlisted domain as system URLs
     // Only treating listed domains temporarily
     if (parseResult.type !== ParseResultType.Listed) {
-        return '*';
+        return '#';
     }
     // Treat URLs with no domain as system URLs
     const domain = parseResult.icann.domain;
     if (!domain) {
-        return '*';
+        return '#';
     }
     return domain;
 }

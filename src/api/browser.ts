@@ -4,6 +4,7 @@ import { set as storageSet } from './browser/storage/sync/set';
 import { query as tabsQuery } from './browser/tabs/query';
 import { Color as tabGroupsColor } from './browser/tabGroups/Color';
 import { update as tabGroupsUpdate } from './browser/tabGroups/update';
+import { query as tabGroupsQuery } from './browser/tabGroups/query';
 import { group as tabsGroup } from './browser/tabs/group';
 import { ungroup as tabsUngroup } from './browser/tabs/ungroup';
 
@@ -48,6 +49,7 @@ const storage = {
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1106846
 const tabGroups = {
     update: tabGroupsUpdate,
+    query: tabGroupsQuery,
     Color: tabGroupsColor,
 };
 

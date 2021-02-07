@@ -21,6 +21,7 @@ interface MkBrowserStorage {
 
 interface MkBrowserTabGroups {
     Color: MkBrowser.tabGroups.Color;
+    query: MkBrowser.tabGroups.Query;
     update: MkBrowser.tabGroups.Update;
 }
 
@@ -54,7 +55,13 @@ export interface MkAddNewGroupParams {
     windowId: number;
 }
 
+export interface MkGetGroupInfoParams {
+    title: string;
+    id: number;
+}
+
 export interface MkUpdateGroupTitleParams {
+    collapsed: boolean;
     color: string;
     groupId: number;
     title: string;
