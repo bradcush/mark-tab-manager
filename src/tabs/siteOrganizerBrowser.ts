@@ -12,6 +12,7 @@ export const siteOrganizerBrowser = {
     },
     tabGroups: {
         Color: browser.tabGroups.Color,
+        query: browser.tabGroups.query,
         update: browser.tabGroups.update,
     },
     tabs: {

@@ -2,6 +2,7 @@ import { MkSyncGetItems, MkSyncGetKeys } from './browser/storage/sync/MkSync';
 import { MkColor as MkTabGroupsColor } from './browser/tabGroups/MkColor';
 import { MkUpdateProperties as MkTabGroupsUpdateProperties } from './browser/tabGroups/MkUpdate';
 import { MkOptions as MkTabsGroupOptions } from './browser/tabs/MkGroup';
+import { MkQueryInfo as MkTabGroupsQueryInfo } from './browser/tabGroups/MkQuery';
 
 interface MkBrowserAction {
     onClicked: MkBrowser.action.OnClicked;
@@ -35,6 +36,7 @@ interface MkBrowserStorage {
 
 interface MkBrowserTabGroups {
     Color: MkBrowser.tabGroups.Color;
+    query: MkBrowser.tabGroups.Query;
     update: MkBrowser.tabGroups.Update;
 }
 
@@ -99,6 +101,15 @@ export declare namespace MkBrowser.storage {
 
 export declare namespace MkBrowser.tabGroups {
     export type Color = MkTabGroupsColor;
+    export type Query = (
+        queryInfo: MkTabGroupsQueryInfo
+    ) => Promise<MkBrowser.tabGroups.TabGroup[]>;
+    export interface TabGroup {
+        collapsed: boolean;
+        color: MkTabGroupsColor;
+        title: string;
+        windowId: number;
+    }
     export type Update = (
         groupId: number,
         updateProperties: MkTabGroupsUpdateProperties

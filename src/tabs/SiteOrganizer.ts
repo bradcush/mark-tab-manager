@@ -3,6 +3,7 @@ import debounce from 'lodash/debounce';
 import {
     MkAddNewGroupParams,
     MkContstructorParams,
+    MkGetGroupInfoParams,
     MkSiteOrganizer,
     MkSiteOrganizerBrowser,
     MkTabIdsByDomain,
@@ -13,6 +14,7 @@ import { parseSharedDomain } from 'src/helpers/domainHelpers';
 import { MkStore } from 'src/storage/MkStore';
 import { MkColor as MkTabGroupsColor } from 'src/api/browser/tabGroups/MkColor';
 import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
+import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 import { MkLogger } from 'src/logs/MkLogger';
@@ -118,12 +120,27 @@ export class SiteOrganizer implements MkSiteOrganizer {
         windowId,
     }: MkAddNewGroupParams) {
         this.logger.log('addNewGroup', name);
+        // We need to get the state before resetting groups using the exact
+        // previous name. As a repercussion of this method, groups where the
+        // count has changed are automatically reopened. This shouldn't happen
+        // when a tab is removed from a group as the UX of a collapsed group
+        // prevents the user from removing a tab.
+        const title = `${name} (${tabIds.length})`;
+        const prevGroup = await this.getGroupInfo({
+            id: windowId,
+            title,
+        });
         const createProperties = { windowId };
         const options = { createProperties, tabIds };
         const groupId = await this.browser.tabs.group(options);
-        const title = `${name} (${tabIds.length})`;
         const color = this.getColorForGroup(idx);
-        this.updateGroupTitle({ color, groupId, title });
+        const collapsed = prevGroup?.collapsed ?? false;
+        this.updateGroupProperties({
+            collapsed,
+            color,
+            groupId,
+            title,
+        });
     }
 
     /**
@@ -134,6 +151,17 @@ export class SiteOrganizer implements MkSiteOrganizer {
         const isTabPinned = (tab: MkBrowser.tabs.Tab) => !!tab.pinned;
         const nonPinnedTabs = tabs.filter((tab) => !isTabPinned(tab));
         return nonPinnedTabs;
+    }
+
+    /**
+     * Get the current properties for a group with
+     * a given name for a specific window id
+     */
+    private async getGroupInfo({ id, title }: MkGetGroupInfoParams) {
+        this.logger.log('getGroupInfo');
+        const queryInfo = { title, windowId: id };
+        const tabGroups = await this.browser.tabGroups.query(queryInfo);
+        return tabGroups[0];
     }
 
     /**
@@ -171,6 +199,7 @@ export class SiteOrganizer implements MkSiteOrganizer {
     private isTabGroupingSupported() {
         return (
             isTabGroupsUpdateSupported() &&
+            isTabGroupsQuerySupported() &&
             isTabsGroupSupported() &&
             isTabsUngroupSupported()
         );
@@ -345,13 +374,14 @@ export class SiteOrganizer implements MkSiteOrganizer {
     /**
      * Update an existing groups title
      */
-    private updateGroupTitle({
+    private updateGroupProperties({
+        collapsed,
         color,
         groupId,
         title,
     }: MkUpdateGroupTitleParams) {
-        this.logger.log('updateGroupTitle');
-        const updateProperties = { color, title };
+        this.logger.log('updateGroupProperties');
+        const updateProperties = { collapsed, color, title };
         void this.browser.tabGroups.update(groupId, updateProperties);
     }
 }
