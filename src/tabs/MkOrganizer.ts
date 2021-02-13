@@ -2,7 +2,7 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStore } from 'src/storage/MkStore';
 import { MkLoggerConstructor } from 'src/logs/MkLogger';
 
-export interface MkSiteOrganizer {
+export interface MkOrganizer {
     connect(): void;
     organize(): void;
 }
@@ -34,7 +34,7 @@ interface MkBrowserTabs {
     ungroup: MkBrowser.tabs.Ungroup;
 }
 
-export interface MkSiteOrganizerBrowser {
+export interface MkOrganizerBrowser {
     action: MkBrowserAction;
     runtime: MkBrowserRuntime;
     storage: MkBrowserStorage;
@@ -43,7 +43,7 @@ export interface MkSiteOrganizerBrowser {
 }
 
 export interface MkContstructorParams {
-    browser: MkSiteOrganizerBrowser;
+    browser: MkOrganizerBrowser;
     store: MkStore;
     Logger: MkLoggerConstructor;
 }

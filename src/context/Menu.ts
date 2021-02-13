@@ -7,16 +7,16 @@ import {
 } from './MkMenu';
 import { MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
-import { MkSiteOrganizer } from 'src/tabs/MkSiteOrganizer';
+import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
 
 /**
- * Context menu creation and updating
+ * Context menu creation and change handling
  */
 export class Menu implements MkMenu {
     public constructor({
         browser,
-        organizer,
         store,
+        tabsOrganizer,
         Logger,
     }: MkConstructorParams) {
         if (!browser) {
@@ -24,10 +24,10 @@ export class Menu implements MkMenu {
         }
         this.browser = browser;
 
-        if (!organizer) {
-            throw new Error('No organizer');
+        if (!tabsOrganizer) {
+            throw new Error('No tabsOrganizer');
         }
-        this.organizer = organizer;
+        this.tabsOrganizer = tabsOrganizer;
 
         if (!store) {
             throw new Error('No store');
@@ -42,7 +42,7 @@ export class Menu implements MkMenu {
     }
 
     private readonly browser: MkMenuBrowser;
-    private readonly organizer: MkSiteOrganizer;
+    private readonly tabsOrganizer: MkTabsOrganizer;
     private readonly store: MkStore;
     private readonly logger: MkLogger;
 
@@ -114,7 +114,7 @@ export class Menu implements MkMenu {
         // Automatically organize as soon
         // as the setting is checked
         if (checked) {
-            this.organizer.organize();
+            this.tabsOrganizer.organize();
         }
         // Rely on the menu item to automatically update itself
         // TODO: Remove specific reference to this particular setting

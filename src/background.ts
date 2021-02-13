@@ -1,7 +1,7 @@
 import { Counter as BookmarkCounter } from './bookmarks/Counter';
 import { counterBrowser as bookmarkCounterBrowser } from './bookmarks/counterBrowser';
-import { SiteOrganizer } from './tabs/SiteOrganizer';
-import { siteOrganizerBrowser } from './tabs/siteOrganizerBrowser';
+import { Organizer as TabsOrganizer } from './tabs/Organizer';
+import { organizerBrowser as tabsOrganizerBrowser } from './tabs/organizerBrowser';
 import { Menu as ContextMenu } from './context/Menu';
 import { menuBrowser as contextMenuBrowser } from './context/menuBrowser';
 import { Store } from './storage/Store';
@@ -25,18 +25,18 @@ async function initBackground() {
     void storeInstance.load();
 
     // Start tab organizer for sorting tabs
-    const siteOrganizer = new SiteOrganizer({
-        browser: siteOrganizerBrowser,
+    const tabsOrganizerInstance = new TabsOrganizer({
+        browser: tabsOrganizerBrowser,
         store: storeInstance,
         Logger: ConsoleLogger,
     });
-    siteOrganizer.connect();
+    tabsOrganizerInstance.connect();
 
     // Create various context menus that dictate client behaviour
     const contextMenu = new ContextMenu({
         browser: contextMenuBrowser,
-        organizer: siteOrganizer,
         store: storeInstance,
+        tabsOrganizer: tabsOrganizerInstance,
         Logger: ConsoleLogger,
     });
     // Connect for creation and handling events
@@ -59,7 +59,7 @@ async function initBackground() {
     const state = await storeInstance.getState();
     const isAutomaticSortingEnabled = state.enableAutomaticSorting;
     if (isAutomaticSortingEnabled) {
-        void siteOrganizer.organize();
+        void tabsOrganizerInstance.organize();
     }
 }
 
