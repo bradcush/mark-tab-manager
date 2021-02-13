@@ -1,17 +1,14 @@
-import {
-    MkBookmarkCounter,
-    MkBookmarkCounterBrowser,
-    MkConstructorParams,
-} from './MkBookmarkCounter';
+import { MkConstructorParams, MkCounter, MkCounterBrowser } from './MkCounter';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
 import { MkLogger } from 'src/logs/MkLogger';
 
 /*
- * Responsible for tracking matching bookmarks relevant to the current tab
- * and displaying that count information in the extension icon badge
+ * Responsible for finding matching bookmarks relevant to
+ * the current tab and displaying that count information
+ * in the extension icon badge
  */
-export class BookmarkCounter implements MkBookmarkCounter {
+export class Counter implements MkCounter {
     public constructor({ browser, Logger }: MkConstructorParams) {
         if (!browser) {
             throw new Error('No browser');
@@ -21,11 +18,11 @@ export class BookmarkCounter implements MkBookmarkCounter {
         if (!Logger) {
             throw new Error('No Logger');
         }
-        this.logger = new Logger('BookmarkCounter');
+        this.logger = new Logger('bookmarks/Counter');
         this.logger.log('constructor');
     }
 
-    private readonly browser: MkBookmarkCounterBrowser;
+    private readonly browser: MkCounterBrowser;
     private readonly logger: MkLogger;
 
     /**
@@ -43,7 +40,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
                 throw lastError;
             }
             const { tabId } = activeInfo;
-            this.setTabBookmarkCount(tabId);
+            this.updateCountForTabId(tabId);
         });
 
         this.browser.tabs.onUpdated.addListener((_tabId, _changeInfo, tab) => {
@@ -57,7 +54,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
             if (!tab.active) {
                 return;
             }
-            this.updateBookmarkCount(tab);
+            this.updateCount(tab);
         });
 
         // Handle when a bookmark has been added
@@ -67,7 +64,7 @@ export class BookmarkCounter implements MkBookmarkCounter {
             if (lastError) {
                 throw lastError;
             }
-            void this.setActiveTabBookmarkCount();
+            void this.updateCountForActiveTab();
         });
     }
 
@@ -79,30 +76,6 @@ export class BookmarkCounter implements MkBookmarkCounter {
         const queryInfo = { active: true, lastFocusedWindow: true };
         const tabs = await this.browser.tabs.query(queryInfo);
         return tabs[0];
-    }
-
-    /**
-     * Set the bookmark count for the active tab
-     */
-    public async setActiveTabBookmarkCount(): Promise<void> {
-        this.logger.log('setActiveTabBookmarkCount');
-        const activeTab = await this.getActiveTab();
-        this.updateBookmarkCount(activeTab);
-    }
-
-    /**
-     * Update the bookmark count for a specific tab
-     */
-    private setTabBookmarkCount(id: number) {
-        this.logger.log('setTabBookmarkCount', id);
-        this.browser.tabs.get(id, (tab) => {
-            this.logger.log('browser.tabs.get', tab);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-            this.updateBookmarkCount(tab);
-        });
     }
 
     /**
@@ -133,8 +106,8 @@ export class BookmarkCounter implements MkBookmarkCounter {
      * Update bookmark count based on the tab current URL second
      * level domain and the URL of any bookmarked site
      */
-    private updateBookmarkCount = (tab: MkBrowser.tabs.Tab) => {
-        this.logger.log('updateBookmarkCount', tab);
+    private updateCount = (tab: MkBrowser.tabs.Tab) => {
+        this.logger.log('updateCount', tab);
         const url = tab.url || tab.pendingUrl;
         const { hostname } = url ? new URL(url) : { hostname: '' };
         const domainName = parseSharedDomain(hostname);
@@ -150,4 +123,28 @@ export class BookmarkCounter implements MkBookmarkCounter {
             this.updateBadge(bookmarksCount);
         });
     };
+
+    /**
+     * Set the bookmark count for the active tab
+     */
+    public async updateCountForActiveTab(): Promise<void> {
+        this.logger.log('updateCountForActiveTab');
+        const activeTab = await this.getActiveTab();
+        this.updateCount(activeTab);
+    }
+
+    /**
+     * Update the bookmark count for a specific tab
+     */
+    private updateCountForTabId(id: number) {
+        this.logger.log('updateCountForTabId', id);
+        this.browser.tabs.get(id, (tab) => {
+            this.logger.log('browser.tabs.get', tab);
+            const lastError = this.browser.runtime.lastError;
+            if (lastError) {
+                throw lastError;
+            }
+            this.updateCount(tab);
+        });
+    }
 }

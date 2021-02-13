@@ -1,9 +1,9 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkLoggerConstructor } from 'src/logs/MkLogger';
 
-export interface MkBookmarkCounter {
+export interface MkCounter {
     connect(): void;
-    setActiveTabBookmarkCount(): Promise<void>;
+    updateCountForActiveTab(): Promise<void>;
 }
 
 interface MkBrowserBookmarks {
@@ -27,7 +27,7 @@ interface MkBrowserTabs {
     query: MkBrowser.tabs.Query;
 }
 
-export interface MkBookmarkCounterBrowser {
+export interface MkCounterBrowser {
     action: MkBrowserAction;
     bookmarks: MkBrowserBookmarks;
     runtime: MkBrowserRuntime;
@@ -35,6 +35,6 @@ export interface MkBookmarkCounterBrowser {
 }
 
 export interface MkConstructorParams {
-    browser: MkBookmarkCounterBrowser;
+    browser: MkCounterBrowser;
     Logger: MkLoggerConstructor;
 }

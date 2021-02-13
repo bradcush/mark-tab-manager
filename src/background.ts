@@ -1,5 +1,5 @@
-import { BookmarkCounter } from './bookmarks/BookmarkCounter';
-import { bookmarkCounterBrowser } from './bookmarks/bookmarkCounterBrowser';
+import { Counter as BookmarkCounter } from './bookmarks/Counter';
+import { counterBrowser as bookmarkCounterBrowser } from './bookmarks/counterBrowser';
 import { SiteOrganizer } from './tabs/SiteOrganizer';
 import { siteOrganizerBrowser } from './tabs/siteOrganizerBrowser';
 import { ContextMenu } from './context/ContextMenu';
@@ -50,7 +50,7 @@ async function initBackground() {
         });
         bookmarkCounter.connect();
         // Set the initial count based the current tab
-        void bookmarkCounter.setActiveTabBookmarkCount();
+        void bookmarkCounter.updateCountForActiveTab();
     }
 
     // Organize on extension initialization done last to allow all

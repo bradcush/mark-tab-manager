@@ -53,7 +53,7 @@ export class ContextMenu implements MkContextMenu {
         this.logger.log('connect');
 
         // Only create menus when installed
-        chrome.runtime.onInstalled.addListener((details) => {
+        this.browser.runtime.onInstalled.addListener((details) => {
             this.logger.log('browser.runtime.onInstalled', details);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {

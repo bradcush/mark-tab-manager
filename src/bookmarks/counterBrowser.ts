@@ -1,6 +1,6 @@
 import { browser } from 'src/api/browser';
 
-export const bookmarkCounterBrowser = {
+export const counterBrowser = {
     action: {
         setBadgeBackgroundColor: browser.action.setBadgeBackgroundColor,
         setBadgeText: browser.action.setBadgeText,
