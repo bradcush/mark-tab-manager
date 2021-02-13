@@ -12,21 +12,34 @@ import { ConsoleLogger } from './logs/ConsoleLogger';
 const logger = new ConsoleLogger();
 logger.log('Service worker started');
 
+/**
+ * Initialize the background process
+ * and all top-level listeners
+ */
 async function initBackground() {
     // Load settings from storage into state
     const storeInstance = new Store({
         browser: storeBrowser,
         Logger: ConsoleLogger,
     });
-    await storeInstance.load();
+    void storeInstance.load();
+
+    // Start tab organizer for sorting tabs
+    const siteOrganizer = new SiteOrganizer({
+        browser: siteOrganizerBrowser,
+        store: storeInstance,
+        Logger: ConsoleLogger,
+    });
+    siteOrganizer.connect();
 
     // Create various context menus that dictate client behaviour
     const contextMenu = new ContextMenu({
         browser: contextMenuBrowser,
+        organizer: siteOrganizer,
         store: storeInstance,
         Logger: ConsoleLogger,
     });
-    await contextMenu.create();
+    // Connect for creation and handling events
     contextMenu.connect();
 
     // Start bookmark counter to track criteria matches
@@ -40,15 +53,9 @@ async function initBackground() {
         void bookmarkCounter.setActiveTabBookmarkCount();
     }
 
-    // Start tab organizer for sorting tabs
-    const siteOrganizer = new SiteOrganizer({
-        browser: siteOrganizerBrowser,
-        store: storeInstance,
-        Logger: ConsoleLogger,
-    });
-    siteOrganizer.connect();
-
-    // Organize on extension initialization
+    // Organize on extension initialization done last to allow all
+    // previous listeners to be registered at the top-level as we
+    // have an async operation here to get the state
     const state = await storeInstance.getState();
     const isAutomaticSortingEnabled = state.enableAutomaticSorting;
     if (isAutomaticSortingEnabled) {

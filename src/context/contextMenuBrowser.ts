@@ -8,5 +8,6 @@ export const contextMenuBrowser = {
     },
     runtime: {
         lastError: browser.runtime.lastError,
+        onInstalled: browser.runtime.onInstalled,
     },
 };

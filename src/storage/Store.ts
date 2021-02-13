@@ -24,12 +24,19 @@ export class Store implements MkStore {
         this.logger = new Logger('Store');
         this.logger.log('constructor');
 
+        // Promise to resolve when state is loaded
+        this.loaded = new Promise((resolve) => {
+            this.resolveLoaded = resolve;
+        });
+
         // Set defaults to be overridden
         this.state = this.makeDefaultState();
     }
 
     private readonly browser: MkStoreBrowser;
+    private readonly loaded: Promise<void>;
     private readonly logger: MkLogger;
+    private resolveLoaded: (() => void) | null = null;
     private state: MkState;
 
     /**
@@ -39,6 +46,12 @@ export class Store implements MkStore {
     public async load(): Promise<void> {
         this.logger.log('load');
         await this.cacheStorage();
+        // Indicate storage is loaded for
+        // anyone who depends on it
+        if (!this.resolveLoaded) {
+            throw new Error('Resolve loaded not set');
+        }
+        this.resolveLoaded();
     }
 
     /**
@@ -73,9 +86,12 @@ export class Store implements MkStore {
     /**
      * Retrieve the current in memory state
      */
-    public getState(): Promise<MkState> {
+    public async getState(): Promise<MkState> {
+        this.logger.log('getState');
+        // Wait for the initial data load
+        await this.loaded;
         this.logger.log('getState', this.state);
-        return Promise.resolve(this.state);
+        return this.state;
     }
 
     /**

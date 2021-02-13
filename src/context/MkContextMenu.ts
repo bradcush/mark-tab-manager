@@ -1,10 +1,10 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStore } from 'src/storage/MkStore';
 import { MkLoggerConstructor } from 'src/logs/MkLogger';
+import { MkSiteOrganizer } from 'src/tabs/MkSiteOrganizer';
 
 export interface MkContextMenu {
     connect(): void;
-    create(): Promise<void>;
 }
 
 interface MkContextMenus {
@@ -15,6 +15,7 @@ interface MkContextMenus {
 
 interface MkRuntime {
     lastError: MkBrowser.runtime.LastError;
+    onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
 export interface MkContextMenuBrowser {
@@ -24,6 +25,7 @@ export interface MkContextMenuBrowser {
 
 export interface MkConstructorParams {
     browser: MkContextMenuBrowser;
+    organizer: MkSiteOrganizer;
     store: MkStore;
     Logger: MkLoggerConstructor;
 }

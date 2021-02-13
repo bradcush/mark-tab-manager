@@ -7,16 +7,27 @@ import {
 } from './MkContextMenu';
 import { MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
+import { MkSiteOrganizer } from 'src/tabs/MkSiteOrganizer';
 
 /**
  * Context menu creation and updating
  */
 export class ContextMenu implements MkContextMenu {
-    public constructor({ browser, store, Logger }: MkConstructorParams) {
+    public constructor({
+        browser,
+        organizer,
+        store,
+        Logger,
+    }: MkConstructorParams) {
         if (!browser) {
             throw new Error('No browser');
         }
         this.browser = browser;
+
+        if (!organizer) {
+            throw new Error('No organizer');
+        }
+        this.organizer = organizer;
 
         if (!store) {
             throw new Error('No store');
@@ -31,6 +42,7 @@ export class ContextMenu implements MkContextMenu {
     }
 
     private readonly browser: MkContextMenuBrowser;
+    private readonly organizer: MkSiteOrganizer;
     private readonly store: MkStore;
     private readonly logger: MkLogger;
 
@@ -39,6 +51,20 @@ export class ContextMenu implements MkContextMenu {
      */
     public connect(): void {
         this.logger.log('connect');
+
+        // Only create menus when installed
+        chrome.runtime.onInstalled.addListener((details) => {
+            this.logger.log('browser.runtime.onInstalled', details);
+            const lastError = this.browser.runtime.lastError;
+            if (lastError) {
+                throw lastError;
+            }
+            // We have no shared dependencies
+            if (details.reason === 'shared_module_update') {
+                return;
+            }
+            void this.create();
+        });
 
         // Handle clicks on any context menu item
         this.browser.contextMenus.onClicked.addListener((info, tab) => {
@@ -54,14 +80,13 @@ export class ContextMenu implements MkContextMenu {
     /**
      * Initialize creation of and interaction with all context menus
      */
-    public async create(): Promise<void> {
+    private async create(): Promise<void> {
         this.logger.log('create');
-
         // Create the browser action context menu
         // for toggling automatic sorting
         const { enableAutomaticSorting } = await this.store.getState();
         this.logger.log('create', enableAutomaticSorting);
-        this.replaceMenuItem(enableAutomaticSorting);
+        this.createMenuItem(enableAutomaticSorting);
     }
 
     /**
@@ -80,12 +105,17 @@ export class ContextMenu implements MkContextMenu {
     }
 
     /**
-     * Handle auto sort context menu setting clicks by
-     * updating a temporary internal state only for now
+     * Handle auto sort context menu setting clicks
+     * by updating a temporary internal state only
      */
     private handleToggle({ info }: MkHandleToggleParams) {
         this.logger.log('handleToggle', info);
         const { checked } = info;
+        // Automatically organize as soon
+        // as the setting is checked
+        if (checked) {
+            this.organizer.organize();
+        }
         // Rely on the menu item to automatically update itself
         // TODO: Remove specific reference to this particular setting
         const data = { enableAutomaticSorting: checked };
@@ -105,23 +135,5 @@ export class ContextMenu implements MkContextMenu {
             type: 'checkbox',
             visible: true,
         };
-    }
-
-    /**
-     * Remove an existing menu items and create a
-     * new item with the given initial state
-     */
-    private replaceMenuItem(checked: boolean) {
-        this.logger.log('replaceMenuItem', checked);
-        // TODO; Remove only the specific menu item or
-        // don't remove at all if you don't need to
-        this.browser.contextMenus.removeAll(() => {
-            this.logger.log('browser.contextMenus.removeAll');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-            this.createMenuItem(checked);
-        });
     }
 }
