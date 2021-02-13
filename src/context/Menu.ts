@@ -1,10 +1,10 @@
 import { v4 as uuid } from 'uuid';
 import {
     MkConstructorParams,
-    MkContextMenu,
-    MkContextMenuBrowser,
     MkHandleToggleParams,
-} from './MkContextMenu';
+    MkMenu,
+    MkMenuBrowser,
+} from './MkMenu';
 import { MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkSiteOrganizer } from 'src/tabs/MkSiteOrganizer';
@@ -12,7 +12,7 @@ import { MkSiteOrganizer } from 'src/tabs/MkSiteOrganizer';
 /**
  * Context menu creation and updating
  */
-export class ContextMenu implements MkContextMenu {
+export class Menu implements MkMenu {
     public constructor({
         browser,
         organizer,
@@ -37,11 +37,11 @@ export class ContextMenu implements MkContextMenu {
         if (!Logger) {
             throw new Error('No Logger');
         }
-        this.logger = new Logger('ContextMenu');
+        this.logger = new Logger('context/Menu');
         this.logger.log('constructor');
     }
 
-    private readonly browser: MkContextMenuBrowser;
+    private readonly browser: MkMenuBrowser;
     private readonly organizer: MkSiteOrganizer;
     private readonly store: MkStore;
     private readonly logger: MkLogger;
@@ -86,16 +86,16 @@ export class ContextMenu implements MkContextMenu {
         // for toggling automatic sorting
         const { enableAutomaticSorting } = await this.store.getState();
         this.logger.log('create', enableAutomaticSorting);
-        this.createMenuItem(enableAutomaticSorting);
+        this.createCheckbox(enableAutomaticSorting);
     }
 
     /**
-     * Create a new menu item
+     * Create a new checkbox menu item
      */
-    private createMenuItem(isChecked: boolean) {
-        this.logger.log('createMenuItem');
-        const autoSortCreateProperties = this.makeCreateProperties(isChecked);
-        this.browser.contextMenus.create(autoSortCreateProperties, () => {
+    private createCheckbox(isChecked: boolean) {
+        this.logger.log('createCheckbox');
+        const createProperties = this.makeCreateProperties(isChecked);
+        this.browser.contextMenus.create(createProperties, () => {
             this.logger.log('browser.contextMenus.create');
             const lastError = this.browser.runtime.lastError;
             if (lastError) {

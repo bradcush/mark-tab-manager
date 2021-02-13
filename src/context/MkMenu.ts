@@ -3,7 +3,7 @@ import { MkStore } from 'src/storage/MkStore';
 import { MkLoggerConstructor } from 'src/logs/MkLogger';
 import { MkSiteOrganizer } from 'src/tabs/MkSiteOrganizer';
 
-export interface MkContextMenu {
+export interface MkMenu {
     connect(): void;
 }
 
@@ -18,13 +18,13 @@ interface MkRuntime {
     onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
-export interface MkContextMenuBrowser {
+export interface MkMenuBrowser {
     contextMenus: MkContextMenus;
     runtime: MkRuntime;
 }
 
 export interface MkConstructorParams {
-    browser: MkContextMenuBrowser;
+    browser: MkMenuBrowser;
     organizer: MkSiteOrganizer;
     store: MkStore;
     Logger: MkLoggerConstructor;
