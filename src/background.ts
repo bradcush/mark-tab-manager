@@ -16,7 +16,7 @@ logger.log('Service worker started');
  * Initialize the background process
  * and all top-level listeners
  */
-async function initBackground() {
+function initBackground() {
     // Load settings from storage into state
     const storeInstance = new Store({
         browser: storeBrowser,
@@ -53,14 +53,8 @@ async function initBackground() {
         void bookmarkCounter.updateCountForActiveTab();
     }
 
-    // Organize on extension initialization done last to allow all
-    // previous listeners to be registered at the top-level as we
-    // have an async operation here to get the state
-    const state = await storeInstance.getState();
-    const isAutomaticSortingEnabled = state.enableAutomaticSorting;
-    if (isAutomaticSortingEnabled) {
-        void tabsOrganizerInstance.organize();
-    }
+    // Organize on extension installation
+    void tabsOrganizerInstance.organize();
 }
 
 void initBackground();

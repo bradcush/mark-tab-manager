@@ -36,11 +36,15 @@ export interface MkHandleToggleParams {
 }
 
 export interface MkMakeCheckboxPropertiesParams {
+    identifier: string;
     checked: boolean;
     labelId: string;
+    text: string;
 }
 
 export interface MkCreateCheckboxParams {
+    id: string;
     isChecked: boolean;
     parentId: string;
+    title: string;
 }

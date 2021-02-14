@@ -3,6 +3,7 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStoreBrowser } from '../MkStore';
 
 const defaultItems = {
+    enableAutomaticGrouping: true,
     enableAutomaticSorting: true,
 };
 

@@ -7,7 +7,7 @@ import {
     MkMenu,
     MkMenuBrowser,
 } from './MkMenu';
-import { MkStore } from 'src/storage/MkStore';
+import { MkState, MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
 
@@ -70,7 +70,7 @@ export class Menu implements MkMenu {
 
         // Handle clicks on any context menu item
         this.browser.contextMenus.onClicked.addListener((info, tab) => {
-            this.logger.log('browser.contextMenus.onClicked');
+            this.logger.log('browser.contextMenus.onClicked', info);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
                 throw lastError;
@@ -86,24 +86,44 @@ export class Menu implements MkMenu {
         this.logger.log('create');
         // Create the browser action context menu
         // for toggling automatic sorting
-        const { enableAutomaticSorting } = await this.store.getState();
-        this.logger.log('create', enableAutomaticSorting);
         const labelId = uuid();
         this.createLabel(labelId);
+        const { enableAutomaticSorting } = await this.store.getState();
+        this.logger.log('create', enableAutomaticSorting);
         this.createCheckbox({
+            id: 'enableAutomaticSorting',
             isChecked: enableAutomaticSorting,
             parentId: labelId,
+            title: 'Enable automatic sorting',
         });
+        const isTabGroupingSupported = this.tabsOrganizer.isTabGroupingSupported();
+        if (isTabGroupingSupported) {
+            const { enableAutomaticGrouping } = await this.store.getState();
+            this.logger.log('create', enableAutomaticGrouping);
+            this.createCheckbox({
+                id: 'enableAutomaticGrouping',
+                isChecked: enableAutomaticGrouping,
+                parentId: labelId,
+                title: 'Enable automatic grouping',
+            });
+        }
     }
 
     /**
      * Create a new checkbox menu item
      */
-    private createCheckbox({ isChecked, parentId }: MkCreateCheckboxParams) {
+    private createCheckbox({
+        id,
+        isChecked,
+        parentId,
+        title,
+    }: MkCreateCheckboxParams) {
         this.logger.log('createCheckbox');
         const createProperties = this.makeCheckboxProperties({
             checked: isChecked,
+            identifier: id,
             labelId: parentId,
+            text: title,
         });
         this.browser.contextMenus.create(createProperties, () => {
             this.logger.log('browser.contextMenus.create');
@@ -135,15 +155,30 @@ export class Menu implements MkMenu {
      */
     private handleToggle({ info }: MkHandleToggleParams) {
         this.logger.log('handleToggle', info);
-        const { checked } = info;
+        const { checked, menuItemId } = info;
         // Automatically organize as soon
-        // as the setting is checked
+        // as any setting is checked
         if (checked) {
-            this.tabsOrganizer.organize();
+            void this.tabsOrganizer.organize();
+        }
+        // Remove any existing groups when grouping is disabled
+        const isAutomaticGrouping = menuItemId === 'enableAutomaticGrouping';
+        if (isAutomaticGrouping && !checked) {
+            void this.tabsOrganizer.removeAllGroups();
+        }
+        const settings: (keyof MkState)[] = [
+            'enableAutomaticGrouping',
+            'enableAutomaticSorting',
+        ];
+        if (!settings.includes(menuItemId)) {
+            /* eslint-disable @typescript-eslint/restrict-template-expressions */
+            throw new Error(`Invalid settings key: ${menuItemId}`);
         }
         // Rely on the menu item to automatically update itself
-        // TODO: Remove specific reference to this particular setting
-        const data = { enableAutomaticSorting: checked };
+        // "menuItemId" is expected to be mapped to settings keys
+        // TODO: Typeguard so "menuItemId" is known to be acceptable
+        this.logger.log('handleToggle', menuItemId);
+        const data = { [menuItemId]: checked };
         void this.store.setState(data);
     }
 
@@ -152,15 +187,17 @@ export class Menu implements MkMenu {
      */
     private makeCheckboxProperties({
         checked,
+        identifier,
         labelId,
+        text,
     }: MkMakeCheckboxPropertiesParams) {
         this.logger.log('makeCheckboxProperties');
         return {
             checked,
             contexts: ['action'],
-            id: uuid(),
+            id: identifier,
             parentId: labelId,
-            title: 'Enable automatic sorting',
+            title: text,
             type: 'checkbox',
             visible: true,
         };
