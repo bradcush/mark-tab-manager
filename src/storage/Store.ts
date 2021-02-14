@@ -101,6 +101,7 @@ export class Store implements MkStore {
     private makeDefaultState() {
         this.logger.log('makeDefaultState');
         return {
+            enableAutomaticGrouping: true,
             enableAutomaticSorting: true,
         };
     }

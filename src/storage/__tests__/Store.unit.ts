@@ -10,6 +10,7 @@ describe('Store', () => {
     describe('when the service is initialized', () => {
         it('should cache storage in memory', async () => {
             const syncGetMock = makeSyncGet({
+                enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
                 invalidSetting: true,
             });
@@ -20,12 +21,16 @@ describe('Store', () => {
             });
             await storageService.load();
             const state = await storageService.getState();
-            const expectedState = { enableAutomaticSorting: false };
+            const expectedState = {
+                enableAutomaticGrouping: false,
+                enableAutomaticSorting: false,
+            };
             expect(state).toStrictEqual(expectedState);
         });
 
         it('should not cache invalid storage in memory', async () => {
             const syncGetMock = makeSyncGet({
+                enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
                 invalidSetting: true,
             });
@@ -36,7 +41,10 @@ describe('Store', () => {
             });
             await storageService.load();
             const state = await storageService.getState();
-            const expectedState = { enableAutomaticSorting: false };
+            const expectedState = {
+                enableAutomaticGrouping: false,
+                enableAutomaticSorting: false,
+            };
             expect(state).toStrictEqual(expectedState);
         });
 
@@ -49,7 +57,10 @@ describe('Store', () => {
             });
             await storageService.load();
             const state = await storageService.getState();
-            const expectedState = { enableAutomaticSorting: true };
+            const expectedState = {
+                enableAutomaticGrouping: true,
+                enableAutomaticSorting: true,
+            };
             expect(state).toStrictEqual(expectedState);
         });
     });
@@ -62,7 +73,10 @@ describe('Store', () => {
                 Logger: ConsoleLogger,
             });
             await storageService.load();
-            const state = { enableAutomaticSorting: false };
+            const state = {
+                enableAutomaticGrouping: false,
+                enableAutomaticSorting: false,
+            };
             await storageService.setState(state);
             const newState = await storageService.getState();
             expect(newState).toStrictEqual(state);
@@ -78,7 +92,10 @@ describe('Store', () => {
             });
             await storageService.load();
 
-            const firstState = { enableAutomaticSorting: false };
+            const firstState = {
+                enableAutomaticGrouping: false,
+                enableAutomaticSorting: false,
+            };
             await storageService.setState(firstState);
             const firstNewState = await storageService.getState();
             expect(firstNewState).toStrictEqual(firstState);
@@ -86,7 +103,10 @@ describe('Store', () => {
             const { set } = browserMock.storage.sync;
             expect(set).toBeCalledWith(firstItems);
 
-            const secondState = { enableAutomaticSorting: true };
+            const secondState = {
+                enableAutomaticGrouping: true,
+                enableAutomaticSorting: true,
+            };
             await storageService.setState(secondState);
             const secondNewState = await storageService.getState();
             expect(secondNewState).toStrictEqual(secondState);
@@ -105,7 +125,10 @@ describe('Store', () => {
             });
             await storageService.load();
             const state = await storageService.getState();
-            const expectedState = { enableAutomaticSorting: true };
+            const expectedState = {
+                enableAutomaticGrouping: true,
+                enableAutomaticSorting: true,
+            };
             expect(state).toStrictEqual(expectedState);
         });
     });

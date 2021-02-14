@@ -67,8 +67,7 @@ export class Organizer implements MkOrganizer {
          * TODO: Handle funky case where the browser is relaunched and
          * multiple tabs are updating at once causing multiple re-renders
          */
-        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
-        this.browser.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
+        this.browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
             this.logger.log('browser.tabs.onUpdated', changeInfo);
             const lastError = this.browser.runtime.lastError;
             if (lastError) {
@@ -105,41 +104,25 @@ export class Organizer implements MkOrganizer {
             this.groupByTabId.set(tabId, domain);
             this.logger.log('browser.tabs.onUpdated', this.groupByTabId);
 
-            // We only want automatic sort if enabled
-            const state = await this.store.getState();
-            const isAutomaticSortingEnabled = state.enableAutomaticSorting;
-            if (!isAutomaticSortingEnabled) {
-                return;
-            }
-
             void this.organize();
         });
 
         // Handle removed tabs
-        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
-        this.browser.tabs.onRemoved.addListener(async (tabId) => {
+        this.browser.tabs.onRemoved.addListener((tabId) => {
             this.logger.log('browser.tabs.onRemoved', tabId);
             // Remove the current tab id from group tracking regardless
             // of if we are automatically sorting to stay updated
             this.groupByTabId.delete(tabId);
             this.logger.log('browser.tabs.onRemoved', this.groupByTabId);
-
-            // We only want automatic sort if enabled
-            const state = await this.store.getState();
-            const isAutomaticSortingEnabled = state.enableAutomaticSorting;
-            if (!isAutomaticSortingEnabled) {
-                return;
-            }
-
             void this.organize();
         });
     }
 
     /**
      * Add new tab groups for a given name, window id, and set of tab ids
-     * TODO: Find a way to prevent the edit field from showing after a
-     * group has been created. Ordering of colors should also be predictable
-     * so it doesn't change on every resort.
+     * TODO: Find a way to prevent the edit field from showing after a group
+     * has been created. Ordering of colors should also be predictable so it
+     * doesn't change on every resort.
      */
     private async addNewGroup({
         idx,
@@ -169,6 +152,23 @@ export class Organizer implements MkOrganizer {
             groupId,
             title,
         });
+    }
+
+    /**
+     * Compare to be used with sorting where "newtab" is
+     * last and specifically references the domain group
+     */
+    private compareGroups(a: string, b: string) {
+        if (a === b) {
+            return 0;
+        }
+        if (a === 'new') {
+            return 1;
+        }
+        if (b === 'new') {
+            return -1;
+        }
+        return a.localeCompare(b);
     }
 
     /**
@@ -215,19 +215,9 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Group tabs in the browser with the same domain
-     */
-    private renderTabGroups(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('renderTabGroups');
-        const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
-        const tabIdsByDomain = this.sortTabIdsByDomain(nonPinnedTabs);
-        this.renderGroupsByDomain(tabIdsByDomain);
-    }
-
-    /**
      * Check if all used tab grouping APIs are supported
      */
-    private isTabGroupingSupported() {
+    public isTabGroupingSupported(): boolean {
         return (
             isTabGroupsUpdateSupported() &&
             isTabGroupsQuerySupported() &&
@@ -237,30 +227,49 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Order and group all tabs
+     * Order and group all tabs with the ability
+     * to force all options together
      */
-    public organize = async (): Promise<void> => {
+    public async organize(): Promise<void> {
         this.logger.log('organize');
-        const tabs = await this.browser.tabs.query({});
         const lastError = this.browser.runtime.lastError;
         if (lastError) {
             throw lastError;
         }
+        const tabs = await this.browser.tabs.query({});
+        // Sorted tabs are needed for sorting or grouping
         const sortedTabs = this.sortTabsAlphabetically(tabs);
-        this.renderSortedTabs(sortedTabs);
-        const isTabGroupingSupported = this.isTabGroupingSupported();
-        if (!isTabGroupingSupported) {
-            this.logger.log('Tab grouping is not supported');
-            return;
+        const { enableAutomaticSorting } = await this.store.getState();
+        if (enableAutomaticSorting) {
+            this.renderSortedTabs(sortedTabs);
         }
-        this.renderTabGroups(sortedTabs);
-    };
+        const isTabGroupingSupported = this.isTabGroupingSupported();
+        const { enableAutomaticGrouping } = await this.store.getState();
+        const isGroupingAllowed =
+            isTabGroupingSupported && enableAutomaticGrouping;
+        if (isGroupingAllowed) {
+            this.renderTabGroups(sortedTabs);
+        }
+    }
 
     /**
-     * Remove a list of tab ids from any group
+     * Remove all existing groups
      */
-    private removeExistingGroup(ids: number[]) {
-        this.logger.log('removeExistingGroup', ids);
+    public async removeAllGroups(): Promise<void> {
+        this.logger.log('removeAllGroups');
+        const tabs = await this.browser.tabs.query({});
+        const filterIds = (id: number | undefined): id is number =>
+            typeof id !== 'undefined';
+        const ids = tabs.map((tab) => tab.id).filter(filterIds);
+        this.removeGroupsForTabIds(ids);
+    }
+
+    /**
+     * Remove a list of tabs from any group
+     * and the group itself when empty
+     */
+    private removeGroupsForTabIds(ids: number[]) {
+        this.logger.log('removeGroupsForTabIds', ids);
         void this.browser.tabs.ungroup(ids);
     }
 
@@ -286,7 +295,7 @@ export class Organizer implements MkOrganizer {
                 const tabIds = tabIdsByGroup[name][windowGroup];
                 // Ungroup existing collections of one tab
                 if (tabIds.length < 2) {
-                    this.removeExistingGroup(tabIds);
+                    this.removeGroupsForTabIds(tabIds);
                     groupIdxOffset++;
                     return;
                 }
@@ -323,6 +332,16 @@ export class Organizer implements MkOrganizer {
                 }
             });
         });
+    }
+
+    /**
+     * Group tabs in the browser with the same domain
+     */
+    private renderTabGroups(tabs: MkBrowser.tabs.Tab[]) {
+        this.logger.log('renderTabGroups');
+        const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
+        const tabIdsByDomain = this.sortTabIdsByDomain(nonPinnedTabs);
+        this.renderGroupsByDomain(tabIdsByDomain);
     }
 
     /**
@@ -379,26 +398,9 @@ export class Organizer implements MkOrganizer {
             const secondTabUrl = new URL(b.url);
             const secondTabHostname = secondTabUrl.hostname;
             const secondTabDomain = parseSharedDomain(secondTabHostname);
-            return this.domainCompare(firstTabDomain, secondTabDomain);
+            return this.compareGroups(firstTabDomain, secondTabDomain);
         });
         return sortedTabs;
-    }
-
-    /**
-     * Compare to be used with sorting where "newtab" is
-     * last and specifically references the domain group
-     */
-    private domainCompare(a: string, b: string) {
-        if (a === b) {
-            return 0;
-        }
-        if (a === 'new') {
-            return 1;
-        }
-        if (b === 'new') {
-            return -1;
-        }
-        return a.localeCompare(b);
     }
 
     /**
