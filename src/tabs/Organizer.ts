@@ -2,11 +2,11 @@ import {
     MkAddNewGroupParams,
     MkContstructorParams,
     MkGetGroupInfoParams,
-    MkSiteOrganizer,
-    MkSiteOrganizerBrowser,
+    MkOrganizer,
+    MkOrganizerBrowser,
     MkTabIdsByDomain,
     MkUpdateGroupTitleParams,
-} from './MkSiteOrganizer';
+} from './MkOrganizer';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
 import { MkStore } from 'src/storage/MkStore';
@@ -20,7 +20,7 @@ import { MkLogger } from 'src/logs/MkLogger';
 /**
  * Organize open tabs
  */
-export class SiteOrganizer implements MkSiteOrganizer {
+export class Organizer implements MkOrganizer {
     public constructor({ browser, store, Logger }: MkContstructorParams) {
         if (!browser) {
             throw new Error('No browser');
@@ -35,11 +35,11 @@ export class SiteOrganizer implements MkSiteOrganizer {
         if (!Logger) {
             throw new Error('No Logger');
         }
-        this.logger = new Logger('SiteOrganizer');
+        this.logger = new Logger('tabs/Organizer');
         this.logger.log('constructor');
     }
 
-    private readonly browser: MkSiteOrganizerBrowser;
+    private readonly browser: MkOrganizerBrowser;
     private readonly store: MkStore;
     private readonly logger: MkLogger;
 
@@ -149,10 +149,10 @@ export class SiteOrganizer implements MkSiteOrganizer {
     }: MkAddNewGroupParams) {
         this.logger.log('addNewGroup', name);
         // We need to get the state before resetting groups using the exact
-        // previous name. As a repercussion of this method, groups where the
-        // count has changed are automatically reopened. This shouldn't happen
-        // when a tab is removed from a group as the UX of a collapsed group
-        // prevents the user from removing a tab.
+        // name. As a repercussion of this method, groups where the count has
+        // changed are automatically reopened. This shouldn't reopen groups
+        // that are collapsed as the user experience for a collapsed group
+        // prevents the user from removing a tab while collapsed.
         const title = `${name} (${tabIds.length})`;
         const prevGroup = await this.getGroupInfo({
             id: windowId,
@@ -217,11 +217,11 @@ export class SiteOrganizer implements MkSiteOrganizer {
     /**
      * Group tabs in the browser with the same domain
      */
-    private groupBrowserTabs(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('groupBrowserTabs');
+    private renderTabGroups(tabs: MkBrowser.tabs.Tab[]) {
+        this.logger.log('renderTabGroups');
         const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
         const tabIdsByDomain = this.sortTabIdsByDomain(nonPinnedTabs);
-        this.renderBrowserTabGroups(tabIdsByDomain);
+        this.renderGroupsByDomain(tabIdsByDomain);
     }
 
     /**
@@ -247,13 +247,13 @@ export class SiteOrganizer implements MkSiteOrganizer {
             throw lastError;
         }
         const sortedTabs = this.sortTabsAlphabetically(tabs);
-        this.reorderBrowserTabs(sortedTabs);
+        this.renderSortedTabs(sortedTabs);
         const isTabGroupingSupported = this.isTabGroupingSupported();
         if (!isTabGroupingSupported) {
             this.logger.log('Tab grouping is not supported');
             return;
         }
-        this.groupBrowserTabs(sortedTabs);
+        this.renderTabGroups(sortedTabs);
     };
 
     /**
@@ -268,8 +268,8 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * Set groups and non-groups using their tab id where
      * groups must contain at least two or more tabs
      */
-    private renderBrowserTabGroups(tabIdsByGroup: MkTabIdsByDomain) {
-        this.logger.log('renderBrowserTabGroups', tabIdsByGroup);
+    private renderGroupsByDomain(tabIdsByGroup: MkTabIdsByDomain) {
+        this.logger.log('renderGroupsByDomain', tabIdsByGroup);
         // Offset the index to ignore orphan groups
         let groupIdxOffset = 0;
         const names = Object.keys(tabIdsByGroup);
@@ -305,8 +305,8 @@ export class SiteOrganizer implements MkSiteOrganizer {
      * Reorder browser tabs in the current
      * window according to tabs list
      */
-    private reorderBrowserTabs(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('reorderBrowserTabs', tabs);
+    private renderSortedTabs(tabs: MkBrowser.tabs.Tab[]) {
+        this.logger.log('renderSortedTabs', tabs);
         tabs.forEach((tab) => {
             // TODO: Create option to organize each tab in the current
             // window by overriding with "WINDOW_ID_CURRENT"

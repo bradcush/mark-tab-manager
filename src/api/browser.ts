@@ -34,6 +34,7 @@ const runtime = {
     // TODO: We shouldn't be passing with but instead
     // abstracting it away in our API implementation
     lastError: chrome.runtime.lastError,
+    onInstalled: chrome.runtime.onInstalled,
 };
 
 const syncStorage = {

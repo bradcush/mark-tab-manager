@@ -1,10 +1,10 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStore } from 'src/storage/MkStore';
 import { MkLoggerConstructor } from 'src/logs/MkLogger';
+import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
 
-export interface MkContextMenu {
+export interface MkMenu {
     connect(): void;
-    create(): Promise<void>;
 }
 
 interface MkContextMenus {
@@ -15,20 +15,32 @@ interface MkContextMenus {
 
 interface MkRuntime {
     lastError: MkBrowser.runtime.LastError;
+    onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
-export interface MkContextMenuBrowser {
+export interface MkMenuBrowser {
     contextMenus: MkContextMenus;
     runtime: MkRuntime;
 }
 
 export interface MkConstructorParams {
-    browser: MkContextMenuBrowser;
+    browser: MkMenuBrowser;
     store: MkStore;
+    tabsOrganizer: MkTabsOrganizer;
     Logger: MkLoggerConstructor;
 }
 
 export interface MkHandleToggleParams {
     info: MkBrowser.contextMenus.OnClickedData;
     tab: MkBrowser.tabs.Tab | undefined;
+}
+
+export interface MkMakeCheckboxPropertiesParams {
+    checked: boolean;
+    labelId: string;
+}
+
+export interface MkCreateCheckboxParams {
+    isChecked: boolean;
+    parentId: string;
 }

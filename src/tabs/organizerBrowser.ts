@@ -1,6 +1,6 @@
 import { browser } from 'src/api/browser';
 
-export const siteOrganizerBrowser = {
+export const organizerBrowser = {
     action: {
         onClicked: browser.action.onClicked,
     },

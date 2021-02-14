@@ -23,6 +23,7 @@ interface MkBrowserContextMenus {
 
 interface MkBrowserRuntime {
     lastError: MkBrowser.runtime.LastError;
+    onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
 interface MkBrowserStorageSync {
@@ -84,6 +85,7 @@ export declare namespace MkBrowser.bookmarks {
 }
 
 export declare namespace MkBrowser.runtime {
+    export type OnInstalled = typeof chrome.runtime.onInstalled;
     export type LastError = typeof chrome.runtime.lastError;
 }
 
