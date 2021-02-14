@@ -34,3 +34,13 @@ export interface MkHandleToggleParams {
     info: MkBrowser.contextMenus.OnClickedData;
     tab: MkBrowser.tabs.Tab | undefined;
 }
+
+export interface MkMakeCheckboxPropertiesParams {
+    checked: boolean;
+    labelId: string;
+}
+
+export interface MkCreateCheckboxParams {
+    isChecked: boolean;
+    parentId: string;
+}

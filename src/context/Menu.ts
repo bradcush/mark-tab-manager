@@ -1,7 +1,9 @@
 import { v4 as uuid } from 'uuid';
 import {
     MkConstructorParams,
+    MkCreateCheckboxParams,
     MkHandleToggleParams,
+    MkMakeCheckboxPropertiesParams,
     MkMenu,
     MkMenuBrowser,
 } from './MkMenu';
@@ -86,15 +88,38 @@ export class Menu implements MkMenu {
         // for toggling automatic sorting
         const { enableAutomaticSorting } = await this.store.getState();
         this.logger.log('create', enableAutomaticSorting);
-        this.createCheckbox(enableAutomaticSorting);
+        const labelId = uuid();
+        this.createLabel(labelId);
+        this.createCheckbox({
+            isChecked: enableAutomaticSorting,
+            parentId: labelId,
+        });
     }
 
     /**
      * Create a new checkbox menu item
      */
-    private createCheckbox(isChecked: boolean) {
+    private createCheckbox({ isChecked, parentId }: MkCreateCheckboxParams) {
         this.logger.log('createCheckbox');
-        const createProperties = this.makeCreateProperties(isChecked);
+        const createProperties = this.makeCheckboxProperties({
+            checked: isChecked,
+            labelId: parentId,
+        });
+        this.browser.contextMenus.create(createProperties, () => {
+            this.logger.log('browser.contextMenus.create');
+            const lastError = this.browser.runtime.lastError;
+            if (lastError) {
+                throw lastError;
+            }
+        });
+    }
+
+    /**
+     * Create a new label menu item
+     */
+    private createLabel(id: string) {
+        this.logger.log('createLabel');
+        const createProperties = this.makeLabelProperties(id);
         this.browser.contextMenus.create(createProperties, () => {
             this.logger.log('browser.contextMenus.create');
             const lastError = this.browser.runtime.lastError;
@@ -123,16 +148,33 @@ export class Menu implements MkMenu {
     }
 
     /**
-     * Make properties used for specifying a created menu item
+     * Make properties used for specifying a checkbox to be created
      */
-    private makeCreateProperties(checked: boolean) {
-        this.logger.log('makeCreateProperties');
+    private makeCheckboxProperties({
+        checked,
+        labelId,
+    }: MkMakeCheckboxPropertiesParams) {
+        this.logger.log('makeCheckboxProperties');
         return {
             checked,
             contexts: ['action'],
             id: uuid(),
+            parentId: labelId,
             title: 'Enable automatic sorting',
             type: 'checkbox',
+            visible: true,
+        };
+    }
+
+    /**
+     * Make properties used for specifying a label to be created
+     */
+    private makeLabelProperties(labelId: string) {
+        this.logger.log('makeLabelProperties');
+        return {
+            contexts: ['action'],
+            id: labelId,
+            title: 'Settings',
             visible: true,
         };
     }
