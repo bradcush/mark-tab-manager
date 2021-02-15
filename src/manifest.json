@@ -1,7 +1,7 @@
 {
     "name": "Mark tab manager",
     "description": "Automated tab management",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "manifest_version": 3,
     "action": {
         "default_title": "Mark"
@@ -14,5 +14,11 @@
         "48": "icons/icon-mark-48.png",
         "128": "icons/icon-mark-128.png"
     },
-    "permissions": ["bookmarks", "contextMenus", "storage", "tabs", "tabGroups"]
+    "permissions": [
+        "bookmarks",
+        "contextMenus",
+        "storage",
+        "tabs",
+        "tabGroups"
+    ]
 }

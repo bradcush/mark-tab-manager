@@ -52,6 +52,21 @@ export class Organizer implements MkOrganizer {
     public connect(): void {
         this.logger.log('connect');
 
+        // Organize tabs on install and update
+        // TODO: Perfect candidate for business API creation
+        this.browser.runtime.onInstalled.addListener((details) => {
+            this.logger.log('browser.runtime.onInstalled', details);
+            const lastError = this.browser.runtime.lastError;
+            if (lastError) {
+                throw lastError;
+            }
+            // We have no shared dependencies
+            if (details.reason === 'shared_module_update') {
+                return;
+            }
+            void this.organize();
+        });
+
         // Handle when the extension icon is clicked
         this.browser.action.onClicked.addListener(() => {
             this.logger.log('browser.action.onClicked');

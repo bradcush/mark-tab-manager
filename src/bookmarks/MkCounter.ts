@@ -3,7 +3,6 @@ import { MkLoggerConstructor } from 'src/logs/MkLogger';
 
 export interface MkCounter {
     connect(): void;
-    updateCountForActiveTab(): Promise<void>;
 }
 
 interface MkBrowserBookmarks {
@@ -18,6 +17,7 @@ interface MkBrowserAction {
 
 interface MkBrowserRuntime {
     lastError: MkBrowser.runtime.LastError;
+    onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
 interface MkBrowserTabs {

@@ -6,6 +6,7 @@ export const organizerBrowser = {
     },
     runtime: {
         lastError: browser.runtime.lastError,
+        onInstalled: browser.runtime.onInstalled,
     },
     storage: {
         sync: browser.storage.sync,

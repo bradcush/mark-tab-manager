@@ -15,6 +15,7 @@ interface MkBrowserAction {
 
 interface MkBrowserRuntime {
     lastError: MkBrowser.runtime.LastError;
+    onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
 interface MkBrowserStorage {
