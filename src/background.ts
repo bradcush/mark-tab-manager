@@ -49,8 +49,6 @@ function initBackground() {
             Logger: ConsoleLogger,
         });
         bookmarkCounter.connect();
-        // Set the initial count based the current tab
-        void bookmarkCounter.updateCountForActiveTab();
     }
 }
 

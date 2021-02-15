@@ -11,6 +11,7 @@ export const counterBrowser = {
     },
     runtime: {
         lastError: browser.runtime.lastError,
+        onInstalled: browser.runtime.onInstalled,
     },
     tabs: {
         get: browser.tabs.get,

@@ -32,6 +32,20 @@ export class Counter implements MkCounter {
     public connect(): void {
         this.logger.log('connect');
 
+        // Set the initial count on install and update
+        this.browser.runtime.onInstalled.addListener((details) => {
+            this.logger.log('browser.runtime.onInstalled', details);
+            const lastError = this.browser.runtime.lastError;
+            if (lastError) {
+                throw lastError;
+            }
+            // We have no shared dependencies
+            if (details.reason === 'shared_module_update') {
+                return;
+            }
+            void this.updateCountForActiveTab();
+        });
+
         // Handle already loaded tabs that are focused
         this.browser.tabs.onActivated.addListener((activeInfo) => {
             this.logger.log('browser.tabs.onActivated', activeInfo);
@@ -127,7 +141,7 @@ export class Counter implements MkCounter {
     /**
      * Set the bookmark count for the active tab
      */
-    public async updateCountForActiveTab(): Promise<void> {
+    private async updateCountForActiveTab(): Promise<void> {
         this.logger.log('updateCountForActiveTab');
         const activeTab = await this.getActiveTab();
         this.updateCount(activeTab);
