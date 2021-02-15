@@ -52,9 +52,6 @@ function initBackground() {
         // Set the initial count based the current tab
         void bookmarkCounter.updateCountForActiveTab();
     }
-
-    // Organize on extension installation
-    void tabsOrganizerInstance.organize();
 }
 
 void initBackground();
