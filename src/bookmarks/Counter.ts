@@ -83,9 +83,14 @@ export class Counter implements MkCounter {
      */
     private async getActiveTab() {
         this.logger.log('getActiveTab');
-        const queryInfo = { active: true, lastFocusedWindow: true };
-        const tabs = await this.browser.tabs.query(queryInfo);
-        return tabs[0];
+        try {
+            const queryInfo = { active: true, lastFocusedWindow: true };
+            const tabs = await this.browser.tabs.query(queryInfo);
+            return tabs[0];
+        } catch (error) {
+            this.logger.error('getActiveTab', error);
+            throw error;
+        }
     }
 
     /**

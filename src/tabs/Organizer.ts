@@ -199,12 +199,17 @@ export class Organizer implements MkOrganizer {
      */
     private async getGroupInfo({ id, title }: MkGetGroupInfoParams) {
         this.logger.log('getGroupInfo', title);
-        // Be careful of the title as query titles are patterns where chars
-        // can have special meaning (eg. * is a universal selector)
-        const queryInfo = { title, windowId: id };
-        const tabGroups = await this.browser.tabGroups.query(queryInfo);
-        this.logger.log('getGroupInfo', tabGroups);
-        return tabGroups[0];
+        try {
+            // Be careful of the title as query titles are patterns where
+            // chars can have special meaning (eg. * is a universal selector)
+            const queryInfo = { title, windowId: id };
+            const tabGroups = await this.browser.tabGroups.query(queryInfo);
+            this.logger.log('getGroupInfo', tabGroups);
+            return tabGroups[0];
+        } catch (error) {
+            this.logger.error('getGroupInfo', error);
+            throw error;
+        }
     }
 
     /**

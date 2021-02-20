@@ -85,10 +85,10 @@ export class Menu implements MkMenu {
         // Create the browser action context menu
         // for toggling automatic sorting
         const labelId = uuid();
-        this.createLabel(labelId);
+        void this.createLabel(labelId);
         const { enableAutomaticSorting } = await this.store.getState();
         this.logger.log('create', enableAutomaticSorting);
-        this.createCheckbox({
+        void this.createCheckbox({
             id: 'enableAutomaticSorting',
             isChecked: enableAutomaticSorting,
             parentId: labelId,
@@ -98,7 +98,7 @@ export class Menu implements MkMenu {
         if (isTabGroupingSupported) {
             const { enableAutomaticGrouping } = await this.store.getState();
             this.logger.log('create', enableAutomaticGrouping);
-            this.createCheckbox({
+            void this.createCheckbox({
                 id: 'enableAutomaticGrouping',
                 isChecked: enableAutomaticGrouping,
                 parentId: labelId,
@@ -110,29 +110,39 @@ export class Menu implements MkMenu {
     /**
      * Create a new checkbox menu item
      */
-    private createCheckbox({
+    private async createCheckbox({
         id,
         isChecked,
         parentId,
         title,
     }: MkCreateCheckboxParams) {
         this.logger.log('createCheckbox');
-        const createProperties = this.makeCheckboxProperties({
-            checked: isChecked,
-            identifier: id,
-            labelId: parentId,
-            text: title,
-        });
-        void this.browser.contextMenus.create(createProperties);
+        try {
+            const createProperties = this.makeCheckboxProperties({
+                checked: isChecked,
+                identifier: id,
+                labelId: parentId,
+                text: title,
+            });
+            await this.browser.contextMenus.create(createProperties);
+        } catch (error) {
+            this.logger.error('createCheckbox', error);
+            throw error;
+        }
     }
 
     /**
      * Create a new label menu item
      */
-    private createLabel(id: string) {
+    private async createLabel(id: string) {
         this.logger.log('createLabel');
-        const createProperties = this.makeLabelProperties(id);
-        void this.browser.contextMenus.create(createProperties);
+        try {
+            const createProperties = this.makeLabelProperties(id);
+            await this.browser.contextMenus.create(createProperties);
+        } catch (error) {
+            this.logger.error('createLabel', error);
+            throw error;
+        }
     }
 
     /**
