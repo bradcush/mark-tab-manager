@@ -96,13 +96,20 @@ export class Counter implements MkCounter {
     /**
      * Update badge count and color
      */
-    private updateBadge(count: number) {
+    private async updateBadge(count: number) {
         this.logger.log('updateBadge', count);
-        const color = count > 0 ? '#00F' : '#F00';
-        const backgroundDetails = { color };
-        void this.browser.action.setBadgeBackgroundColor(backgroundDetails);
-        const textDetails = { text: `${count}` };
-        void this.browser.action.setBadgeText(textDetails);
+        try {
+            const color = count > 0 ? '#00F' : '#F00';
+            const backgroundDetails = { color };
+            await this.browser.action.setBadgeBackgroundColor(
+                backgroundDetails
+            );
+            const textDetails = { text: `${count}` };
+            await this.browser.action.setBadgeText(textDetails);
+        } catch (error) {
+            this.logger.error('updateBadge', error);
+            throw error;
+        }
     }
 
     /**
@@ -111,14 +118,19 @@ export class Counter implements MkCounter {
      */
     private async updateCount(tab: MkBrowser.tabs.Tab) {
         this.logger.log('updateCount', tab);
-        const url = tab.url || tab.pendingUrl;
-        const { hostname } = url ? new URL(url) : { hostname: '' };
-        const domainName = parseSharedDomain(hostname);
-        // Show the count of bookmarks matching the same
-        // second level domain next to the popup icon
-        const results = await this.browser.bookmarks.search(domainName);
-        const bookmarksCount = results.length;
-        this.updateBadge(bookmarksCount);
+        try {
+            const url = tab.url || tab.pendingUrl;
+            const { hostname } = url ? new URL(url) : { hostname: '' };
+            const domainName = parseSharedDomain(hostname);
+            // Show the count of bookmarks matching the same
+            // second level domain next to the popup icon
+            const results = await this.browser.bookmarks.search(domainName);
+            const bookmarksCount = results.length;
+            void this.updateBadge(bookmarksCount);
+        } catch (error) {
+            this.logger.error('updateCount', error);
+            throw error;
+        }
     }
 
     /**
@@ -135,7 +147,12 @@ export class Counter implements MkCounter {
      */
     private async updateCountForTabId(id: number) {
         this.logger.log('updateCountForTabId', id);
-        const tab = await this.browser.tabs.get(id);
-        void this.updateCount(tab);
+        try {
+            const tab = await this.browser.tabs.get(id);
+            void this.updateCount(tab);
+        } catch (error) {
+            this.logger.error('updateCountForActiveTab', error);
+            throw error;
+        }
     }
 }
