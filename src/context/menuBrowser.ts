@@ -7,7 +7,6 @@ export const menuBrowser = {
         removeAll: browser.contextMenus.removeAll,
     },
     runtime: {
-        lastError: browser.runtime.lastError,
         onInstalled: browser.runtime.onInstalled,
     },
 };

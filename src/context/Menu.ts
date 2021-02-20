@@ -57,9 +57,8 @@ export class Menu implements MkMenu {
         // Only create menus when installed
         this.browser.runtime.onInstalled.addListener((details) => {
             this.logger.log('browser.runtime.onInstalled', details);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             // We have no shared dependencies
             if (details.reason === 'shared_module_update') {
@@ -71,9 +70,8 @@ export class Menu implements MkMenu {
         // Handle clicks on any context menu item
         this.browser.contextMenus.onClicked.addListener((info, tab) => {
             this.logger.log('browser.contextMenus.onClicked', info);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             this.handleToggle({ info, tab });
         });
@@ -125,13 +123,7 @@ export class Menu implements MkMenu {
             labelId: parentId,
             text: title,
         });
-        this.browser.contextMenus.create(createProperties, () => {
-            this.logger.log('browser.contextMenus.create');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-        });
+        void this.browser.contextMenus.create(createProperties);
     }
 
     /**
@@ -140,13 +132,7 @@ export class Menu implements MkMenu {
     private createLabel(id: string) {
         this.logger.log('createLabel');
         const createProperties = this.makeLabelProperties(id);
-        this.browser.contextMenus.create(createProperties, () => {
-            this.logger.log('browser.contextMenus.create');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-        });
+        void this.browser.contextMenus.create(createProperties);
     }
 
     /**

@@ -14,7 +14,6 @@ interface MkContextMenus {
 }
 
 interface MkRuntime {
-    lastError: MkBrowser.runtime.LastError;
     onInstalled: MkBrowser.runtime.OnInstalled;
 }
 

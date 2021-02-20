@@ -56,9 +56,8 @@ export class Organizer implements MkOrganizer {
         // TODO: Perfect candidate for business API creation
         this.browser.runtime.onInstalled.addListener((details) => {
             this.logger.log('browser.runtime.onInstalled', details);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             // We have no shared dependencies
             if (details.reason === 'shared_module_update') {
@@ -70,9 +69,8 @@ export class Organizer implements MkOrganizer {
         // Handle when the extension icon is clicked
         this.browser.action.onClicked.addListener(() => {
             this.logger.log('browser.action.onClicked');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             void this.organize();
         });
@@ -84,9 +82,8 @@ export class Organizer implements MkOrganizer {
          */
         this.browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
             this.logger.log('browser.tabs.onUpdated', changeInfo);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             // TODO: We could only update the order if the domain has changed
             // but this would require keeping track of a tabs previous state
@@ -247,10 +244,6 @@ export class Organizer implements MkOrganizer {
      */
     public async organize(): Promise<void> {
         this.logger.log('organize');
-        const lastError = this.browser.runtime.lastError;
-        if (lastError) {
-            throw lastError;
-        }
         const tabs = await this.browser.tabs.query({});
         // Sorted tabs are needed for sorting or grouping
         const sortedTabs = this.sortTabsAlphabetically(tabs);
@@ -340,12 +333,7 @@ export class Organizer implements MkOrganizer {
                 throw new Error('No id for sorted tab');
             }
             const moveProperties = { index: -1 };
-            this.browser.tabs.move(id, moveProperties, () => {
-                const lastError = this.browser.runtime.lastError;
-                if (lastError) {
-                    throw lastError;
-                }
-            });
+            void this.browser.tabs.move(id, moveProperties);
         });
     }
 
