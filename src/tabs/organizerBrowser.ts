@@ -5,7 +5,6 @@ export const organizerBrowser = {
         onClicked: browser.action.onClicked,
     },
     runtime: {
-        lastError: browser.runtime.lastError,
         onInstalled: browser.runtime.onInstalled,
     },
     storage: {

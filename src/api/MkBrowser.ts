@@ -22,7 +22,6 @@ interface MkBrowserContextMenus {
 }
 
 interface MkBrowserRuntime {
-    lastError: MkBrowser.runtime.LastError;
     onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
@@ -63,13 +62,22 @@ export interface MkBrowser {
 }
 
 export declare namespace MkBrowser.action {
+    export type BadgeBackgroundColorDetails = chrome.browserAction.BadgeBackgroundColorDetails;
+    export type BadgeTextDetails = chrome.browserAction.BadgeTextDetails;
     export type OnClicked = typeof chrome.browserAction.onClicked;
-    export type SetBadgeBackgroundColor = typeof chrome.browserAction.setBadgeBackgroundColor;
-    export type SetBadgeText = typeof chrome.browserAction.setBadgeText;
+    export type SetBadgeBackgroundColor = (
+        details: MkBrowser.action.BadgeBackgroundColorDetails
+    ) => Promise<void>;
+    export type SetBadgeText = (
+        details: MkBrowser.action.BadgeTextDetails
+    ) => Promise<void>;
 }
 
 export declare namespace MkBrowser.contextMenus {
-    export type Create = typeof chrome.contextMenus.create;
+    export type Create = (
+        createProperties: MkBrowser.contextMenus.CreateProperties
+    ) => Promise<void>;
+    export type CreateProperties = chrome.contextMenus.CreateProperties;
     export type OnClicked = typeof chrome.contextMenus.onClicked;
     export type OnClickedData = chrome.contextMenus.OnClickData;
     export type RemoveAll = typeof chrome.contextMenus.removeAll;
@@ -81,12 +89,13 @@ export declare namespace MkBrowser.bookmarks {
         | string;
     export type BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
     export type OnCreated = typeof chrome.bookmarks.onCreated;
-    export type Search = typeof chrome.bookmarks.search;
+    export type Search = (
+        query: string
+    ) => Promise<MkBrowser.bookmarks.BookmarkTreeNode[]>;
 }
 
 export declare namespace MkBrowser.runtime {
     export type OnInstalled = typeof chrome.runtime.onInstalled;
-    export type LastError = typeof chrome.runtime.lastError;
 }
 
 export declare namespace MkBrowser.storage.sync {
@@ -120,9 +129,12 @@ export declare namespace MkBrowser.tabGroups {
 
 export declare namespace MkBrowser.tabs {
     export type ChangeInfo = chrome.tabs.TabChangeInfo;
-    export type Get = typeof chrome.tabs.get;
+    export type Get = (id: number) => Promise<MkBrowser.tabs.Tab>;
     export type Group = (options: MkTabsGroupOptions) => Promise<number>;
-    export type Move = typeof chrome.tabs.move;
+    export type Move = (
+        id: number,
+        moveProperties: MkBrowser.tabs.MoveProperties
+    ) => Promise<void>;
     export type MoveProperties = chrome.tabs.MoveProperties;
     export type OnActivated = typeof chrome.tabs.onActivated;
     export type OnUpdated = typeof chrome.tabs.onUpdated;

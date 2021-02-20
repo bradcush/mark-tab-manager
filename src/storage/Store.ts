@@ -60,18 +60,23 @@ export class Store implements MkStore {
      */
     private async cacheStorage() {
         this.logger.log('cacheStorage');
-        const { storage } = this.browser;
-        const { settings } = await storage.sync.get('settings');
-        this.logger.log('cacheStorage', settings);
-        // If there is no storage we don't cache anything
-        if (typeof settings === 'undefined') {
-            return;
+        try {
+            const { storage } = this.browser;
+            const { settings } = await storage.sync.get('settings');
+            this.logger.log('cacheStorage', settings);
+            // If there is no storage we don't cache anything
+            if (typeof settings === 'undefined') {
+                return;
+            }
+            if (typeof settings !== 'string') {
+                throw new Error('Invalid settings storage');
+            }
+            const validState = this.parseValidState(settings);
+            this.setInternalState(validState);
+        } catch (error) {
+            this.logger.error('cacheStorage', error);
+            throw error;
         }
-        if (typeof settings !== 'string') {
-            throw new Error('Invalid settings storage');
-        }
-        const validState = this.parseValidState(settings);
-        this.setInternalState(validState);
     }
 
     /**
@@ -150,12 +155,17 @@ export class Store implements MkStore {
      */
     public async setState(state: Partial<MkState>): Promise<void> {
         this.logger.log('setState');
-        // Best to set in memory state immediately instead of relying on on
-        // storage updated event so we can be sure our state is accurate at
-        // the right time when it may be accessed.
-        const internalState = this.setInternalState(state);
-        const serializedState = JSON.stringify(internalState);
-        const items = { settings: serializedState };
-        await this.browser.storage.sync.set(items);
+        try {
+            // Best to set in memory state immediately instead of relying on
+            // storage updated event so we can be sure our state is accurate
+            // at the right time when it may be accessed.
+            const internalState = this.setInternalState(state);
+            const serializedState = JSON.stringify(internalState);
+            const items = { settings: serializedState };
+            await this.browser.storage.sync.set(items);
+        } catch (error) {
+            this.logger.error('setState', error);
+            throw error;
+        }
     }
 }

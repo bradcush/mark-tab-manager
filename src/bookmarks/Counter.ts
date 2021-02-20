@@ -35,9 +35,8 @@ export class Counter implements MkCounter {
         // Set the initial count on install and update
         this.browser.runtime.onInstalled.addListener((details) => {
             this.logger.log('browser.runtime.onInstalled', details);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             // We have no shared dependencies
             if (details.reason === 'shared_module_update') {
@@ -49,34 +48,31 @@ export class Counter implements MkCounter {
         // Handle already loaded tabs that are focused
         this.browser.tabs.onActivated.addListener((activeInfo) => {
             this.logger.log('browser.tabs.onActivated', activeInfo);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             const { tabId } = activeInfo;
-            this.updateCountForTabId(tabId);
+            void this.updateCountForTabId(tabId);
         });
 
         this.browser.tabs.onUpdated.addListener((_tabId, _changeInfo, tab) => {
             this.logger.log('browser.tabs.onUpdated', tab);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             // Only update the count for active tabs
             // of which there should only be one
             if (!tab.active) {
                 return;
             }
-            this.updateCount(tab);
+            void this.updateCount(tab);
         });
 
         // Handle when a bookmark has been added
         this.browser.bookmarks.onCreated.addListener(() => {
             this.logger.log('browser.bookmarks.onCreated');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             void this.updateCountForActiveTab();
         });
@@ -87,56 +83,55 @@ export class Counter implements MkCounter {
      */
     private async getActiveTab() {
         this.logger.log('getActiveTab');
-        const queryInfo = { active: true, lastFocusedWindow: true };
-        const tabs = await this.browser.tabs.query(queryInfo);
-        return tabs[0];
+        try {
+            const queryInfo = { active: true, lastFocusedWindow: true };
+            const tabs = await this.browser.tabs.query(queryInfo);
+            return tabs[0];
+        } catch (error) {
+            this.logger.error('getActiveTab', error);
+            throw error;
+        }
     }
 
     /**
      * Update badge count and color
      */
-    private updateBadge(count: number) {
+    private async updateBadge(count: number) {
         this.logger.log('updateBadge', count);
-        const color = count > 0 ? '#00F' : '#F00';
-        const backgroundDetails = { color };
-        this.browser.action.setBadgeBackgroundColor(backgroundDetails, () => {
-            this.logger.log('browser.action.setBadgeBackgroundColor');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-        });
-        const textDetails = { text: `${count}` };
-        this.browser.action.setBadgeText(textDetails, () => {
-            this.logger.log('browser.action.setBadgeText');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-        });
+        try {
+            const color = count > 0 ? '#00F' : '#F00';
+            const backgroundDetails = { color };
+            await this.browser.action.setBadgeBackgroundColor(
+                backgroundDetails
+            );
+            const textDetails = { text: `${count}` };
+            await this.browser.action.setBadgeText(textDetails);
+        } catch (error) {
+            this.logger.error('updateBadge', error);
+            throw error;
+        }
     }
 
     /**
      * Update bookmark count based on the tab current URL second
      * level domain and the URL of any bookmarked site
      */
-    private updateCount = (tab: MkBrowser.tabs.Tab) => {
+    private async updateCount(tab: MkBrowser.tabs.Tab) {
         this.logger.log('updateCount', tab);
-        const url = tab.url || tab.pendingUrl;
-        const { hostname } = url ? new URL(url) : { hostname: '' };
-        const domainName = parseSharedDomain(hostname);
-        // Show the count of bookmarks matching the same
-        // second level domain next to the popup icon
-        this.browser.bookmarks.search(domainName, (results) => {
-            this.logger.log('browser.bookmarks.search', results);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
+        try {
+            const url = tab.url || tab.pendingUrl;
+            const { hostname } = url ? new URL(url) : { hostname: '' };
+            const domainName = parseSharedDomain(hostname);
+            // Show the count of bookmarks matching the same
+            // second level domain next to the popup icon
+            const results = await this.browser.bookmarks.search(domainName);
             const bookmarksCount = results.length;
-            this.updateBadge(bookmarksCount);
-        });
-    };
+            void this.updateBadge(bookmarksCount);
+        } catch (error) {
+            this.logger.error('updateCount', error);
+            throw error;
+        }
+    }
 
     /**
      * Set the bookmark count for the active tab
@@ -144,21 +139,20 @@ export class Counter implements MkCounter {
     private async updateCountForActiveTab(): Promise<void> {
         this.logger.log('updateCountForActiveTab');
         const activeTab = await this.getActiveTab();
-        this.updateCount(activeTab);
+        void this.updateCount(activeTab);
     }
 
     /**
      * Update the bookmark count for a specific tab
      */
-    private updateCountForTabId(id: number) {
+    private async updateCountForTabId(id: number) {
         this.logger.log('updateCountForTabId', id);
-        this.browser.tabs.get(id, (tab) => {
-            this.logger.log('browser.tabs.get', tab);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
-            }
-            this.updateCount(tab);
-        });
+        try {
+            const tab = await this.browser.tabs.get(id);
+            void this.updateCount(tab);
+        } catch (error) {
+            this.logger.error('updateCountForActiveTab', error);
+            throw error;
+        }
     }
 }

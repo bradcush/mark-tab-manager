@@ -82,10 +82,6 @@ const contextMenus = {
     },
 };
 
-const runtime = {
-    lastError: undefined,
-};
-
 const storage = {
     sync: {
         get: jest.fn(),
@@ -120,7 +116,6 @@ export const browser = ({
     action,
     bookmarks,
     contextMenus,
-    runtime,
     storage,
     tabs,
 } as any) as MkBrowser;

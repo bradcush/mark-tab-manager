@@ -56,9 +56,8 @@ export class Organizer implements MkOrganizer {
         // TODO: Perfect candidate for business API creation
         this.browser.runtime.onInstalled.addListener((details) => {
             this.logger.log('browser.runtime.onInstalled', details);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             // We have no shared dependencies
             if (details.reason === 'shared_module_update') {
@@ -70,9 +69,8 @@ export class Organizer implements MkOrganizer {
         // Handle when the extension icon is clicked
         this.browser.action.onClicked.addListener(() => {
             this.logger.log('browser.action.onClicked');
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             void this.organize();
         });
@@ -84,9 +82,8 @@ export class Organizer implements MkOrganizer {
          */
         this.browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
             this.logger.log('browser.tabs.onUpdated', changeInfo);
-            const lastError = this.browser.runtime.lastError;
-            if (lastError) {
-                throw lastError;
+            if (chrome.runtime.lastError) {
+                throw chrome.runtime.lastError;
             }
             // TODO: We could only update the order if the domain has changed
             // but this would require keeping track of a tabs previous state
@@ -146,27 +143,32 @@ export class Organizer implements MkOrganizer {
         windowId,
     }: MkAddNewGroupParams) {
         this.logger.log('addNewGroup', name);
-        // We need to get the state before resetting groups using the exact
-        // name. As a repercussion of this method, groups where the count has
-        // changed are automatically reopened. This shouldn't reopen groups
-        // that are collapsed as the user experience for a collapsed group
-        // prevents the user from removing a tab while collapsed.
-        const title = `${name} (${tabIds.length})`;
-        const prevGroup = await this.getGroupInfo({
-            id: windowId,
-            title,
-        });
-        const createProperties = { windowId };
-        const options = { createProperties, tabIds };
-        const groupId = await this.browser.tabs.group(options);
-        const color = this.getColorForGroup(idx);
-        const collapsed = prevGroup?.collapsed ?? false;
-        this.updateGroupProperties({
-            collapsed,
-            color,
-            groupId,
-            title,
-        });
+        try {
+            // We need to get the state before resetting groups using the
+            // exact name. As a repercussion of this method, groups where the
+            // count has changed are automatically reopened. This shouldn't
+            // reopen groups that are collapsed as the user experience for a
+            // collapsed group prevents the user from removing a tab.
+            const title = `${name} (${tabIds.length})`;
+            const prevGroup = await this.getGroupInfo({
+                id: windowId,
+                title,
+            });
+            const createProperties = { windowId };
+            const options = { createProperties, tabIds };
+            const groupId = await this.browser.tabs.group(options);
+            const color = this.getColorForGroup(idx);
+            const collapsed = prevGroup?.collapsed ?? false;
+            void this.updateGroupProperties({
+                collapsed,
+                color,
+                groupId,
+                title,
+            });
+        } catch (error) {
+            this.logger.error('addNewGroup', error);
+            throw error;
+        }
     }
 
     /**
@@ -202,12 +204,17 @@ export class Organizer implements MkOrganizer {
      */
     private async getGroupInfo({ id, title }: MkGetGroupInfoParams) {
         this.logger.log('getGroupInfo', title);
-        // Be careful of the title as query titles are patterns where chars
-        // can have special meaning (eg. * is a universal selector)
-        const queryInfo = { title, windowId: id };
-        const tabGroups = await this.browser.tabGroups.query(queryInfo);
-        this.logger.log('getGroupInfo', tabGroups);
-        return tabGroups[0];
+        try {
+            // Be careful of the title as query titles are patterns where
+            // chars can have special meaning (eg. * is a universal selector)
+            const queryInfo = { title, windowId: id };
+            const tabGroups = await this.browser.tabGroups.query(queryInfo);
+            this.logger.log('getGroupInfo', tabGroups);
+            return tabGroups[0];
+        } catch (error) {
+            this.logger.error('getGroupInfo', error);
+            throw error;
+        }
     }
 
     /**
@@ -247,23 +254,24 @@ export class Organizer implements MkOrganizer {
      */
     public async organize(): Promise<void> {
         this.logger.log('organize');
-        const lastError = this.browser.runtime.lastError;
-        if (lastError) {
-            throw lastError;
-        }
-        const tabs = await this.browser.tabs.query({});
-        // Sorted tabs are needed for sorting or grouping
-        const sortedTabs = this.sortTabsAlphabetically(tabs);
-        const { enableAutomaticSorting } = await this.store.getState();
-        if (enableAutomaticSorting) {
-            this.renderSortedTabs(sortedTabs);
-        }
-        const isTabGroupingSupported = this.isTabGroupingSupported();
-        const { enableAutomaticGrouping } = await this.store.getState();
-        const isGroupingAllowed =
-            isTabGroupingSupported && enableAutomaticGrouping;
-        if (isGroupingAllowed) {
-            this.renderTabGroups(sortedTabs);
+        try {
+            const tabs = await this.browser.tabs.query({});
+            // Sorted tabs are needed for sorting or grouping
+            const sortedTabs = this.sortTabsAlphabetically(tabs);
+            const { enableAutomaticSorting } = await this.store.getState();
+            if (enableAutomaticSorting) {
+                this.renderSortedTabs(sortedTabs);
+            }
+            const isTabGroupingSupported = this.isTabGroupingSupported();
+            const { enableAutomaticGrouping } = await this.store.getState();
+            const isGroupingAllowed =
+                isTabGroupingSupported && enableAutomaticGrouping;
+            if (isGroupingAllowed) {
+                this.renderTabGroups(sortedTabs);
+            }
+        } catch (error) {
+            this.logger.error('organize', error);
+            throw error;
         }
     }
 
@@ -272,20 +280,30 @@ export class Organizer implements MkOrganizer {
      */
     public async removeAllGroups(): Promise<void> {
         this.logger.log('removeAllGroups');
-        const tabs = await this.browser.tabs.query({});
-        const filterIds = (id: number | undefined): id is number =>
-            typeof id !== 'undefined';
-        const ids = tabs.map((tab) => tab.id).filter(filterIds);
-        this.removeGroupsForTabIds(ids);
+        try {
+            const tabs = await this.browser.tabs.query({});
+            const filterIds = (id: number | undefined): id is number =>
+                typeof id !== 'undefined';
+            const ids = tabs.map((tab) => tab.id).filter(filterIds);
+            void this.removeGroupsForTabIds(ids);
+        } catch (error) {
+            this.logger.error('removeAllGroups', error);
+            throw error;
+        }
     }
 
     /**
      * Remove a list of tabs from any group
      * and the group itself when empty
      */
-    private removeGroupsForTabIds(ids: number[]) {
+    private async removeGroupsForTabIds(ids: number[]) {
         this.logger.log('removeGroupsForTabIds', ids);
-        void this.browser.tabs.ungroup(ids);
+        try {
+            await this.browser.tabs.ungroup(ids);
+        } catch (error) {
+            this.logger.error('removeGroupsForTabIds', error);
+            throw error;
+        }
     }
 
     /**
@@ -310,7 +328,7 @@ export class Organizer implements MkOrganizer {
                 const tabIds = tabIdsByGroup[name][windowGroup];
                 // Ungroup existing collections of one tab
                 if (tabIds.length < 2) {
-                    this.removeGroupsForTabIds(tabIds);
+                    void this.removeGroupsForTabIds(tabIds);
                     groupIdxOffset++;
                     return;
                 }
@@ -331,22 +349,25 @@ export class Organizer implements MkOrganizer {
      */
     private renderSortedTabs(tabs: MkBrowser.tabs.Tab[]) {
         this.logger.log('renderSortedTabs', tabs);
-        tabs.forEach((tab) => {
-            // TODO: Create option to organize each tab in the current
-            // window by overriding with "WINDOW_ID_CURRENT"
-            // Current default uses the window for the current tab
-            const { id } = tab;
-            if (!id) {
-                throw new Error('No id for sorted tab');
-            }
-            const moveProperties = { index: -1 };
-            this.browser.tabs.move(id, moveProperties, () => {
-                const lastError = this.browser.runtime.lastError;
-                if (lastError) {
-                    throw lastError;
+        try {
+            /* eslint-disable @typescript-eslint/no-misused-promises */
+            tabs.forEach(async (tab) => {
+                // TODO: Create option to organize each tab in the current
+                // window by overriding with "WINDOW_ID_CURRENT"
+                // Current default uses the window for the current tab
+                const { id } = tab;
+                if (!id) {
+                    throw new Error('No id for sorted tab');
                 }
+                const moveProperties = { index: -1 };
+                // We expect calls to move to still run in parallel
+                // but await simply to catch errors properly
+                await this.browser.tabs.move(id, moveProperties);
             });
-        });
+        } catch (error) {
+            this.logger.error('renderSortedTabs', error);
+            throw error;
+        }
     }
 
     /**
@@ -421,14 +442,19 @@ export class Organizer implements MkOrganizer {
     /**
      * Update an existing groups title
      */
-    private updateGroupProperties({
+    private async updateGroupProperties({
         collapsed,
         color,
         groupId,
         title,
     }: MkUpdateGroupTitleParams) {
         this.logger.log('updateGroupProperties');
-        const updateProperties = { collapsed, color, title };
-        void this.browser.tabGroups.update(groupId, updateProperties);
+        try {
+            const updateProperties = { collapsed, color, title };
+            await this.browser.tabGroups.update(groupId, updateProperties);
+        } catch (error) {
+            this.logger.error('updateGroupProperties', error);
+            throw error;
+        }
     }
 }

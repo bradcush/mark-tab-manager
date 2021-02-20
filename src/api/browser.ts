@@ -7,33 +7,32 @@ import { update as tabGroupsUpdate } from './browser/tabGroups/update';
 import { query as tabGroupsQuery } from './browser/tabGroups/query';
 import { group as tabsGroup } from './browser/tabs/group';
 import { ungroup as tabsUngroup } from './browser/tabs/ungroup';
+import { setBadgeBackgroundColor as actionSetBadgeBackgroundColor } from './browser/action/setBadgeBackgroundColor';
+import { setBadgeText as actionSetBadgeText } from './browser/action/setBadgeText';
+import { search as bookmarksSearch } from './browser/bookmarks/search';
+import { get as tabsGet } from './browser/tabs/get';
+import { create as contextMenusCreate } from './browser/contextMenus/create';
+import { move as tabsMove } from './browser/tabs/move';
 
-// For MV3 "browserAction" should be replaced by "action"
-// https://developers.chrome.com/extensions/migrating_to_manifest_v3#actions
 const action = {
     // @ts-expect-error Recent Manifest v3 change
     onClicked: chrome.action.onClicked,
-    // @ts-expect-error Recent Manifest v3 change
-    setBadgeBackgroundColor: chrome.action.setBadgeBackgroundColor,
-    // @ts-expect-error Recent Manifest v3 change
-    setBadgeText: chrome.action.setBadgeText,
+    setBadgeBackgroundColor: actionSetBadgeBackgroundColor,
+    setBadgeText: actionSetBadgeText,
 };
 
 const bookmarks = {
     onCreated: chrome.bookmarks.onCreated,
-    search: chrome.bookmarks.search,
+    search: bookmarksSearch,
 };
 
 const contextMenus = {
-    create: chrome.contextMenus.create,
+    create: contextMenusCreate,
     onClicked: chrome.contextMenus.onClicked,
     removeAll: chrome.contextMenus.removeAll,
 };
 
 const runtime = {
-    // TODO: We shouldn't be passing with but instead
-    // abstracting it away in our API implementation
-    lastError: chrome.runtime.lastError,
     onInstalled: chrome.runtime.onInstalled,
 };
 
@@ -55,9 +54,9 @@ const tabGroups = {
 };
 
 const tabs = {
-    get: chrome.tabs.get,
+    get: tabsGet,
     group: tabsGroup,
-    move: chrome.tabs.move,
+    move: tabsMove,
     onActivated: chrome.tabs.onActivated,
     onUpdated: chrome.tabs.onUpdated,
     onRemoved: chrome.tabs.onRemoved,

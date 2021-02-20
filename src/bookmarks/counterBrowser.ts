@@ -10,7 +10,6 @@ export const counterBrowser = {
         search: browser.bookmarks.search,
     },
     runtime: {
-        lastError: browser.runtime.lastError,
         onInstalled: browser.runtime.onInstalled,
     },
     tabs: {
