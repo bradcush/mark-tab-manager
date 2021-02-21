@@ -156,6 +156,8 @@ export class Store implements MkStore {
     public async setState(state: Partial<MkState>): Promise<void> {
         this.logger.log('setState');
         try {
+            // Wait for the initial data load
+            await this.loaded;
             // Best to set in memory state immediately instead of relying on
             // storage updated event so we can be sure our state is accurate
             // at the right time when it may be accessed.
