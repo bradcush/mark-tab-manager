@@ -80,7 +80,7 @@ export class Organizer implements MkOrganizer {
          * TODO: Handle funky case where the browser is relaunched and
          * multiple tabs are updating at once causing multiple re-renders
          */
-        this.browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+        this.browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             this.logger.log('browser.tabs.onUpdated', changeInfo);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
@@ -111,12 +111,8 @@ export class Organizer implements MkOrganizer {
             if (!hasGroupChanged) {
                 return;
             }
-            // Track the tab id with its current group regardless
-            // of if we are automatically sorting to stay updated
-            this.groupByTabId.set(tabId, domain);
-            this.logger.log('browser.tabs.onUpdated', this.groupByTabId);
 
-            void this.organize();
+            void this.organize(tab);
         });
 
         // Handle removed tabs
@@ -131,10 +127,8 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Add new tab groups for a given name, window id, and set of tab ids
-     * TODO: Find a way to prevent the edit field from showing after a group
-     * has been created. Ordering of colors should also be predictable so it
-     * doesn't change on every resort.
+     * Add new tab groups for a given name,
+     * window id, and set of tab ids
      */
     private async addNewGroup({
         idx,
@@ -169,6 +163,34 @@ export class Organizer implements MkOrganizer {
             this.logger.error('addNewGroup', error);
             throw error;
         }
+    }
+
+    /**
+     * Cache tabs in memory when needed whether it's
+     * an item addition or fresh cache creation
+     * TODO: Centralize caching in a helper class so we don't have
+     * to care about the implementation details of our cache
+     */
+    private cache(tabs: MkBrowser.tabs.Tab[]) {
+        this.logger.log('cache', tabs);
+        // We don't need to update if nothing has changed
+        if (tabs.length === this.groupByTabId.size) {
+            this.logger.log('cache', false);
+            return;
+        }
+        tabs.forEach((tab) => {
+            const { id, url } = tab;
+            if (!id) {
+                throw new Error('No id for tab cache');
+            }
+            if (!url) {
+                throw new Error('No url for tab cache');
+            }
+            const parsedUrl = new URL(url);
+            const domain = parseSharedDomain(parsedUrl.hostname);
+            this.groupByTabId.set(id, domain);
+        });
+        this.logger.log('cache', this.groupByTabId);
     }
 
     /**
@@ -252,7 +274,7 @@ export class Organizer implements MkOrganizer {
      * Order and group all tabs with the ability
      * to force all options together
      */
-    public async organize(): Promise<void> {
+    public async organize(tab?: MkBrowser.tabs.Tab): Promise<void> {
         this.logger.log('organize');
         try {
             const tabs = await this.browser.tabs.query({});
@@ -269,6 +291,10 @@ export class Organizer implements MkOrganizer {
             if (isGroupingAllowed) {
                 this.renderTabGroups(sortedTabs);
             }
+            // Cache tabs regardless settings
+            const isCacheBuilt = this.groupByTabId.size > 0;
+            const tabsToCache = isCacheBuilt && tab ? [tab] : sortedTabs;
+            this.cache(tabsToCache);
         } catch (error) {
             this.logger.error('organize', error);
             throw error;
