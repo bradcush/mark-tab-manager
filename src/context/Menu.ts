@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import {
     MkConstructorParams,
     MkCreateCheckboxParams,
@@ -84,7 +83,7 @@ export class Menu implements MkMenu {
         this.logger.log('create');
         // Create the browser action context menu
         // for toggling automatic sorting
-        const labelId = uuid();
+        const labelId = 'settings';
         void this.createLabel(labelId);
         const { enableAutomaticSorting } = await this.store.getState();
         this.logger.log('create', enableAutomaticSorting);
