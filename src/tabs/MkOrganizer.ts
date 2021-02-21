@@ -5,7 +5,7 @@ import { MkLoggerConstructor } from 'src/logs/MkLogger';
 export interface MkOrganizer {
     connect(): void;
     isTabGroupingSupported(): boolean;
-    organize(): Promise<void>;
+    organize(tab?: MkBrowser.tabs.Tab): Promise<void>;
     removeAllGroups(): Promise<void>;
 }
 
