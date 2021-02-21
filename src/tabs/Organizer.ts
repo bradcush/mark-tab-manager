@@ -131,10 +131,8 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Add new tab groups for a given name, window id, and set of tab ids
-     * TODO: Find a way to prevent the edit field from showing after a group
-     * has been created. Ordering of colors should also be predictable so it
-     * doesn't change on every resort.
+     * Add new tab groups for a given name,
+     * window id, and set of tab ids
      */
     private async addNewGroup({
         idx,
