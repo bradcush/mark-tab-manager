@@ -278,6 +278,11 @@ export class Organizer implements MkOrganizer {
         this.logger.log('organize');
         try {
             const tabs = await this.browser.tabs.query({});
+            // Cache tabs regardless settings as early as possible
+            const isCacheBuilt = this.groupByTabId.size > 0;
+            const tabsToCache = isCacheBuilt && tab ? [tab] : tabs;
+            this.cache(tabsToCache);
+
             // Sorted tabs are needed for sorting or grouping
             const sortedTabs = this.sortTabsAlphabetically(tabs);
             const { enableAutomaticSorting } = await this.store.getState();
@@ -291,10 +296,6 @@ export class Organizer implements MkOrganizer {
             if (isGroupingAllowed) {
                 this.renderTabGroups(sortedTabs);
             }
-            // Cache tabs regardless settings
-            const isCacheBuilt = this.groupByTabId.size > 0;
-            const tabsToCache = isCacheBuilt && tab ? [tab] : sortedTabs;
-            this.cache(tabsToCache);
         } catch (error) {
             this.logger.error('organize', error);
             throw error;
