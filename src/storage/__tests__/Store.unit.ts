@@ -12,6 +12,7 @@ describe('Store', () => {
             const syncGetMock = makeSyncGet({
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
+                forceWindowConsolidation: true,
                 invalidSetting: true,
             });
             const browserMock = makeStoreBrowser(syncGetMock);
@@ -24,6 +25,7 @@ describe('Store', () => {
             const expectedState = {
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
+                forceWindowConsolidation: true,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -32,6 +34,7 @@ describe('Store', () => {
             const syncGetMock = makeSyncGet({
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
+                forceWindowConsolidation: true,
                 invalidSetting: true,
             });
             const browserMock = makeStoreBrowser(syncGetMock);
@@ -44,6 +47,7 @@ describe('Store', () => {
             const expectedState = {
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
+                forceWindowConsolidation: true,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -60,6 +64,7 @@ describe('Store', () => {
             const expectedState = {
                 enableAutomaticGrouping: true,
                 enableAutomaticSorting: true,
+                forceWindowConsolidation: false,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -76,6 +81,7 @@ describe('Store', () => {
             const state = {
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
+                forceWindowConsolidation: true,
             };
             await storageService.setState(state);
             const newState = await storageService.getState();
@@ -95,6 +101,7 @@ describe('Store', () => {
             const firstState = {
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
+                forceWindowConsolidation: true,
             };
             await storageService.setState(firstState);
             const firstNewState = await storageService.getState();
@@ -106,6 +113,7 @@ describe('Store', () => {
             const secondState = {
                 enableAutomaticGrouping: true,
                 enableAutomaticSorting: true,
+                forceWindowConsolidation: false,
             };
             await storageService.setState(secondState);
             const secondNewState = await storageService.getState();
@@ -128,6 +136,7 @@ describe('Store', () => {
             const expectedState = {
                 enableAutomaticGrouping: true,
                 enableAutomaticSorting: true,
+                forceWindowConsolidation: false,
             };
             expect(state).toStrictEqual(expectedState);
         });
