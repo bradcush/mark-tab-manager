@@ -136,7 +136,7 @@ export class Organizer implements MkOrganizer {
         tabIds,
         windowId,
     }: MkAddNewGroupParams) {
-        this.logger.log('addNewGroup', name);
+        this.logger.log('addNewGroup', name, windowId);
         try {
             // We need to get the state before resetting groups using the
             // exact name. As a repercussion of this method, groups where the
@@ -278,23 +278,24 @@ export class Organizer implements MkOrganizer {
         this.logger.log('organize');
         try {
             const tabs = await this.browser.tabs.query({});
+            // Cache tabs regardless settings as early as possible
+            const isCacheBuilt = this.groupByTabId.size > 0;
+            const tabsToCache = isCacheBuilt && tab ? [tab] : tabs;
+            this.cache(tabsToCache);
+
             // Sorted tabs are needed for sorting or grouping
             const sortedTabs = this.sortTabsAlphabetically(tabs);
             const { enableAutomaticSorting } = await this.store.getState();
             if (enableAutomaticSorting) {
-                this.renderSortedTabs(sortedTabs);
+                void this.renderSortedTabs(sortedTabs);
             }
             const isTabGroupingSupported = this.isTabGroupingSupported();
             const { enableAutomaticGrouping } = await this.store.getState();
             const isGroupingAllowed =
                 isTabGroupingSupported && enableAutomaticGrouping;
             if (isGroupingAllowed) {
-                this.renderTabGroups(sortedTabs);
+                void this.renderTabGroups(sortedTabs);
             }
-            // Cache tabs regardless settings
-            const isCacheBuilt = this.groupByTabId.size > 0;
-            const tabsToCache = isCacheBuilt && tab ? [tab] : sortedTabs;
-            this.cache(tabsToCache);
         } catch (error) {
             this.logger.error('organize', error);
             throw error;
@@ -342,6 +343,7 @@ export class Organizer implements MkOrganizer {
         let groupIdxOffset = 0;
         const names = Object.keys(tabIdsByGroup);
         names.forEach((name, idx) => {
+            this.logger.log('renderGroupsByDomain', name);
             // Groups are represented by the window id
             const group = Object.keys(tabIdsByGroup[name]);
             const isRealGroup = (windowId: string) =>
@@ -373,19 +375,28 @@ export class Organizer implements MkOrganizer {
      * Reorder browser tabs in the current
      * window according to tabs list
      */
-    private renderSortedTabs(tabs: MkBrowser.tabs.Tab[]) {
+    private async renderSortedTabs(tabs: MkBrowser.tabs.Tab[]) {
         this.logger.log('renderSortedTabs', tabs);
         try {
+            // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
+            // "windowId" in our algorithm which the representative -2 breaks
+            const staticWindowId = tabs[0].windowId;
+            const { forceWindowConsolidation } = await this.store.getState();
             /* eslint-disable @typescript-eslint/no-misused-promises */
             tabs.forEach(async (tab) => {
-                // TODO: Create option to organize each tab in the current
-                // window by overriding with "WINDOW_ID_CURRENT"
-                // Current default uses the window for the current tab
                 const { id } = tab;
                 if (!id) {
                     throw new Error('No id for sorted tab');
                 }
-                const moveProperties = { index: -1 };
+                const baseMoveProperties = { index: -1 };
+                // Specify the current window as the forced window
+                const staticWindowMoveProperties = {
+                    windowId: staticWindowId,
+                };
+                // Current default uses the window for the current tab
+                const moveProperties = forceWindowConsolidation
+                    ? { ...baseMoveProperties, ...staticWindowMoveProperties }
+                    : baseMoveProperties;
                 // We expect calls to move to still run in parallel
                 // but await simply to catch errors properly
                 await this.browser.tabs.move(id, moveProperties);
@@ -399,10 +410,10 @@ export class Organizer implements MkOrganizer {
     /**
      * Group tabs in the browser with the same domain
      */
-    private renderTabGroups(tabs: MkBrowser.tabs.Tab[]) {
+    private async renderTabGroups(tabs: MkBrowser.tabs.Tab[]) {
         this.logger.log('renderTabGroups');
         const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
-        const tabIdsByDomain = this.sortTabIdsByDomain(nonPinnedTabs);
+        const tabIdsByDomain = await this.sortTabIdsByDomain(nonPinnedTabs);
         this.renderGroupsByDomain(tabIdsByDomain);
     }
 
@@ -410,12 +421,14 @@ export class Organizer implements MkOrganizer {
      * Sort tabs by their domain and window id while grouping those
      * that don't have a valid domain under the system nomenclature
      */
-    private sortTabIdsByDomain(tabs: MkBrowser.tabs.Tab[]) {
+    private async sortTabIdsByDomain(tabs: MkBrowser.tabs.Tab[]) {
         this.logger.log('sortTabIdsByDomain');
         const tabIdsByDomain: MkTabIdsByDomain = {};
+        const { forceWindowConsolidation } = await this.store.getState();
+        // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
+        // "windowId" in our algorithm which the representative -2 breaks
+        const staticWindowId = tabs[0].windowId;
         tabs.forEach((tab) => {
-            // TODO: Create option to organize every group in the current
-            // window by overriding with "WINDOW_ID_CURRENT"
             const { id, url, windowId } = tab;
             if (!id) {
                 throw new Error('No id for tab');
@@ -427,17 +440,21 @@ export class Organizer implements MkOrganizer {
             }
             const parsedUrl = new URL(url);
             const domain = parseSharedDomain(parsedUrl.hostname);
+            // Specify the current window as the forced window
+            const chosenWindowId = forceWindowConsolidation
+                ? staticWindowId
+                : windowId;
             if (!tabIdsByDomain[domain]) {
                 tabIdsByDomain[domain] = {
-                    [windowId]: [id],
+                    [chosenWindowId]: [id],
                 };
-            } else if (!tabIdsByDomain[domain][windowId]) {
+            } else if (!tabIdsByDomain[domain][chosenWindowId]) {
                 tabIdsByDomain[domain] = {
                     ...tabIdsByDomain[domain],
-                    [windowId]: [id],
+                    [chosenWindowId]: [id],
                 };
             } else {
-                tabIdsByDomain[domain][windowId].push(id);
+                tabIdsByDomain[domain][chosenWindowId].push(id);
             }
         });
         this.logger.log('sortTabIdsByDomain', tabIdsByDomain);

@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import {
     MkConstructorParams,
     MkCreateCheckboxParams,
@@ -84,7 +83,7 @@ export class Menu implements MkMenu {
         this.logger.log('create');
         // Create the browser action context menu
         // for toggling automatic sorting
-        const labelId = uuid();
+        const labelId = 'settings';
         void this.createLabel(labelId);
         const { enableAutomaticSorting } = await this.store.getState();
         this.logger.log('create', enableAutomaticSorting);
@@ -105,6 +104,13 @@ export class Menu implements MkMenu {
                 title: 'Enable automatic grouping',
             });
         }
+        const { forceWindowConsolidation } = await this.store.getState();
+        void this.createCheckbox({
+            id: 'forceWindowConsolidation',
+            isChecked: forceWindowConsolidation,
+            parentId: labelId,
+            title: 'Force window consolidation',
+        });
     }
 
     /**
@@ -152,8 +158,8 @@ export class Menu implements MkMenu {
     private handleToggle({ info }: MkHandleToggleParams) {
         this.logger.log('handleToggle', info);
         const { checked, menuItemId } = info;
-        // Automatically organize as soon
-        // as any setting is checked
+        // Automatically organize as soon as any setting is checked which is
+        // opinionated as it relies checked settings meaning enabled
         if (checked) {
             void this.tabsOrganizer.organize();
         }
@@ -165,6 +171,7 @@ export class Menu implements MkMenu {
         const settings: (keyof MkState)[] = [
             'enableAutomaticGrouping',
             'enableAutomaticSorting',
+            'forceWindowConsolidation',
         ];
         if (!settings.includes(menuItemId)) {
             /* eslint-disable @typescript-eslint/restrict-template-expressions */

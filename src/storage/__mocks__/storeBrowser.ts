@@ -5,6 +5,7 @@ import { MkStoreBrowser } from '../MkStore';
 const defaultItems = {
     enableAutomaticGrouping: true,
     enableAutomaticSorting: true,
+    forceWindowConsolidation: false,
 };
 
 export function makeSyncGet(
