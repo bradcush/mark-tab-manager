@@ -52,4 +52,4 @@ function initBackground() {
     }
 }
 
-void initBackground();
+initBackground();

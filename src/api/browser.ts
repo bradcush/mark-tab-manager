@@ -15,7 +15,6 @@ import { create as contextMenusCreate } from './browser/contextMenus/create';
 import { move as tabsMove } from './browser/tabs/move';
 
 const action = {
-    // @ts-expect-error Recent Manifest v3 change
     onClicked: chrome.action.onClicked,
     setBadgeBackgroundColor: actionSetBadgeBackgroundColor,
     setBadgeText: actionSetBadgeText,

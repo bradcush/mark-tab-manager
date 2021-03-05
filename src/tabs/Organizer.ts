@@ -10,7 +10,6 @@ import {
 import { MkBrowser } from 'src/api/MkBrowser';
 import { parseSharedDomain } from 'src/helpers/domainHelpers';
 import { MkStore } from 'src/storage/MkStore';
-import { MkColor as MkTabGroupsColor } from 'src/api/browser/tabGroups/MkColor';
 import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
 import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
@@ -248,9 +247,8 @@ export class Organizer implements MkOrganizer {
         const colorsByEnum = this.browser.tabGroups.Color;
         this.logger.log('getColorForGroup', colorsByEnum);
         const colorKeys = Object.keys(colorsByEnum);
-        // TODO: Remove type assertion in favor of real types
-        const colors = colorKeys.map(
-            (colorKey) => colorsByEnum[colorKey] as MkTabGroupsColor
+        const colors = colorKeys.map((colorKey) =>
+            colorKey.toLocaleLowerCase()
         );
         const colorIdx = index % colorKeys.length;
         const color = colors[colorIdx];

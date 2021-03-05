@@ -1,9 +1,10 @@
-export type MkColor =
-    | 'blue'
-    | 'cyan'
-    | 'green'
-    | 'grey'
-    | 'pink'
-    | 'purple'
-    | 'red'
-    | 'yellow';
+export enum MkColor {
+    BLUE = 'blue',
+    CYAN = 'cyan',
+    GREEN = 'green',
+    GREY = 'grey',
+    PINK = 'pink',
+    PURPLE = 'purple',
+    RED = 'red',
+    YELLOW = 'yellow',
+}

@@ -2,33 +2,45 @@
   "name": "mark",
   "version": "0.1.8",
   "description": "Automated tab management",
-  "main": "dist/background.js",
   "repository": "https://github.com/bradcush/mark.git",
   "author": "Bradley Cushing <bradleycushing@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "build:dev": "webpack --config meta/webpack.config.dev.js",
-    "build:prod": "webpack --config meta/webpack.config.prod.js",
+    "build:dev": "webpack --config meta/webpack.config.dev.ts",
+    "build:prod": "webpack --config meta/webpack.config.prod.ts",
     "lint": "eslint --ext .ts,.json .",
     "lint:fix": "yarn lint --fix",
     "test:unit": "jest '/__tests__/.*\\.unit\\.(js|ts)$' --config=./jest.config.json",
     "test:unit:coverage": "yarn test:unit --coverage --no-cache"
   },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "husky": {
     "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "yarn lint"
     }
   },
   "dependencies": {
-    "parse-domain": "^3.0.3"
+    "parse-domain": "^3.0.3",
+    "tslib": "^2.1.0"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.129",
+    "@commitlint/cli": "^12.0.1",
+    "@commitlint/config-conventional": "^12.0.1",
+    "@types/chrome": "^0.0.133",
+    "@types/copy-webpack-plugin": "^6.4.0",
     "@types/jest": "^26.0.15",
     "@types/node": "^14.0.14",
+    "@types/terser-webpack-plugin": "^5.0.2",
+    "@types/webpack": "^4.41.26",
     "@typescript-eslint/eslint-plugin": "^3.4.0",
     "@typescript-eslint/parser": "^3.4.0",
+    "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^6.0.2",
     "eslint": "^7.3.1",
     "eslint-config-prettier": "^6.11.0",
@@ -40,8 +52,10 @@
     "prettier": "^2.0.5",
     "ts-jest": "^26.4.3",
     "ts-loader": "^7.0.5",
+    "ts-node": "^9.1.1",
     "typescript": "^3.9.5",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webpack-merge": "^5.7.3"
   }
 }

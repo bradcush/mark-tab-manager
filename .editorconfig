@@ -1,7 +1,7 @@
-[*.{py,ts,js,json}]
+[*.{js,json,ts}]
 indent_style = space
 indent_size = 4
 
-[{package.json,tsd.json}]
+[{package.json}]
 indent_style = space
 indent_size = 2

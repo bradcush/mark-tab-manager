@@ -1,21 +1,25 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "importHelpers": true,
         "module": "commonjs",
         "moduleResolution": "node",
-        "esModuleInterop": true,
-        "isolatedModules": false,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "declaration": false,
-        "strictBindCallApply": true,
-        "removeComments": true,
-        "noLib": false,
-        "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "sourceMap": true,
         "noImplicitReturns": true,
-        "baseUrl": "./",
-        "strict": true
+        "preserveConstEnums": true,
+        "removeComments": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "ES2017",
+        "types": [
+            "chrome",
+            "copy-webpack-plugin",
+            "jest",
+            "node",
+            "terser-webpack-plugin",
+            "webpack"
+        ]
     }
 }
