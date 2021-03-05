@@ -1,10 +1,9 @@
 {
     "extends": "./tsconfig.json",
     "include": [
-        "meta/**/*.ts",
-        "src/**/*.ts",
-        "typings/**/*.ts",
-        "**/*.json"
+        "**/*.js",
+        "**/*.json",
+        "**/*.ts"
     ],
     "compilerOptions": {
         "allowJs": true,
