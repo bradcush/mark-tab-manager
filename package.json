@@ -14,8 +14,14 @@
     "test:unit": "jest '/__tests__/.*\\.unit\\.(js|ts)$' --config=./jest.config.json",
     "test:unit:coverage": "yarn test:unit --coverage --no-cache"
   },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "husky": {
     "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "yarn lint"
     }
   },
@@ -24,6 +30,8 @@
     "tslib": "^2.1.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^12.0.1",
+    "@commitlint/config-conventional": "^12.0.1",
     "@types/chrome": "^0.0.133",
     "@types/copy-webpack-plugin": "^6.4.0",
     "@types/jest": "^26.0.15",
