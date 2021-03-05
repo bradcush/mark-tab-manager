@@ -30,9 +30,9 @@ is currently no need for any at the moment.
 
 ## Linting
 
-Linting using `eslist` is also automatically run as part of the GitHub CI for
+Linting using `eslint` is also automatically run as part of the GitHub CI for
 both a commit push and pull request. They are also run locally before
-committing using a pre-commit hook. The must be no errors for any pull
+committing using a pre-commit hook. There must be no errors for any pull
 request to be merged into the main branch.
 
 - Linting: `yarn lint`
