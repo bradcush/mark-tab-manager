@@ -2,7 +2,6 @@
   "name": "mark",
   "version": "0.1.8",
   "description": "Automated tab management",
-  "main": "dist/background.js",
   "repository": "https://github.com/bradcush/mark.git",
   "author": "Bradley Cushing <bradleycushing@gmail.com>",
   "license": "UNLICENSED",
