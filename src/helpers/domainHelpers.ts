@@ -16,11 +16,11 @@ function parseUrl(url: string) {
 /**
  * Currently a quick attempt at parsing the most
  * general and shared part of a given domain
- * TODO: Make sure to revisit with the docs
  */
 export function parseSharedDomain(url: string | undefined): string {
+    const defaultDomain = '#';
     if (typeof url === 'undefined') {
-        return '#';
+        return defaultDomain;
     }
     const parsedUrl = parseUrl(url);
     const parseResult = parseDomain(parsedUrl.hostname);
@@ -32,12 +32,12 @@ export function parseSharedDomain(url: string | undefined): string {
     // Treat URLs with unlisted domain as system URLs
     // Only treating listed domains temporarily
     if (parseResult.type !== ParseResultType.Listed) {
-        return '#';
+        return defaultDomain;
     }
     // Treat URLs with no domain as system URLs
     const domain = parseResult.icann.domain;
     if (!domain) {
-        return '#';
+        return defaultDomain;
     }
     return domain;
 }
