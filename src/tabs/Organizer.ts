@@ -76,18 +76,12 @@ export class Organizer implements MkOrganizer {
 
         /**
          * Handle tabs where a URL is updated
-         * TODO: Handle funky case where the browser is relaunched and
-         * multiple tabs are updating at once causing multiple re-renders
          */
         this.browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             this.logger.log('browser.tabs.onUpdated', changeInfo);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
             }
-            // TODO: We could only update the order if the domain has changed
-            // but this would require keeping track of a tabs previous state
-            // which might not be worth the added complexity.
-
             const { status, url } = changeInfo;
             // Prevent triggering of updates when we aren't loading
             // so we can treat tabs as early as possible
@@ -100,7 +94,6 @@ export class Organizer implements MkOrganizer {
             if (!url) {
                 return;
             }
-
             // If the domain categorization didn't
             // change then we don't both to organize
             const domain = parseSharedDomain(url);
@@ -109,7 +102,6 @@ export class Organizer implements MkOrganizer {
             if (!hasGroupChanged) {
                 return;
             }
-
             void this.organize(tab);
         });
 
@@ -430,7 +422,6 @@ export class Organizer implements MkOrganizer {
                 throw new Error('No id for tab');
             }
             // Don't group tabs without a URL
-            // TODO: Depending on what these are we should reconsider
             if (!url) {
                 throw new Error('No tab url');
             }
