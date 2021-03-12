@@ -103,8 +103,7 @@ export class Organizer implements MkOrganizer {
 
             // If the domain categorization didn't
             // change then we don't both to organize
-            const parsedUrl = new URL(url);
-            const domain = parseSharedDomain(parsedUrl.hostname);
+            const domain = parseSharedDomain(url);
             const hasGroupChanged = this.groupByTabId.get(tabId) !== domain;
             this.logger.log('browser.tabs.onUpdated', hasGroupChanged);
             if (!hasGroupChanged) {
@@ -185,8 +184,7 @@ export class Organizer implements MkOrganizer {
             if (!url) {
                 throw new Error('No url for tab cache');
             }
-            const parsedUrl = new URL(url);
-            const domain = parseSharedDomain(parsedUrl.hostname);
+            const domain = parseSharedDomain(url);
             this.groupByTabId.set(id, domain);
         });
         this.logger.log('cache', this.groupByTabId);
@@ -436,8 +434,7 @@ export class Organizer implements MkOrganizer {
             if (!url) {
                 throw new Error('No tab url');
             }
-            const parsedUrl = new URL(url);
-            const domain = parseSharedDomain(parsedUrl.hostname);
+            const domain = parseSharedDomain(url);
             // Specify the current window as the forced window
             const chosenWindowId = forceWindowConsolidation
                 ? staticWindowId
@@ -469,12 +466,8 @@ export class Organizer implements MkOrganizer {
             if (!a.url || !b.url) {
                 throw new Error('No url for sorted tab');
             }
-            const firstTabUrl = new URL(a.url);
-            const firstTabHostname = firstTabUrl.hostname;
-            const firstTabDomain = parseSharedDomain(firstTabHostname);
-            const secondTabUrl = new URL(b.url);
-            const secondTabHostname = secondTabUrl.hostname;
-            const secondTabDomain = parseSharedDomain(secondTabHostname);
+            const firstTabDomain = parseSharedDomain(a.url);
+            const secondTabDomain = parseSharedDomain(b.url);
             return this.compareGroups(firstTabDomain, secondTabDomain);
         });
         return sortedTabs;
