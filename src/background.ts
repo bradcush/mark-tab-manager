@@ -7,7 +7,7 @@ import { menuBrowser as contextMenuBrowser } from './context/menuBrowser';
 import { Store } from './storage/Store';
 import { storeBrowser } from './storage/storeBrowser';
 import { ConsoleLogger } from './logs/ConsoleLogger';
-import { MemoryCache } from './storage/Cache';
+import { MemoryCache } from './storage/MemoryCache';
 
 // When the service worker starts
 const logger = new ConsoleLogger();
