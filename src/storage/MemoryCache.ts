@@ -44,12 +44,14 @@ export class MemoryCache implements MkCache {
     }
 
     /**
-     * Cache a set of items based on their group for
-     * an item addition or fresh cache creation
+     * Cache a set of items for an item
+     * addition or fresh cache creation
      */
     public set(items: MkCacheItem[]): void {
         this.logger.log('set', items);
         // We don't need to update if nothing has changed
+        // TODO: There is an issue when the cache only
+        // contains one item and we want to add one item
         if (items.length === this.keyValueStore.size) {
             this.logger.log('set', false);
             return;
