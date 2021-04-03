@@ -7,6 +7,7 @@ import { menuBrowser as contextMenuBrowser } from './context/menuBrowser';
 import { Store } from './storage/Store';
 import { storeBrowser } from './storage/storeBrowser';
 import { ConsoleLogger } from './logs/ConsoleLogger';
+import { MemoryCache } from './storage/Cache';
 
 // When the service worker starts
 const logger = new ConsoleLogger();
@@ -24,9 +25,12 @@ function initBackground() {
     });
     void storeInstance.load();
 
+    // Create memory cache for group caching
+    const memoryCache = new MemoryCache(ConsoleLogger);
     // Start tab organizer for sorting tabs
     const tabsOrganizerInstance = new TabsOrganizer({
         browser: tabsOrganizerBrowser,
+        cache: memoryCache,
         store: storeInstance,
         Logger: ConsoleLogger,
     });

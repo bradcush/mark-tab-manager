@@ -1,6 +1,7 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStore } from 'src/storage/MkStore';
 import { MkLoggerConstructor } from 'src/logs/MkLogger';
+import { MkCache } from 'src/storage/MkCache';
 
 export interface MkOrganizer {
     connect(): void;
@@ -46,6 +47,7 @@ export interface MkOrganizerBrowser {
 
 export interface MkContstructorParams {
     browser: MkOrganizerBrowser;
+    cache: MkCache;
     store: MkStore;
     Logger: MkLoggerConstructor;
 }

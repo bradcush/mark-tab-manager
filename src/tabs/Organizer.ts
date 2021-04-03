@@ -15,16 +15,27 @@ import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGro
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 import { MkLogger } from 'src/logs/MkLogger';
+import { MkCache } from 'src/storage/MkCache';
 
 /**
  * Organize open tabs
  */
 export class Organizer implements MkOrganizer {
-    public constructor({ browser, store, Logger }: MkContstructorParams) {
+    public constructor({
+        browser,
+        cache,
+        store,
+        Logger,
+    }: MkContstructorParams) {
         if (!browser) {
             throw new Error('No browser');
         }
         this.browser = browser;
+
+        if (!cache) {
+            throw new Error('No cache');
+        }
+        this.cache = cache;
 
         if (!store) {
             throw new Error('No store');
@@ -40,10 +51,8 @@ export class Organizer implements MkOrganizer {
 
     private readonly browser: MkOrganizerBrowser;
     private readonly store: MkStore;
+    private readonly cache: MkCache;
     private readonly logger: MkLogger;
-
-    // Used to keep track of tabs changing groups
-    private groupByTabId = new Map<number, string>();
 
     /**
      * Connect site organizer to triggering browser events
@@ -97,7 +106,7 @@ export class Organizer implements MkOrganizer {
             // If the domain categorization didn't
             // change then we don't both to organize
             const domain = parseSharedDomain(url);
-            const hasGroupChanged = this.groupByTabId.get(tabId) !== domain;
+            const hasGroupChanged = this.cache.get(tabId) !== domain;
             this.logger.log('browser.tabs.onUpdated', hasGroupChanged);
             if (!hasGroupChanged) {
                 return;
@@ -110,8 +119,7 @@ export class Organizer implements MkOrganizer {
             this.logger.log('browser.tabs.onRemoved', tabId);
             // Remove the current tab id from group tracking regardless
             // of if we are automatically sorting to stay updated
-            this.groupByTabId.delete(tabId);
-            this.logger.log('browser.tabs.onRemoved', this.groupByTabId);
+            this.cache.remove(tabId);
             void this.organize();
         });
     }
@@ -153,33 +161,6 @@ export class Organizer implements MkOrganizer {
             this.logger.error('addNewGroup', error);
             throw error;
         }
-    }
-
-    /**
-     * Cache tabs in memory when needed whether it's
-     * an item addition or fresh cache creation
-     * TODO: Centralize caching in a helper class so we don't have
-     * to care about the implementation details of our cache
-     */
-    private cache(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('cache', tabs);
-        // We don't need to update if nothing has changed
-        if (tabs.length === this.groupByTabId.size) {
-            this.logger.log('cache', false);
-            return;
-        }
-        tabs.forEach((tab) => {
-            const { id, url } = tab;
-            if (!id) {
-                throw new Error('No id for tab cache');
-            }
-            if (!url) {
-                throw new Error('No url for tab cache');
-            }
-            const domain = parseSharedDomain(url);
-            this.groupByTabId.set(id, domain);
-        });
-        this.logger.log('cache', this.groupByTabId);
     }
 
     /**
@@ -267,9 +248,14 @@ export class Organizer implements MkOrganizer {
         try {
             const tabs = await this.browser.tabs.query({});
             // Cache tabs regardless settings as early as possible
-            const isCacheBuilt = this.groupByTabId.size > 0;
-            const tabsToCache = isCacheBuilt && tab ? [tab] : tabs;
-            this.cache(tabsToCache);
+            const isCacheFilled = this.cache.exists();
+            // Cache a single addition tab or everything
+            const tabsToCache = isCacheFilled && tab ? [tab] : tabs;
+            const cacheItems = tabsToCache.map(({ id, url }) => ({
+                key: id,
+                value: url ? parseSharedDomain(url) : undefined,
+            }));
+            this.cache.set(cacheItems);
 
             // Sorted tabs are needed for sorting or grouping
             const sortedTabs = this.sortTabsAlphabetically(tabs);
