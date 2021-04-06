@@ -71,6 +71,6 @@ export interface MkUpdateGroupTitleParams {
     title: string;
 }
 
-export interface MkTabIdsByDomain {
+export interface MkTabIdsByGroup {
     [key: string]: Record<string, number[]>;
 }

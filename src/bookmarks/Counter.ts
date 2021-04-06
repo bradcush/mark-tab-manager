@@ -1,6 +1,6 @@
 import { MkConstructorParams, MkCounter, MkCounterBrowser } from './MkCounter';
 import { MkBrowser } from 'src/api/MkBrowser';
-import { parseSharedDomain } from 'src/helpers/domainHelpers';
+import { makeGroupName } from 'src/helpers/groupName';
 import { MkLogger } from 'src/logs/MkLogger';
 
 /*
@@ -120,10 +120,10 @@ export class Counter implements MkCounter {
         this.logger.log('updateCount', tab);
         try {
             const url = tab.url || tab.pendingUrl;
-            const domainName = parseSharedDomain(url);
+            const groupName = makeGroupName({ type: 'shared', url });
             // Show the count of bookmarks matching the same
             // second level domain next to the popup icon
-            const results = await this.browser.bookmarks.search(domainName);
+            const results = await this.browser.bookmarks.search(groupName);
             const bookmarksCount = results.length;
             void this.updateBadge(bookmarksCount);
         } catch (error) {
