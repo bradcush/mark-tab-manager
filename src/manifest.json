@@ -1,7 +1,7 @@
 {
     "name": "Mark tab manager",
     "description": "The missing tab manager for Chrome",
-    "version": "0.1.10",
+    "version": "0.1.11",
     "manifest_version": 3,
     "action": {
         "default_title": "Mark"
@@ -14,6 +14,7 @@
         "48": "icons/icon-mark-48.png",
         "128": "icons/icon-mark-128.png"
     },
+    "offline_enabled": true,
     "permissions": [
         "bookmarks",
         "contextMenus",
