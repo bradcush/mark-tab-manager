@@ -4,7 +4,7 @@ import {
     MkMakeGroupNameParams,
 } from './MkGroupName';
 
-const SYSTEM_GROUP_NAME = '#';
+export const SYSTEM_GROUP_NAME = '#';
 
 /**
  * Extract the hostname from a URL
