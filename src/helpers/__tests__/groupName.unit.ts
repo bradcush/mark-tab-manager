@@ -16,7 +16,7 @@ describe('makeGroupName', () => {
             expect(groupName).toBe('new');
         });
 
-        it('should return system group for invalid urls', () => {
+        it('should return system group for unlisted urls', () => {
             const type = 'granular';
             const chromeUrl = 'chrome://extensions';
             const chromeGroup = makeGroupName({ type, url: chromeUrl });
@@ -27,6 +27,19 @@ describe('makeGroupName', () => {
             const filePath = 'file:///path.file.ext';
             const filePathGroup = makeGroupName({ type, url: filePath });
             expect(filePathGroup).toBe(SYSTEM_GROUP_NAME);
+            const ftpPath = 'ftp://path.file.ext';
+            const ftpPathGroup = makeGroupName({ type, url: ftpPath });
+            expect(ftpPathGroup).toBe(SYSTEM_GROUP_NAME);
+            const unlisted = 'https://domain.unlisted';
+            const unlistedGroup = makeGroupName({ type, url: unlisted });
+            expect(unlistedGroup).toBe(SYSTEM_GROUP_NAME);
+        });
+
+        it('should return the system group when tld only', () => {
+            const type = 'granular';
+            const url = 'https://com';
+            const groupName = makeGroupName({ type, url });
+            expect(groupName).toBe(SYSTEM_GROUP_NAME);
         });
 
         it('should properly group source code urls', () => {
@@ -34,6 +47,16 @@ describe('makeGroupName', () => {
             const url = 'view-source:https://domain.com';
             const groupName = makeGroupName({ type, url });
             expect(groupName).toBe('domain');
+        });
+
+        it('should properly group valid protocols', () => {
+            const type = 'granular';
+            const httpUrl = 'http://domain.com';
+            const httpUrlGroup = makeGroupName({ type, url: httpUrl });
+            expect(httpUrlGroup).toBe('domain');
+            const httpsUrl = 'https://domain.com';
+            const httpsUrlGroup = makeGroupName({ type, url: httpsUrl });
+            expect(httpsUrlGroup).toBe('domain');
         });
     });
 

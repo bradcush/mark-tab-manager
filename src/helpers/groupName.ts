@@ -35,7 +35,8 @@ function parseValidDomainInfo(hostname: string) {
     if (parseResult.type !== ParseResultType.Listed) {
         return null;
     }
-    // URLs with no domain are considered invalid
+    // URLs with no domain are considered
+    // invalid like a tld without a domain
     const { domain } = parseResult.icann;
     if (!domain) {
         return null;
