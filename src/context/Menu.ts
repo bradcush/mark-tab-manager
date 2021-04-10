@@ -93,6 +93,8 @@ export class Menu implements MkMenu {
             parentId: labelId,
             title: 'Enable automatic sorting',
         });
+        // Create the browser action context menu
+        // for toggling automatic grouping
         const isTabGroupingSupported = this.tabsOrganizer.isTabGroupingSupported();
         if (isTabGroupingSupported) {
             const { enableAutomaticGrouping } = await this.store.getState();
@@ -104,6 +106,18 @@ export class Menu implements MkMenu {
                 title: 'Enable automatic grouping',
             });
         }
+        // Create the browser action context menu
+        // for toggling use of granular domains
+        const { enableSubdomainFiltering } = await this.store.getState();
+        this.logger.log('create', enableSubdomainFiltering);
+        void this.createCheckbox({
+            id: 'enableSubdomainFiltering',
+            isChecked: enableSubdomainFiltering,
+            parentId: labelId,
+            title: 'Enable subdomain filtering',
+        });
+        // Create the browser action context menu
+        // for toggling forced window consolidation
         const { forceWindowConsolidation } = await this.store.getState();
         void this.createCheckbox({
             id: 'forceWindowConsolidation',
@@ -159,8 +173,10 @@ export class Menu implements MkMenu {
         this.logger.log('handleToggle', info);
         const { checked, menuItemId } = info;
         // Automatically organize as soon as any setting is checked which is
-        // opinionated as it relies checked settings meaning enabled
-        if (checked) {
+        // opinionated as it relies checked settings meaning enabled.
+        // Additionally granularity changes need reorganization
+        const isSubdomainFiltering = 'enableSubdomainFiltering' === menuItemId;
+        if (checked || isSubdomainFiltering) {
             void this.tabsOrganizer.organize();
         }
         // Remove any existing groups when grouping is disabled
@@ -171,6 +187,7 @@ export class Menu implements MkMenu {
         const settings: (keyof MkState)[] = [
             'enableAutomaticGrouping',
             'enableAutomaticSorting',
+            'enableSubdomainFiltering',
             'forceWindowConsolidation',
         ];
         if (!settings.includes(menuItemId)) {

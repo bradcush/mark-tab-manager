@@ -4,11 +4,11 @@ import {
     MkGetGroupInfoParams,
     MkOrganizer,
     MkOrganizerBrowser,
-    MkTabIdsByDomain,
+    MkTabIdsByGroup,
     MkUpdateGroupTitleParams,
 } from './MkOrganizer';
 import { MkBrowser } from 'src/api/MkBrowser';
-import { parseSharedDomain } from 'src/helpers/domainHelpers';
+import { makeGroupName } from 'src/helpers/groupName';
 import { MkStore } from 'src/storage/MkStore';
 import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
 import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
@@ -103,10 +103,10 @@ export class Organizer implements MkOrganizer {
             if (!url) {
                 return;
             }
-            // If the domain categorization didn't
-            // change then we don't both to organize
-            const domain = parseSharedDomain(url);
-            const hasGroupChanged = this.cache.get(tabId) !== domain;
+            // If the group categorization didn't change
+            // then we don't bother to organize
+            const groupName = makeGroupName({ type: 'shared', url });
+            const hasGroupChanged = this.cache.get(tabId) !== groupName;
             this.logger.log('browser.tabs.onUpdated', hasGroupChanged);
             if (!hasGroupChanged) {
                 return;
@@ -141,7 +141,7 @@ export class Organizer implements MkOrganizer {
             // count has changed are automatically reopened. This shouldn't
             // reopen groups that are collapsed as the user experience for a
             // collapsed group prevents the user from removing a tab.
-            const title = `${name} (${tabIds.length})`;
+            const title = `(${tabIds.length}) ${name}`;
             const prevGroup = await this.getGroupInfo({
                 id: windowId,
                 title,
@@ -164,8 +164,8 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Compare to be used with sorting where "newtab" is
-     * last and specifically references the domain group
+     * Compare to be used with sorting where "newtab"
+     * is last and specifically references the group
      */
     private compareGroups(a: string, b: string) {
         if (a === b) {
@@ -253,12 +253,12 @@ export class Organizer implements MkOrganizer {
             const tabsToCache = isCacheFilled && tab ? [tab] : tabs;
             const cacheItems = tabsToCache.map(({ id, url }) => ({
                 key: id,
-                value: url ? parseSharedDomain(url) : undefined,
+                value: makeGroupName({ type: 'shared', url }),
             }));
             this.cache.set(cacheItems);
 
             // Sorted tabs are needed for sorting or grouping
-            const sortedTabs = this.sortTabsAlphabetically(tabs);
+            const sortedTabs = await this.sortTabsAlphabetically(tabs);
             const { enableAutomaticSorting } = await this.store.getState();
             if (enableAutomaticSorting) {
                 void this.renderSortedTabs(sortedTabs);
@@ -311,13 +311,13 @@ export class Organizer implements MkOrganizer {
      * Set groups and non-groups using their tab id where
      * groups must contain at least two or more tabs
      */
-    private renderGroupsByDomain(tabIdsByGroup: MkTabIdsByDomain) {
-        this.logger.log('renderGroupsByDomain', tabIdsByGroup);
+    private renderGroupsByName(tabIdsByGroup: MkTabIdsByGroup) {
+        this.logger.log('renderGroupsByName', tabIdsByGroup);
         // Offset the index to ignore orphan groups
         let groupIdxOffset = 0;
         const names = Object.keys(tabIdsByGroup);
         names.forEach((name, idx) => {
-            this.logger.log('renderGroupsByDomain', name);
+            this.logger.log('renderGroupsByName', name);
             // Groups are represented by the window id
             const group = Object.keys(tabIdsByGroup[name]);
             const isRealGroup = (windowId: string) =>
@@ -382,23 +382,23 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Group tabs in the browser with the same domain
+     * Group tabs in the browser
      */
     private async renderTabGroups(tabs: MkBrowser.tabs.Tab[]) {
         this.logger.log('renderTabGroups');
         const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
-        const tabIdsByDomain = await this.sortTabIdsByDomain(nonPinnedTabs);
-        this.renderGroupsByDomain(tabIdsByDomain);
+        const tabIdsByGroup = await this.sortTabIdsByGroup(nonPinnedTabs);
+        this.renderGroupsByName(tabIdsByGroup);
     }
 
     /**
-     * Sort tabs by their domain and window id while grouping those
-     * that don't have a valid domain under the system nomenclature
+     * Sort tabs by their group name and window id
      */
-    private async sortTabIdsByDomain(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('sortTabIdsByDomain');
-        const tabIdsByDomain: MkTabIdsByDomain = {};
+    private async sortTabIdsByGroup(tabs: MkBrowser.tabs.Tab[]) {
+        this.logger.log('sortTabIdsByGroup');
+        const tabIdsByGroup: MkTabIdsByGroup = {};
         const { forceWindowConsolidation } = await this.store.getState();
+        const { enableSubdomainFiltering } = await this.store.getState();
         // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
         // "windowId" in our algorithm which the representative -2 breaks
         const staticWindowId = tabs[0].windowId;
@@ -411,41 +411,46 @@ export class Organizer implements MkOrganizer {
             if (!url) {
                 throw new Error('No tab url');
             }
-            const domain = parseSharedDomain(url);
+            const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
+            const groupName = makeGroupName({ type: groupType, url });
             // Specify the current window as the forced window
             const chosenWindowId = forceWindowConsolidation
                 ? staticWindowId
                 : windowId;
-            if (!tabIdsByDomain[domain]) {
-                tabIdsByDomain[domain] = {
+            if (!tabIdsByGroup[groupName]) {
+                tabIdsByGroup[groupName] = {
                     [chosenWindowId]: [id],
                 };
-            } else if (!tabIdsByDomain[domain][chosenWindowId]) {
-                tabIdsByDomain[domain] = {
-                    ...tabIdsByDomain[domain],
+            } else if (!tabIdsByGroup[groupName][chosenWindowId]) {
+                tabIdsByGroup[groupName] = {
+                    ...tabIdsByGroup[groupName],
                     [chosenWindowId]: [id],
                 };
             } else {
-                tabIdsByDomain[domain][chosenWindowId].push(id);
+                tabIdsByGroup[groupName][chosenWindowId].push(id);
             }
         });
-        this.logger.log('sortTabIdsByDomain', tabIdsByDomain);
-        return tabIdsByDomain;
+        this.logger.log('sortTabIdsByGroup', tabIdsByGroup);
+        return tabIdsByGroup;
     }
 
     /**
      * Sort tabs alphabetically using their hostname with
      * exceptions for system tabs and most specifically "newtab"
      */
-    private sortTabsAlphabetically(tabs: MkBrowser.tabs.Tab[]) {
+    private async sortTabsAlphabetically(tabs: MkBrowser.tabs.Tab[]) {
         this.logger.log('sortTabsAlphabetically', tabs);
+        const { enableSubdomainFiltering } = await this.store.getState();
         const sortedTabs = tabs.sort((a, b) => {
-            if (!a.url || !b.url) {
+            const urlOne = a.url;
+            const urlTwo = b.url;
+            if (!urlOne || !urlTwo) {
                 throw new Error('No url for sorted tab');
             }
-            const firstTabDomain = parseSharedDomain(a.url);
-            const secondTabDomain = parseSharedDomain(b.url);
-            return this.compareGroups(firstTabDomain, secondTabDomain);
+            const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
+            const groupOne = makeGroupName({ type: groupType, url: urlOne });
+            const groupTwo = makeGroupName({ type: groupType, url: urlTwo });
+            return this.compareGroups(groupOne, groupTwo);
         });
         return sortedTabs;
     }
