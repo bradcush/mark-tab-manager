@@ -398,7 +398,7 @@ export class Organizer implements MkOrganizer {
         this.logger.log('sortTabIdsByGroup');
         const tabIdsByGroup: MkTabIdsByGroup = {};
         const { forceWindowConsolidation } = await this.store.getState();
-        const { enableGranularDomains } = await this.store.getState();
+        const { enableSubdomainFiltering } = await this.store.getState();
         // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
         // "windowId" in our algorithm which the representative -2 breaks
         const staticWindowId = tabs[0].windowId;
@@ -411,7 +411,7 @@ export class Organizer implements MkOrganizer {
             if (!url) {
                 throw new Error('No tab url');
             }
-            const groupType = enableGranularDomains ? 'granular' : 'shared';
+            const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
             const groupName = makeGroupName({ type: groupType, url });
             // Specify the current window as the forced window
             const chosenWindowId = forceWindowConsolidation
@@ -440,14 +440,14 @@ export class Organizer implements MkOrganizer {
      */
     private async sortTabsAlphabetically(tabs: MkBrowser.tabs.Tab[]) {
         this.logger.log('sortTabsAlphabetically', tabs);
-        const { enableGranularDomains } = await this.store.getState();
+        const { enableSubdomainFiltering } = await this.store.getState();
         const sortedTabs = tabs.sort((a, b) => {
             const urlOne = a.url;
             const urlTwo = b.url;
             if (!urlOne || !urlTwo) {
                 throw new Error('No url for sorted tab');
             }
-            const groupType = enableGranularDomains ? 'granular' : 'shared';
+            const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
             const groupOne = makeGroupName({ type: groupType, url: urlOne });
             const groupTwo = makeGroupName({ type: groupType, url: urlTwo });
             return this.compareGroups(groupOne, groupTwo);

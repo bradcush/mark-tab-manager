@@ -23,6 +23,6 @@ export interface MkConstructorParams {
 export interface MkState {
     enableAutomaticGrouping: boolean;
     enableAutomaticSorting: boolean;
-    enableGranularDomains: boolean;
+    enableSubdomainFiltering: boolean;
     forceWindowConsolidation: boolean;
 }

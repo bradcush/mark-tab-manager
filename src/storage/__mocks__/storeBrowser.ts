@@ -5,7 +5,7 @@ import { MkStoreBrowser } from '../MkStore';
 const defaultItems = {
     enableAutomaticGrouping: true,
     enableAutomaticSorting: true,
-    enableGranularDomains: false,
+    enableSubdomainFiltering: false,
     forceWindowConsolidation: false,
 };
 

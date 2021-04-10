@@ -12,7 +12,7 @@ describe('Store', () => {
             const syncGetMock = makeSyncGet({
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
-                enableGranularDomains: true,
+                enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 invalidSetting: true,
             });
@@ -26,7 +26,7 @@ describe('Store', () => {
             const expectedState = {
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
-                enableGranularDomains: true,
+                enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
             };
             expect(state).toStrictEqual(expectedState);
@@ -36,7 +36,7 @@ describe('Store', () => {
             const syncGetMock = makeSyncGet({
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
-                enableGranularDomains: true,
+                enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 invalidSetting: true,
             });
@@ -50,7 +50,7 @@ describe('Store', () => {
             const expectedState = {
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
-                enableGranularDomains: true,
+                enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
             };
             expect(state).toStrictEqual(expectedState);
@@ -68,7 +68,7 @@ describe('Store', () => {
             const expectedState = {
                 enableAutomaticGrouping: true,
                 enableAutomaticSorting: true,
-                enableGranularDomains: false,
+                enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
             };
             expect(state).toStrictEqual(expectedState);
@@ -86,7 +86,7 @@ describe('Store', () => {
             const state = {
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
-                enableGranularDomains: true,
+                enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
             };
             await storageService.setState(state);
@@ -107,7 +107,7 @@ describe('Store', () => {
             const firstState = {
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
-                enableGranularDomains: true,
+                enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
             };
             await storageService.setState(firstState);
@@ -120,7 +120,7 @@ describe('Store', () => {
             const secondState = {
                 enableAutomaticGrouping: true,
                 enableAutomaticSorting: true,
-                enableGranularDomains: false,
+                enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
             };
             await storageService.setState(secondState);
@@ -144,7 +144,7 @@ describe('Store', () => {
             const expectedState = {
                 enableAutomaticGrouping: true,
                 enableAutomaticSorting: true,
-                enableGranularDomains: false,
+                enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
             };
             expect(state).toStrictEqual(expectedState);

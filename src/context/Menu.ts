@@ -108,13 +108,13 @@ export class Menu implements MkMenu {
         }
         // Create the browser action context menu
         // for toggling use of granular domains
-        const { enableGranularDomains } = await this.store.getState();
-        this.logger.log('create', enableGranularDomains);
+        const { enableSubdomainFiltering } = await this.store.getState();
+        this.logger.log('create', enableSubdomainFiltering);
         void this.createCheckbox({
-            id: 'enableGranularDomains',
-            isChecked: enableGranularDomains,
+            id: 'enableSubdomainFiltering',
+            isChecked: enableSubdomainFiltering,
             parentId: labelId,
-            title: 'Enable granular domains',
+            title: 'Enable subdomain filtering',
         });
         // Create the browser action context menu
         // for toggling forced window consolidation
@@ -175,8 +175,8 @@ export class Menu implements MkMenu {
         // Automatically organize as soon as any setting is checked which is
         // opinionated as it relies checked settings meaning enabled.
         // Additionally granularity changes need reorganization
-        const isGranularSetting = 'enableGranularDomains' === menuItemId;
-        if (checked || isGranularSetting) {
+        const isSubdomainFiltering = 'enableSubdomainFiltering' === menuItemId;
+        if (checked || isSubdomainFiltering) {
             void this.tabsOrganizer.organize();
         }
         // Remove any existing groups when grouping is disabled
@@ -187,7 +187,7 @@ export class Menu implements MkMenu {
         const settings: (keyof MkState)[] = [
             'enableAutomaticGrouping',
             'enableAutomaticSorting',
-            'enableGranularDomains',
+            'enableSubdomainFiltering',
             'forceWindowConsolidation',
         ];
         if (!settings.includes(menuItemId)) {
