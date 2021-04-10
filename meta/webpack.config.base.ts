@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Configuration } from 'webpack';
-import CopyPlugin from 'copy-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 /**
@@ -33,7 +33,7 @@ export const config: Configuration = {
     plugins: [
         // Clean the output directory contents
         new CleanWebpackPlugin(),
-        new CopyPlugin({
+        new CopyWebpackPlugin({
             patterns: [
                 {
                     // Copy "icons" contents from source
