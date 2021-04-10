@@ -70,11 +70,8 @@ function makeGranularGroupName(result: MkMakeGranularGroupNameParams) {
         // Remove the common prefix
         subDomains.shift();
     }
-    // Use the domain if nothing is left
-    if (!subDomains.length) {
-        return domain;
-    }
-    // Use the highest level subdomain
+    // Use the highest level subdomain or
+    // the domain if nothing is left
     const sharedDomain = subDomains.pop();
     if (!sharedDomain) {
         return domain;
