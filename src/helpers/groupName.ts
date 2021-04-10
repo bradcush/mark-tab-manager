@@ -58,7 +58,8 @@ function isCommonPrefix(prefix: string) {
 }
 
 /**
- * Calculate the user friendly group name
+ * Determine the highest level domain
+ * with precedence given to subdomains
  */
 function makeGranularGroupName(result: MkMakeGranularGroupNameParams) {
     const { domain, subDomains } = result;
