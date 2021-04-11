@@ -18,10 +18,6 @@ interface MkBrowserRuntime {
     onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
-interface MkBrowserStorage {
-    sync: MkBrowser.storage.Sync;
-}
-
 interface MkBrowserTabGroups {
     Color: MkBrowser.tabGroups.Color;
     query: MkBrowser.tabGroups.Query;
@@ -40,7 +36,6 @@ interface MkBrowserTabs {
 export interface MkOrganizerBrowser {
     action: MkBrowserAction;
     runtime: MkBrowserRuntime;
-    storage: MkBrowserStorage;
     tabGroups: MkBrowserTabGroups;
     tabs: MkBrowserTabs;
 }

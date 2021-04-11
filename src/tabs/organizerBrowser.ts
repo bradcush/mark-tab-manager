@@ -7,9 +7,6 @@ export const organizerBrowser = {
     runtime: {
         onInstalled: browser.runtime.onInstalled,
     },
-    storage: {
-        sync: browser.storage.sync,
-    },
     tabGroups: {
         Color: browser.tabGroups.Color,
         query: browser.tabGroups.query,
