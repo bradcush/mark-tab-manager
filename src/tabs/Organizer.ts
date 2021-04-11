@@ -1,9 +1,15 @@
 import {
+    MkActiveTabIdsByWindow,
+    MkActiveTabIdsByWindowKey,
+    MkActiveTabIdsByWindowValue,
     MkAddNewGroupParams,
     MkContstructorParams,
     MkGetGroupInfoParams,
+    MkOrganizeParams,
     MkOrganizer,
     MkOrganizerBrowser,
+    MkRenderGroupsByNameParams,
+    MkRenderTabGroups,
     MkTabIdsByGroup,
     MkUpdateGroupTitleParams,
 } from './MkOrganizer';
@@ -71,7 +77,7 @@ export class Organizer implements MkOrganizer {
             if (details.reason === 'shared_module_update') {
                 return;
             }
-            void this.organize();
+            void this.organize({ type: 'collapse' });
         });
 
         // Handle when the extension icon is clicked
@@ -111,7 +117,7 @@ export class Organizer implements MkOrganizer {
             if (!hasGroupChanged) {
                 return;
             }
-            void this.organize(tab);
+            void this.organize({ tab });
         });
 
         // Handle removed tabs
@@ -130,6 +136,7 @@ export class Organizer implements MkOrganizer {
      */
     private async addNewGroup({
         idx,
+        forceCollapse,
         name,
         tabIds,
         windowId,
@@ -150,7 +157,8 @@ export class Organizer implements MkOrganizer {
             const options = { createProperties, tabIds };
             const groupId = await this.browser.tabs.group(options);
             const color = this.getColorForGroup(idx);
-            const collapsed = prevGroup?.collapsed ?? false;
+            // Rely on the previous state when we don't force
+            const collapsed = (forceCollapse || prevGroup?.collapsed) ?? false;
             void this.updateGroupProperties({
                 collapsed,
                 color,
@@ -240,10 +248,11 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Order and group all tabs with the ability
-     * to force all options together
+     * Order and group all tabs
      */
-    public async organize(tab?: MkBrowser.tabs.Tab): Promise<void> {
+    public async organize(
+        { tab, type = 'default' }: MkOrganizeParams = { type: 'default' }
+    ): Promise<void> {
         this.logger.log('organize');
         try {
             const tabs = await this.browser.tabs.query({});
@@ -268,7 +277,10 @@ export class Organizer implements MkOrganizer {
             const isGroupingAllowed =
                 isTabGroupingSupported && enableAutomaticGrouping;
             if (isGroupingAllowed) {
-                void this.renderTabGroups(sortedTabs);
+                void this.renderTabGroups({
+                    organizeType: type,
+                    tabs: sortedTabs,
+                });
             }
         } catch (error) {
             this.logger.error('organize', error);
@@ -311,7 +323,11 @@ export class Organizer implements MkOrganizer {
      * Set groups and non-groups using their tab id where
      * groups must contain at least two or more tabs
      */
-    private renderGroupsByName(tabIdsByGroup: MkTabIdsByGroup) {
+    private renderGroupsByName({
+        activeTabIdsByWindow,
+        tabIdsByGroup,
+        type,
+    }: MkRenderGroupsByNameParams) {
         this.logger.log('renderGroupsByName', tabIdsByGroup);
         // Offset the index to ignore orphan groups
         let groupIdxOffset = 0;
@@ -335,11 +351,23 @@ export class Organizer implements MkOrganizer {
                     return;
                 }
                 const groupIdx = idx - groupIdxOffset;
+                const windowId = Number(windowGroup);
+                // Does this group contain an active tab
+                const activeTabId = activeTabIdsByWindow.get(windowId);
+                // Collapse non-active groups
+                const forceCollapse =
+                    // Complexity isn't good here but it should be
+                    // ok since collapse should be very rarely used
+                    type === 'collapse' && typeof activeTabId !== 'undefined'
+                        ? !tabIds.includes(activeTabId)
+                        : false;
+                this.logger.log('renderGroupsByName', forceCollapse);
                 void this.addNewGroup({
                     idx: groupIdx,
+                    forceCollapse,
                     name,
                     tabIds,
-                    windowId: Number(windowGroup),
+                    windowId,
                 });
             });
         });
@@ -384,11 +412,34 @@ export class Organizer implements MkOrganizer {
     /**
      * Group tabs in the browser
      */
-    private async renderTabGroups(tabs: MkBrowser.tabs.Tab[]) {
+    private async renderTabGroups({ organizeType, tabs }: MkRenderTabGroups) {
         this.logger.log('renderTabGroups');
         const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
+        const activeTabIdsByWindow = this.getActiveTabIdsByWindow(tabs);
         const tabIdsByGroup = await this.sortTabIdsByGroup(nonPinnedTabs);
-        this.renderGroupsByName(tabIdsByGroup);
+        this.renderGroupsByName({
+            activeTabIdsByWindow,
+            type: organizeType,
+            tabIdsByGroup,
+        });
+    }
+
+    /**
+     * Get all the active tabs across all windows
+     */
+    private getActiveTabIdsByWindow(tabs: MkBrowser.tabs.Tab[]) {
+        this.logger.log('getActiveTabIdsByWindow');
+        const activeTabs = tabs.filter((tab) => tab.active);
+        // Best to use domain specific typings here
+        const activeTabIdsByWindow: MkActiveTabIdsByWindow = new Map<
+            MkActiveTabIdsByWindowKey,
+            MkActiveTabIdsByWindowValue
+        >();
+        activeTabs.forEach(({ id, windowId }) => {
+            activeTabIdsByWindow.set(windowId, id);
+        });
+        this.logger.log('getActiveTabIdsByWindow', activeTabIdsByWindow);
+        return activeTabIdsByWindow;
     }
 
     /**

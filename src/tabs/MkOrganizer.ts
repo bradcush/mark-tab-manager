@@ -6,7 +6,7 @@ import { MkCache } from 'src/storage/MkCache';
 export interface MkOrganizer {
     connect(): void;
     isTabGroupingSupported(): boolean;
-    organize(tab?: MkBrowser.tabs.Tab): Promise<void>;
+    organize(params?: MkOrganizeParams): Promise<void>;
     removeAllGroups(): Promise<void>;
 }
 
@@ -54,6 +54,7 @@ export interface MkContstructorParams {
 
 export interface MkAddNewGroupParams {
     idx: number;
+    forceCollapse: boolean;
     name: string;
     tabIds: number[];
     windowId: number;
@@ -64,13 +65,35 @@ export interface MkGetGroupInfoParams {
     id: number;
 }
 
+type MkOrganizerType = 'collapse' | 'default';
+
+export interface MkOrganizeParams {
+    tab?: MkBrowser.tabs.Tab;
+    type?: MkOrganizerType;
+}
+
+export interface MkRenderTabGroups {
+    organizeType: MkOrganizerType;
+    tabs: MkBrowser.tabs.Tab[];
+}
+
+export type MkActiveTabIdsByWindowKey = number;
+export type MkActiveTabIdsByWindowValue = number | undefined;
+export type MkActiveTabIdsByWindow = Map<number, number | undefined>;
+
+export interface MkTabIdsByGroup {
+    [key: string]: Record<string, number[]>;
+}
+
+export interface MkRenderGroupsByNameParams {
+    activeTabIdsByWindow: MkActiveTabIdsByWindow;
+    type: MkOrganizerType;
+    tabIdsByGroup: MkTabIdsByGroup;
+}
+
 export interface MkUpdateGroupTitleParams {
     collapsed: boolean;
     color: string;
     groupId: number;
     title: string;
-}
-
-export interface MkTabIdsByGroup {
-    [key: string]: Record<string, number[]>;
 }
