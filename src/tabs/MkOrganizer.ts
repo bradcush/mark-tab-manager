@@ -2,6 +2,7 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStore } from 'src/storage/MkStore';
 import { MkLoggerConstructor } from 'src/logs/MkLogger';
 import { MkCache } from 'src/storage/MkCache';
+import { MkSorter } from './MkSorter';
 
 export interface MkOrganizer {
     connect(): void;
@@ -26,7 +27,6 @@ interface MkBrowserTabGroups {
 
 interface MkBrowserTabs {
     group: MkBrowser.tabs.Group;
-    move: MkBrowser.tabs.Move;
     onUpdated: MkBrowser.tabs.OnUpdated;
     onRemoved: MkBrowser.tabs.OnRemoved;
     query: MkBrowser.tabs.Query;
@@ -43,6 +43,7 @@ export interface MkOrganizerBrowser {
 export interface MkContstructorParams {
     browser: MkOrganizerBrowser;
     cache: MkCache;
+    tabsSorter: MkSorter;
     store: MkStore;
     Logger: MkLoggerConstructor;
 }

@@ -22,6 +22,7 @@ import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group'
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkCache } from 'src/storage/MkCache';
+import { MkSorter } from './MkSorter';
 
 /**
  * Organize open tabs
@@ -30,6 +31,7 @@ export class Organizer implements MkOrganizer {
     public constructor({
         browser,
         cache,
+        tabsSorter,
         store,
         Logger,
     }: MkContstructorParams) {
@@ -42,6 +44,11 @@ export class Organizer implements MkOrganizer {
             throw new Error('No cache');
         }
         this.cache = cache;
+
+        if (!tabsSorter) {
+            throw new Error('No tabsSorter');
+        }
+        this.tabsSorter = tabsSorter;
 
         if (!store) {
             throw new Error('No store');
@@ -56,6 +63,7 @@ export class Organizer implements MkOrganizer {
     }
 
     private readonly browser: MkOrganizerBrowser;
+    private readonly tabsSorter: MkSorter;
     private readonly store: MkStore;
     private readonly cache: MkCache;
     private readonly logger: MkLogger;
@@ -172,23 +180,6 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Compare to be used with sorting where "newtab"
-     * is last and specifically references the group
-     */
-    private compareGroups(a: string, b: string) {
-        if (a === b) {
-            return 0;
-        }
-        if (a === 'new') {
-            return 1;
-        }
-        if (b === 'new') {
-            return -1;
-        }
-        return a.localeCompare(b);
-    }
-
-    /**
      * Remove tabs that are pinned from the list
      */
     private filterNonPinnedTabs(tabs: MkBrowser.tabs.Tab[]) {
@@ -267,10 +258,10 @@ export class Organizer implements MkOrganizer {
             this.cache.set(cacheItems);
 
             // Sorted tabs are needed for sorting or grouping
-            const sortedTabs = await this.sortTabsAlphabetically(tabs);
+            const sortedTabs = await this.tabsSorter.sortTabs(tabs);
             const { enableAutomaticSorting } = await this.store.getState();
             if (enableAutomaticSorting) {
-                void this.renderSortedTabs(sortedTabs);
+                void this.tabsSorter.renderSortedTabs(sortedTabs);
             }
             const isTabGroupingSupported = this.isTabGroupingSupported();
             const { enableAutomaticGrouping } = await this.store.getState();
@@ -374,42 +365,6 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Reorder browser tabs in the current
-     * window according to tabs list
-     */
-    private async renderSortedTabs(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('renderSortedTabs', tabs);
-        try {
-            // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
-            // "windowId" in our algorithm which the representative -2 breaks
-            const staticWindowId = tabs[0].windowId;
-            const { forceWindowConsolidation } = await this.store.getState();
-            /* eslint-disable @typescript-eslint/no-misused-promises */
-            tabs.forEach(async (tab) => {
-                const { id } = tab;
-                if (!id) {
-                    throw new Error('No id for sorted tab');
-                }
-                const baseMoveProperties = { index: -1 };
-                // Specify the current window as the forced window
-                const staticWindowMoveProperties = {
-                    windowId: staticWindowId,
-                };
-                // Current default uses the window for the current tab
-                const moveProperties = forceWindowConsolidation
-                    ? { ...baseMoveProperties, ...staticWindowMoveProperties }
-                    : baseMoveProperties;
-                // We expect calls to move to still run in parallel
-                // but await simply to catch errors properly
-                await this.browser.tabs.move(id, moveProperties);
-            });
-        } catch (error) {
-            this.logger.error('renderSortedTabs', error);
-            throw error;
-        }
-    }
-
-    /**
      * Group tabs in the browser
      */
     private async renderTabGroups({ organizeType, tabs }: MkRenderTabGroups) {
@@ -483,27 +438,6 @@ export class Organizer implements MkOrganizer {
         });
         this.logger.log('sortTabIdsByGroup', tabIdsByGroup);
         return tabIdsByGroup;
-    }
-
-    /**
-     * Sort tabs alphabetically using their hostname with
-     * exceptions for system tabs and most specifically "newtab"
-     */
-    private async sortTabsAlphabetically(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('sortTabsAlphabetically', tabs);
-        const { enableSubdomainFiltering } = await this.store.getState();
-        const sortedTabs = tabs.sort((a, b) => {
-            const urlOne = a.url;
-            const urlTwo = b.url;
-            if (!urlOne || !urlTwo) {
-                throw new Error('No url for sorted tab');
-            }
-            const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
-            const groupOne = makeGroupName({ type: groupType, url: urlOne });
-            const groupTwo = makeGroupName({ type: groupType, url: urlTwo });
-            return this.compareGroups(groupOne, groupTwo);
-        });
-        return sortedTabs;
     }
 
     /**
