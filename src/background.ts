@@ -8,6 +8,8 @@ import { Store } from './storage/Store';
 import { storeBrowser } from './storage/storeBrowser';
 import { ConsoleLogger } from './logs/ConsoleLogger';
 import { MemoryCache } from './storage/MemoryCache';
+import { Sorter } from './tabs/Sorter';
+import { sorterBrowser } from './tabs/sorterBrowser';
 
 // When the service worker starts
 const logger = new ConsoleLogger();
@@ -27,10 +29,17 @@ function initBackground() {
 
     // Create memory cache for group caching
     const memoryCache = new MemoryCache(ConsoleLogger);
-    // Start tab organizer for sorting tabs
+    // Create tab sorter for sorting tabs
+    const tabsSorterInstance = new Sorter({
+        browser: sorterBrowser,
+        store: storeInstance,
+        Logger: ConsoleLogger,
+    });
+    // Start tab organizer for organizing tabs
     const tabsOrganizerInstance = new TabsOrganizer({
         browser: tabsOrganizerBrowser,
         cache: memoryCache,
+        tabsSorter: tabsSorterInstance,
         store: storeInstance,
         Logger: ConsoleLogger,
     });
