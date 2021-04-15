@@ -100,33 +100,42 @@ export class Organizer implements MkOrganizer {
         /**
          * Handle tabs where a URL is updated
          */
-        this.browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-            this.logger.log('browser.tabs.onUpdated', changeInfo);
-            if (chrome.runtime.lastError) {
-                throw chrome.runtime.lastError;
+        this.browser.tabs.onUpdated.addListener(
+            /* eslint-disable @typescript-eslint/no-misused-promises */
+            async (tabId, changeInfo, tab) => {
+                this.logger.log('browser.tabs.onUpdated', changeInfo);
+                if (chrome.runtime.lastError) {
+                    throw chrome.runtime.lastError;
+                }
+                const { status, url } = changeInfo;
+                // Prevent triggering of updates when we aren't loading
+                // so we can treat tabs as early as possible
+                if (status !== 'loading') {
+                    return;
+                }
+                // If there is no url change we don't consider updating its group.
+                // (It's observed that only loading tabs can have a url and that
+                // reloading a tab doesn't send a url)
+                if (!url) {
+                    return;
+                }
+                // If the group categorization didn't change
+                // then we don't bother to organize
+                const {
+                    enableSubdomainFiltering,
+                } = await this.store.getState();
+                const groupType = enableSubdomainFiltering
+                    ? 'granular'
+                    : 'shared';
+                const groupName = makeGroupName({ type: groupType, url });
+                const hasGroupChanged = this.cache.get(tabId) !== groupName;
+                this.logger.log('browser.tabs.onUpdated', hasGroupChanged);
+                if (!hasGroupChanged) {
+                    return;
+                }
+                void this.organize({ tab });
             }
-            const { status, url } = changeInfo;
-            // Prevent triggering of updates when we aren't loading
-            // so we can treat tabs as early as possible
-            if (status !== 'loading') {
-                return;
-            }
-            // If there is no url change we don't consider updating its group.
-            // (It's observed that only loading tabs can have a url and that
-            // reloading a tab doesn't send a url)
-            if (!url) {
-                return;
-            }
-            // If the group categorization didn't change
-            // then we don't bother to organize
-            const groupName = makeGroupName({ type: 'shared', url });
-            const hasGroupChanged = this.cache.get(tabId) !== groupName;
-            this.logger.log('browser.tabs.onUpdated', hasGroupChanged);
-            if (!hasGroupChanged) {
-                return;
-            }
-            void this.organize({ tab });
-        });
+        );
 
         // Handle removed tabs
         this.browser.tabs.onRemoved.addListener((tabId) => {
@@ -239,6 +248,18 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
+     * Make list of cache information
+     */
+    private async makeCacheItems(tabs: MkBrowser.tabs.Tab[]) {
+        const { enableSubdomainFiltering } = await this.store.getState();
+        const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
+        return tabs.map(({ id, url }) => {
+            const groupName = makeGroupName({ type: groupType, url });
+            return { key: id, value: groupName };
+        });
+    }
+
+    /**
      * Order and group all tabs
      */
     public async organize(
@@ -251,10 +272,7 @@ export class Organizer implements MkOrganizer {
             const isCacheFilled = this.cache.exists();
             // Cache a single addition tab or everything
             const tabsToCache = isCacheFilled && tab ? [tab] : tabs;
-            const cacheItems = tabsToCache.map(({ id, url }) => ({
-                key: id,
-                value: makeGroupName({ type: 'shared', url }),
-            }));
+            const cacheItems = await this.makeCacheItems(tabsToCache);
             this.cache.set(cacheItems);
 
             // Sorted tabs are needed for sorting or grouping
