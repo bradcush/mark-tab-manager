@@ -191,7 +191,7 @@ export class Menu implements MkMenu {
         // Remove any existing groups when grouping is disabled
         const isAutomaticGrouping = menuItemId === 'enableAutomaticGrouping';
         if (isAutomaticGrouping && !checked) {
-            void this.tabsGrouper.removeAllGroups();
+            void this.tabsGrouper.remove();
         }
         const settings: (keyof MkState)[] = [
             'enableAutomaticGrouping',

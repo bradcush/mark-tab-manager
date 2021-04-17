@@ -7,8 +7,8 @@ import {
     MkGetGroupInfoParams,
     MkGrouper,
     MkGrouperBrowser,
+    MkRender,
     MkRenderGroupsByNameParams,
-    MkRenderTabGroups,
     MkTabIdsByGroup,
     MkUpdateGroupTitleParams,
 } from './MkGrouper';
@@ -168,8 +168,8 @@ export class Grouper implements MkGrouper {
     /**
      * Remove all existing groups
      */
-    public async removeAllGroups(): Promise<void> {
-        this.logger.log('removeAllGroups');
+    public async remove(): Promise<void> {
+        this.logger.log('remove');
         try {
             const tabs = await this.browser.tabs.query({});
             const filterIds = (id: number | undefined): id is number =>
@@ -177,7 +177,7 @@ export class Grouper implements MkGrouper {
             const ids = tabs.map((tab) => tab.id).filter(filterIds);
             void this.removeGroupsForTabIds(ids);
         } catch (error) {
-            this.logger.error('removeAllGroups', error);
+            this.logger.error('remove', error);
             throw error;
         }
     }
@@ -253,11 +253,8 @@ export class Grouper implements MkGrouper {
     /**
      * Group tabs in the browser
      */
-    public async renderTabGroups({
-        organizeType,
-        tabs,
-    }: MkRenderTabGroups): Promise<void> {
-        this.logger.log('renderTabGroups');
+    public async render({ organizeType, tabs }: MkRender): Promise<void> {
+        this.logger.log('render');
         const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
         const activeTabIdsByWindow = this.getActiveTabIdsByWindow(tabs);
         const tabIdsByGroup = await this.sortTabIdsByGroup(nonPinnedTabs);

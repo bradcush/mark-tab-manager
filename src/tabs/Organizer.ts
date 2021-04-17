@@ -171,17 +171,17 @@ export class Organizer implements MkOrganizer {
             this.cache.set(cacheItems);
 
             // Sorted tabs are needed for sorting or grouping
-            const sortedTabs = await this.tabsSorter.sortTabs(tabs);
+            const sortedTabs = await this.tabsSorter.sort(tabs);
             const { enableAutomaticSorting } = await this.store.getState();
             if (enableAutomaticSorting) {
-                void this.tabsSorter.renderSortedTabs(sortedTabs);
+                void this.tabsSorter.render(sortedTabs);
             }
             const isTabGroupingSupported = this.tabsGrouper.isSupported();
             const { enableAutomaticGrouping } = await this.store.getState();
             const isGroupingAllowed =
                 isTabGroupingSupported && enableAutomaticGrouping;
             if (isGroupingAllowed) {
-                void this.tabsGrouper.renderTabGroups({
+                void this.tabsGrouper.render({
                     organizeType: type,
                     tabs: sortedTabs,
                 });

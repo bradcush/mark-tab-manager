@@ -51,10 +51,10 @@ export class Sorter implements MkSorter {
      * Sort tabs alphabetically using their hostname
      * with exceptions for some specific groups
      */
-    public async sortTabs(
+    public async sort(
         tabs: MkBrowser.tabs.Tab[]
     ): Promise<MkBrowser.tabs.Tab[]> {
-        this.logger.log('sortTabsAlphabetically', tabs);
+        this.logger.log('sort', tabs);
         const { enableSubdomainFiltering } = await this.store.getState();
         const sortedTabs = tabs.sort((a, b) => {
             const urlOne = a.url;
@@ -74,8 +74,8 @@ export class Sorter implements MkSorter {
      * Reorder browser tabs in the current
      * window according to tabs list
      */
-    public async renderSortedTabs(tabs: MkBrowser.tabs.Tab[]): Promise<void> {
-        this.logger.log('renderSortedTabs', tabs);
+    public async render(tabs: MkBrowser.tabs.Tab[]): Promise<void> {
+        this.logger.log('render', tabs);
         try {
             // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
             // "windowId" in our algorithm which the representative -2 breaks
@@ -101,7 +101,7 @@ export class Sorter implements MkSorter {
                 await this.browser.tabs.move(id, moveProperties);
             });
         } catch (error) {
-            this.logger.error('renderSortedTabs', error);
+            this.logger.error('render', error);
             throw error;
         }
     }

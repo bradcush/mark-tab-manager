@@ -3,8 +3,8 @@ import { MkLoggerConstructor } from 'src/logs/MkLogger';
 import { MkBrowser } from 'src/api/MkBrowser';
 
 export interface MkSorter {
-    renderSortedTabs(tabs: MkBrowser.tabs.Tab[]): Promise<void>;
-    sortTabs(tabs: MkBrowser.tabs.Tab[]): Promise<MkBrowser.tabs.Tab[]>;
+    render(tabs: MkBrowser.tabs.Tab[]): Promise<void>;
+    sort(tabs: MkBrowser.tabs.Tab[]): Promise<MkBrowser.tabs.Tab[]>;
 }
 
 interface MkBrowserTabs {
