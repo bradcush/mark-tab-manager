@@ -179,6 +179,8 @@ export class Menu implements MkMenu {
      */
     private handleToggle({ info }: MkHandleToggleParams) {
         this.logger.log('handleToggle', info);
+        // Menu item id can be any as described by official typings
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { checked, menuItemId } = info;
         // Automatically organize as soon as any setting is checked which is
         // opinionated as it relies checked settings meaning enabled.
@@ -200,7 +202,8 @@ export class Menu implements MkMenu {
             'forceWindowConsolidation',
         ];
         if (!settings.includes(menuItemId)) {
-            /* eslint-disable @typescript-eslint/restrict-template-expressions */
+            // Menu item id can be any but we assume a string for now
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             throw new Error(`Invalid settings key: ${menuItemId}`);
         }
         // Rely on the menu item to automatically update itself

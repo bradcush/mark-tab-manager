@@ -1,12 +1,14 @@
 import { MkOptions } from './MkGroup';
 
 export function group(options: MkOptions): Promise<number> {
-    // @ts-expect-error Currently in Beta channel
+    // tabs.group not yet in official typings
+    /* eslint-disable-next-line */ /* @ts-expect-error */
     if (!chrome.tabs.group) {
         throw new Error('No tabs.group support');
     }
     return new Promise<number>((resolve, reject) => {
-        /* eslint-disable-next-line */ /* @ts-expect-error Currently in Beta channel */
+        // tabs.group not yet in official typings
+        /* eslint-disable-next-line */ /* @ts-expect-error */
         chrome.tabs.group(options, (groupId) => {
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
@@ -17,6 +19,7 @@ export function group(options: MkOptions): Promise<number> {
 }
 
 export function isSupported(): boolean {
-    // @ts-expect-error Currently in Beta channel
+    // tabs.group not yet in official typings
+    /* eslint-disable-next-line */ /* @ts-expect-error */
     return !!chrome.tabs.group;
 }

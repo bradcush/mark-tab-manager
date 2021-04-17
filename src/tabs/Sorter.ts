@@ -81,7 +81,8 @@ export class Sorter implements MkSorter {
             // "windowId" in our algorithm which the representative -2 breaks
             const staticWindowId = tabs[0].windowId;
             const { forceWindowConsolidation } = await this.store.getState();
-            /* eslint-disable @typescript-eslint/no-misused-promises */
+            // We only care about catching errors with await in this case
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             tabs.forEach(async (tab) => {
                 const { id } = tab;
                 if (!id) {

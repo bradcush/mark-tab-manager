@@ -95,8 +95,8 @@ export class Organizer implements MkOrganizer {
 
         // Handle tabs where a URL is updated
         this.browser.tabs.onUpdated.addListener(
-            // As sequential events don't matter, async is fine
-            /* eslint-disable @typescript-eslint/no-misused-promises */
+            // Handlers can be async since we just care to fire and forget
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             async (tabId, changeInfo, tab) => {
                 this.logger.log('browser.tabs.onUpdated', changeInfo);
                 if (chrome.runtime.lastError) {
@@ -108,9 +108,9 @@ export class Organizer implements MkOrganizer {
                 if (status !== 'loading') {
                     return;
                 }
-                // If there is no url change we don't consider updating its group.
-                // (It's observed that only loading tabs can have a url and that
-                // reloading a tab doesn't send a url)
+                // If there is no url change we don't consider updating its
+                // group. (It's observed that only loading tabs can have a url
+                // and that reloading a tab doesn't send a url)
                 if (!url) {
                     return;
                 }

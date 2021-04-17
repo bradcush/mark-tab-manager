@@ -28,5 +28,7 @@ export function makeStoreBrowser(
                 set: jest.fn(),
             },
         },
+        // Mocking requires any assertion
+        // eslint-disable-next-line
     } as any) as MkStoreBrowser;
 }
