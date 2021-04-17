@@ -154,9 +154,21 @@ export class Grouper implements MkGrouper {
     }
 
     /**
+     * Should we group items based on support
+     * and whether the feature is activated
+     */
+    public async isEnabled(): Promise<boolean> {
+        this.logger.log('isEnabled');
+        const isSupported = this.isSupported();
+        const { enableAutomaticGrouping } = await this.store.getState();
+        return isSupported && enableAutomaticGrouping;
+    }
+
+    /**
      * Check if all used tab grouping APIs are supported
      */
     public isSupported(): boolean {
+        this.logger.log('isSupported');
         return (
             isTabGroupsUpdateSupported() &&
             isTabGroupsQuerySupported() &&

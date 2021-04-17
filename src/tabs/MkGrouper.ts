@@ -4,6 +4,7 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { MkOrganizerType } from './MkOrganizer';
 
 export interface MkGrouper {
+    isEnabled(): Promise<boolean>;
     isSupported(): boolean;
     remove(): Promise<void>;
     render(params: MkRender): Promise<void>;

@@ -176,11 +176,8 @@ export class Organizer implements MkOrganizer {
             if (enableAutomaticSorting) {
                 void this.tabsSorter.render(sortedTabs);
             }
-            const isTabGroupingSupported = this.tabsGrouper.isSupported();
-            const { enableAutomaticGrouping } = await this.store.getState();
-            const isGroupingAllowed =
-                isTabGroupingSupported && enableAutomaticGrouping;
-            if (isGroupingAllowed) {
+            const isGroupingEnabled = await this.tabsGrouper.isEnabled();
+            if (isGroupingEnabled) {
                 void this.tabsGrouper.render({
                     organizeType: type,
                     tabs: sortedTabs,
