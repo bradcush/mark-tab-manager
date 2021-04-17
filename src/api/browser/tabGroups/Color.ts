@@ -9,5 +9,6 @@ export const ColorMap = {
     YELLOW: 'yellow',
 };
 
-// @ts-expect-error Currently in Beta channel
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error tabGroups not yet in official typings
 export const { tabGroups: { Color = ColorMap } = {} } = chrome;

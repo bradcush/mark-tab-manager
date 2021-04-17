@@ -118,4 +118,6 @@ export const browser = ({
     contextMenus,
     storage,
     tabs,
+    // Mocking requires any assertion
+    // eslint-disable-next-line
 } as any) as MkBrowser;

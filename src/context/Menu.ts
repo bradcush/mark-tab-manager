@@ -9,6 +9,7 @@ import {
 import { MkState, MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
+import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
 
 /**
  * Context menu creation and change handling
@@ -17,6 +18,7 @@ export class Menu implements MkMenu {
     public constructor({
         browser,
         store,
+        tabsGrouper,
         tabsOrganizer,
         Logger,
     }: MkConstructorParams) {
@@ -24,6 +26,11 @@ export class Menu implements MkMenu {
             throw new Error('No browser');
         }
         this.browser = browser;
+
+        if (!tabsGrouper) {
+            throw new Error('No tabsGrouper');
+        }
+        this.tabsGrouper = tabsGrouper;
 
         if (!tabsOrganizer) {
             throw new Error('No tabsOrganizer');
@@ -43,9 +50,10 @@ export class Menu implements MkMenu {
     }
 
     private readonly browser: MkMenuBrowser;
-    private readonly tabsOrganizer: MkTabsOrganizer;
-    private readonly store: MkStore;
     private readonly logger: MkLogger;
+    private readonly store: MkStore;
+    private readonly tabsGrouper: MkTabsGrouper;
+    private readonly tabsOrganizer: MkTabsOrganizer;
 
     /**
      * Connect handler for context menu updates
@@ -95,7 +103,7 @@ export class Menu implements MkMenu {
         });
         // Create the browser action context menu
         // for toggling automatic grouping
-        const isTabGroupingSupported = this.tabsOrganizer.isTabGroupingSupported();
+        const isTabGroupingSupported = this.tabsGrouper.isSupported();
         if (isTabGroupingSupported) {
             const { enableAutomaticGrouping } = await this.store.getState();
             this.logger.log('create', enableAutomaticGrouping);
@@ -171,6 +179,8 @@ export class Menu implements MkMenu {
      */
     private handleToggle({ info }: MkHandleToggleParams) {
         this.logger.log('handleToggle', info);
+        // Menu item id can be any as described by official typings
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { checked, menuItemId } = info;
         // Automatically organize as soon as any setting is checked which is
         // opinionated as it relies checked settings meaning enabled.
@@ -183,7 +193,7 @@ export class Menu implements MkMenu {
         // Remove any existing groups when grouping is disabled
         const isAutomaticGrouping = menuItemId === 'enableAutomaticGrouping';
         if (isAutomaticGrouping && !checked) {
-            void this.tabsOrganizer.removeAllGroups();
+            void this.tabsGrouper.remove();
         }
         const settings: (keyof MkState)[] = [
             'enableAutomaticGrouping',
@@ -192,7 +202,8 @@ export class Menu implements MkMenu {
             'forceWindowConsolidation',
         ];
         if (!settings.includes(menuItemId)) {
-            /* eslint-disable @typescript-eslint/restrict-template-expressions */
+            // Menu item id can be any but we assume a string for now
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             throw new Error(`Invalid settings key: ${menuItemId}`);
         }
         // Rely on the menu item to automatically update itself

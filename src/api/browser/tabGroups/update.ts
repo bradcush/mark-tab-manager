@@ -4,12 +4,14 @@ export function update(
     groupId: number,
     updateProperties: MkUpdateProperties
 ): Promise<void> {
-    // @ts-expect-error Currently in Beta channel
+    // tabGroups not yet in official typings
+    /* eslint-disable-next-line */ /* @ts-expect-error */
     if (!chrome.tabGroups?.update) {
         throw new Error('No tabGroups.update support');
     }
     return new Promise((resolve, reject) => {
-        /* eslint-disable-next-line */ /* @ts-expect-error Currently in Beta channel */
+        // tabGroups not yet in official typings
+        /* eslint-disable-next-line */ /* @ts-expect-error */
         chrome.tabGroups.update(groupId, updateProperties, () => {
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
@@ -20,6 +22,7 @@ export function update(
 }
 
 export function isSupported(): boolean {
-    // @ts-expect-error Currently in Beta channel
+    // tabGroups not yet in official typings
+    /* eslint-disable-next-line */ /* @ts-expect-error */
     return !!chrome.tabGroups?.update;
 }

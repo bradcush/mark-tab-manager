@@ -1,28 +1,17 @@
 import {
-    MkActiveTabIdsByWindow,
-    MkActiveTabIdsByWindowKey,
-    MkActiveTabIdsByWindowValue,
-    MkAddNewGroupParams,
     MkContstructorParams,
-    MkGetGroupInfoParams,
+    MkIsGroupChanged,
     MkOrganizeParams,
     MkOrganizer,
     MkOrganizerBrowser,
-    MkRenderGroupsByNameParams,
-    MkRenderTabGroups,
-    MkTabIdsByGroup,
-    MkUpdateGroupTitleParams,
 } from './MkOrganizer';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { makeGroupName } from 'src/helpers/groupName';
 import { MkStore } from 'src/storage/MkStore';
-import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
-import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
-import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
-import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkCache } from 'src/storage/MkCache';
 import { MkSorter } from './MkSorter';
+import { MkGrouper } from './MkGrouper';
 
 /**
  * Organize open tabs
@@ -31,8 +20,9 @@ export class Organizer implements MkOrganizer {
     public constructor({
         browser,
         cache,
-        tabsSorter,
         store,
+        tabsGrouper,
+        tabsSorter,
         Logger,
     }: MkContstructorParams) {
         if (!browser) {
@@ -45,15 +35,20 @@ export class Organizer implements MkOrganizer {
         }
         this.cache = cache;
 
-        if (!tabsSorter) {
-            throw new Error('No tabsSorter');
-        }
-        this.tabsSorter = tabsSorter;
-
         if (!store) {
             throw new Error('No store');
         }
         this.store = store;
+
+        if (!tabsGrouper) {
+            throw new Error('No tabsGrouper');
+        }
+        this.tabsGrouper = tabsGrouper;
+
+        if (!tabsSorter) {
+            throw new Error('No tabsSorter');
+        }
+        this.tabsSorter = tabsSorter;
 
         if (!Logger) {
             throw new Error('No Logger');
@@ -63,10 +58,11 @@ export class Organizer implements MkOrganizer {
     }
 
     private readonly browser: MkOrganizerBrowser;
-    private readonly tabsSorter: MkSorter;
-    private readonly store: MkStore;
     private readonly cache: MkCache;
     private readonly logger: MkLogger;
+    private readonly store: MkStore;
+    private readonly tabsGrouper: MkGrouper;
+    private readonly tabsSorter: MkSorter;
 
     /**
      * Connect site organizer to triggering browser events
@@ -97,11 +93,10 @@ export class Organizer implements MkOrganizer {
             void this.organize();
         });
 
-        /**
-         * Handle tabs where a URL is updated
-         */
+        // Handle tabs where a URL is updated
         this.browser.tabs.onUpdated.addListener(
-            /* eslint-disable @typescript-eslint/no-misused-promises */
+            // Handlers can be async since we just care to fire and forget
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             async (tabId, changeInfo, tab) => {
                 this.logger.log('browser.tabs.onUpdated', changeInfo);
                 if (chrome.runtime.lastError) {
@@ -113,24 +108,19 @@ export class Organizer implements MkOrganizer {
                 if (status !== 'loading') {
                     return;
                 }
-                // If there is no url change we don't consider updating its group.
-                // (It's observed that only loading tabs can have a url and that
-                // reloading a tab doesn't send a url)
+                // If there is no url change we don't consider updating its
+                // group. (It's observed that only loading tabs can have a url
+                // and that reloading a tab doesn't send a url)
                 if (!url) {
                     return;
                 }
-                // If the group categorization didn't change
+                // If the group assignation didn't change
                 // then we don't bother to organize
-                const {
-                    enableSubdomainFiltering,
-                } = await this.store.getState();
-                const groupType = enableSubdomainFiltering
-                    ? 'granular'
-                    : 'shared';
-                const groupName = makeGroupName({ type: groupType, url });
-                const hasGroupChanged = this.cache.get(tabId) !== groupName;
-                this.logger.log('browser.tabs.onUpdated', hasGroupChanged);
-                if (!hasGroupChanged) {
+                const isGroupChanged = await this.isGroupChanged({
+                    id: tabId,
+                    currentUrl: url,
+                });
+                if (!isGroupChanged) {
                     return;
                 }
                 void this.organize({ tab });
@@ -148,109 +138,24 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Add new tab groups for a given name,
-     * window id, and set of tab ids
+     * Has the group assignation for a tab changed based
+     * on it's url relative to what's in the cache
      */
-    private async addNewGroup({
-        idx,
-        forceCollapse,
-        name,
-        tabIds,
-        windowId,
-    }: MkAddNewGroupParams) {
-        this.logger.log('addNewGroup', name, windowId);
-        try {
-            // We need to get the state before resetting groups using the
-            // exact name. As a repercussion of this method, groups where the
-            // count has changed are automatically reopened. This shouldn't
-            // reopen groups that are collapsed as the user experience for a
-            // collapsed group prevents the user from removing a tab.
-            const title = `(${tabIds.length}) ${name}`;
-            const prevGroup = await this.getGroupInfo({
-                id: windowId,
-                title,
-            });
-            const createProperties = { windowId };
-            const options = { createProperties, tabIds };
-            const groupId = await this.browser.tabs.group(options);
-            const color = this.getColorForGroup(idx);
-            // Rely on the previous state when we don't force
-            const collapsed = (forceCollapse || prevGroup?.collapsed) ?? false;
-            void this.updateGroupProperties({
-                collapsed,
-                color,
-                groupId,
-                title,
-            });
-        } catch (error) {
-            this.logger.error('addNewGroup', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Remove tabs that are pinned from the list
-     */
-    private filterNonPinnedTabs(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('filterNonPinnedTabs');
-        const isTabPinned = (tab: MkBrowser.tabs.Tab) => !!tab.pinned;
-        const nonPinnedTabs = tabs.filter((tab) => !isTabPinned(tab));
-        return nonPinnedTabs;
-    }
-
-    /**
-     * Get the current properties for a group with
-     * a given name for a specific window id
-     */
-    private async getGroupInfo({ id, title }: MkGetGroupInfoParams) {
-        this.logger.log('getGroupInfo', title);
-        try {
-            // Be careful of the title as query titles are patterns where
-            // chars can have special meaning (eg. * is a universal selector)
-            const queryInfo = { title, windowId: id };
-            const tabGroups = await this.browser.tabGroups.query(queryInfo);
-            this.logger.log('getGroupInfo', tabGroups);
-            return tabGroups[0];
-        } catch (error) {
-            this.logger.error('getGroupInfo', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Get the color based on each index so that each index will
-     * retain the same color regardless of a group re-render
-     */
-    private getColorForGroup(index: number) {
-        this.logger.log('getColorForGroup', index);
-        const colorsByEnum = this.browser.tabGroups.Color;
-        this.logger.log('getColorForGroup', colorsByEnum);
-        const colorKeys = Object.keys(colorsByEnum);
-        const colors = colorKeys.map((colorKey) =>
-            colorKey.toLocaleLowerCase()
-        );
-        const colorIdx = index % colorKeys.length;
-        const color = colors[colorIdx];
-        this.logger.log('getColorForGroup', color);
-        return color;
-    }
-
-    /**
-     * Check if all used tab grouping APIs are supported
-     */
-    public isTabGroupingSupported(): boolean {
-        return (
-            isTabGroupsUpdateSupported() &&
-            isTabGroupsQuerySupported() &&
-            isTabsGroupSupported() &&
-            isTabsUngroupSupported()
-        );
+    private async isGroupChanged({ currentUrl, id }: MkIsGroupChanged) {
+        this.logger.log('isGroupChanged');
+        const { enableSubdomainFiltering } = await this.store.getState();
+        const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
+        const groupName = makeGroupName({ type: groupType, url: currentUrl });
+        const isGroupChanged = this.cache.get(id) !== groupName;
+        this.logger.log('isTabUpdated', isGroupChanged);
+        return isGroupChanged;
     }
 
     /**
      * Make list of cache information
      */
     private async makeCacheItems(tabs: MkBrowser.tabs.Tab[]) {
+        this.logger.log('makeCacheItems');
         const { enableSubdomainFiltering } = await this.store.getState();
         const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
         return tabs.map(({ id, url }) => {
@@ -268,211 +173,26 @@ export class Organizer implements MkOrganizer {
         this.logger.log('organize');
         try {
             const tabs = await this.browser.tabs.query({});
-            // Cache tabs regardless settings as early as possible
-            const isCacheFilled = this.cache.exists();
-            // Cache a single addition tab or everything
-            const tabsToCache = isCacheFilled && tab ? [tab] : tabs;
+            // Cache tabs regardless of settings as early as possible
+            // and cache a single updated tab or everything
+            const tabsToCache = this.cache.exists() && tab ? [tab] : tabs;
             const cacheItems = await this.makeCacheItems(tabsToCache);
             this.cache.set(cacheItems);
-
-            // Sorted tabs are needed for sorting or grouping
-            const sortedTabs = await this.tabsSorter.sortTabs(tabs);
+            // Sorted tabs are needed for sorting and grouping
+            const sortedTabs = await this.tabsSorter.sort(tabs);
             const { enableAutomaticSorting } = await this.store.getState();
             if (enableAutomaticSorting) {
-                void this.tabsSorter.renderSortedTabs(sortedTabs);
+                void this.tabsSorter.render(sortedTabs);
             }
-            const isTabGroupingSupported = this.isTabGroupingSupported();
-            const { enableAutomaticGrouping } = await this.store.getState();
-            const isGroupingAllowed =
-                isTabGroupingSupported && enableAutomaticGrouping;
-            if (isGroupingAllowed) {
-                void this.renderTabGroups({
+            const isGroupingEnabled = await this.tabsGrouper.isEnabled();
+            if (isGroupingEnabled) {
+                void this.tabsGrouper.render({
                     organizeType: type,
                     tabs: sortedTabs,
                 });
             }
         } catch (error) {
             this.logger.error('organize', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Remove all existing groups
-     */
-    public async removeAllGroups(): Promise<void> {
-        this.logger.log('removeAllGroups');
-        try {
-            const tabs = await this.browser.tabs.query({});
-            const filterIds = (id: number | undefined): id is number =>
-                typeof id !== 'undefined';
-            const ids = tabs.map((tab) => tab.id).filter(filterIds);
-            void this.removeGroupsForTabIds(ids);
-        } catch (error) {
-            this.logger.error('removeAllGroups', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Remove a list of tabs from any group
-     * and the group itself when empty
-     */
-    private async removeGroupsForTabIds(ids: number[]) {
-        this.logger.log('removeGroupsForTabIds', ids);
-        try {
-            await this.browser.tabs.ungroup(ids);
-        } catch (error) {
-            this.logger.error('removeGroupsForTabIds', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Set groups and non-groups using their tab id where
-     * groups must contain at least two or more tabs
-     */
-    private renderGroupsByName({
-        activeTabIdsByWindow,
-        tabIdsByGroup,
-        type,
-    }: MkRenderGroupsByNameParams) {
-        this.logger.log('renderGroupsByName', tabIdsByGroup);
-        // Offset the index to ignore orphan groups
-        let groupIdxOffset = 0;
-        const names = Object.keys(tabIdsByGroup);
-        names.forEach((name, idx) => {
-            this.logger.log('renderGroupsByName', name);
-            // Groups are represented by the window id
-            const group = Object.keys(tabIdsByGroup[name]);
-            const isRealGroup = (windowId: string) =>
-                tabIdsByGroup[name][windowId].length > 1;
-            const realGroups = group.filter(isRealGroup);
-            const orphanGroups = group.filter((group) => !isRealGroup(group));
-            // We treat real groups first so our index used to
-            // determine the color isn't affected by orphan groups
-            [...realGroups, ...orphanGroups].forEach((windowGroup) => {
-                const tabIds = tabIdsByGroup[name][windowGroup];
-                // Ungroup existing collections of one tab
-                if (tabIds.length < 2) {
-                    void this.removeGroupsForTabIds(tabIds);
-                    groupIdxOffset++;
-                    return;
-                }
-                const groupIdx = idx - groupIdxOffset;
-                const windowId = Number(windowGroup);
-                // Does this group contain an active tab
-                const activeTabId = activeTabIdsByWindow.get(windowId);
-                // Collapse non-active groups
-                const forceCollapse =
-                    // Complexity isn't good here but it should be
-                    // ok since collapse should be very rarely used
-                    type === 'collapse' && typeof activeTabId !== 'undefined'
-                        ? !tabIds.includes(activeTabId)
-                        : false;
-                this.logger.log('renderGroupsByName', forceCollapse);
-                void this.addNewGroup({
-                    idx: groupIdx,
-                    forceCollapse,
-                    name,
-                    tabIds,
-                    windowId,
-                });
-            });
-        });
-    }
-
-    /**
-     * Group tabs in the browser
-     */
-    private async renderTabGroups({ organizeType, tabs }: MkRenderTabGroups) {
-        this.logger.log('renderTabGroups');
-        const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
-        const activeTabIdsByWindow = this.getActiveTabIdsByWindow(tabs);
-        const tabIdsByGroup = await this.sortTabIdsByGroup(nonPinnedTabs);
-        this.renderGroupsByName({
-            activeTabIdsByWindow,
-            type: organizeType,
-            tabIdsByGroup,
-        });
-    }
-
-    /**
-     * Get all the active tabs across all windows
-     */
-    private getActiveTabIdsByWindow(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('getActiveTabIdsByWindow');
-        const activeTabs = tabs.filter((tab) => tab.active);
-        // Best to use domain specific typings here
-        const activeTabIdsByWindow: MkActiveTabIdsByWindow = new Map<
-            MkActiveTabIdsByWindowKey,
-            MkActiveTabIdsByWindowValue
-        >();
-        activeTabs.forEach(({ id, windowId }) => {
-            activeTabIdsByWindow.set(windowId, id);
-        });
-        this.logger.log('getActiveTabIdsByWindow', activeTabIdsByWindow);
-        return activeTabIdsByWindow;
-    }
-
-    /**
-     * Sort tabs by their group name and window id
-     */
-    private async sortTabIdsByGroup(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('sortTabIdsByGroup');
-        const tabIdsByGroup: MkTabIdsByGroup = {};
-        const { forceWindowConsolidation } = await this.store.getState();
-        const { enableSubdomainFiltering } = await this.store.getState();
-        // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
-        // "windowId" in our algorithm which the representative -2 breaks
-        const staticWindowId = tabs[0].windowId;
-        tabs.forEach((tab) => {
-            const { id, url, windowId } = tab;
-            if (!id) {
-                throw new Error('No id for tab');
-            }
-            // Don't group tabs without a URL
-            if (!url) {
-                throw new Error('No tab url');
-            }
-            const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
-            const groupName = makeGroupName({ type: groupType, url });
-            // Specify the current window as the forced window
-            const chosenWindowId = forceWindowConsolidation
-                ? staticWindowId
-                : windowId;
-            if (!tabIdsByGroup[groupName]) {
-                tabIdsByGroup[groupName] = {
-                    [chosenWindowId]: [id],
-                };
-            } else if (!tabIdsByGroup[groupName][chosenWindowId]) {
-                tabIdsByGroup[groupName] = {
-                    ...tabIdsByGroup[groupName],
-                    [chosenWindowId]: [id],
-                };
-            } else {
-                tabIdsByGroup[groupName][chosenWindowId].push(id);
-            }
-        });
-        this.logger.log('sortTabIdsByGroup', tabIdsByGroup);
-        return tabIdsByGroup;
-    }
-
-    /**
-     * Update an existing groups title
-     */
-    private async updateGroupProperties({
-        collapsed,
-        color,
-        groupId,
-        title,
-    }: MkUpdateGroupTitleParams) {
-        this.logger.log('updateGroupProperties');
-        try {
-            const updateProperties = { collapsed, color, title };
-            await this.browser.tabGroups.update(groupId, updateProperties);
-        } catch (error) {
-            this.logger.error('updateGroupProperties', error);
             throw error;
         }
     }

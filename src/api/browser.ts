@@ -44,11 +44,11 @@ const storage = {
     sync: syncStorage,
 };
 
-// See the proposed API for tabGroups and tabs related to groups
-// https://bugs.chromium.org/p/chromium/issues/detail?id=1106846
 const tabGroups = {
     update: tabGroupsUpdate,
     query: tabGroupsQuery,
+    // Color isn't officially typed
+    // eslint-disable-next-line
     Color: tabGroupsColor,
 };
 

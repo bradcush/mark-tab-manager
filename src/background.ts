@@ -4,12 +4,14 @@ import { Organizer as TabsOrganizer } from './tabs/Organizer';
 import { organizerBrowser as tabsOrganizerBrowser } from './tabs/organizerBrowser';
 import { Menu as ContextMenu } from './context/Menu';
 import { menuBrowser as contextMenuBrowser } from './context/menuBrowser';
+import { Sorter as TabsSorter } from './tabs/Sorter';
+import { sorterBrowser as tabsSorterBrowser } from './tabs/sorterBrowser';
+import { Grouper as TabsGrouper } from './tabs/Grouper';
+import { grouperBrowser as tabsGrouperBrowser } from './tabs/grouperBrowser';
 import { Store } from './storage/Store';
 import { storeBrowser } from './storage/storeBrowser';
 import { ConsoleLogger } from './logs/ConsoleLogger';
 import { MemoryCache } from './storage/MemoryCache';
-import { Sorter } from './tabs/Sorter';
-import { sorterBrowser } from './tabs/sorterBrowser';
 
 // When the service worker starts
 const logger = new ConsoleLogger();
@@ -29,9 +31,15 @@ function initBackground() {
 
     // Create memory cache for group caching
     const memoryCache = new MemoryCache(ConsoleLogger);
+    // Create tab grouper for grouping tabs
+    const tabsGrouperInstance = new TabsGrouper({
+        browser: tabsGrouperBrowser,
+        store: storeInstance,
+        Logger: ConsoleLogger,
+    });
     // Create tab sorter for sorting tabs
-    const tabsSorterInstance = new Sorter({
-        browser: sorterBrowser,
+    const tabsSorterInstance = new TabsSorter({
+        browser: tabsSorterBrowser,
         store: storeInstance,
         Logger: ConsoleLogger,
     });
@@ -39,8 +47,9 @@ function initBackground() {
     const tabsOrganizerInstance = new TabsOrganizer({
         browser: tabsOrganizerBrowser,
         cache: memoryCache,
-        tabsSorter: tabsSorterInstance,
         store: storeInstance,
+        tabsGrouper: tabsGrouperInstance,
+        tabsSorter: tabsSorterInstance,
         Logger: ConsoleLogger,
     });
     tabsOrganizerInstance.connect();
@@ -49,6 +58,7 @@ function initBackground() {
     const contextMenu = new ContextMenu({
         browser: contextMenuBrowser,
         store: storeInstance,
+        tabsGrouper: tabsGrouperInstance,
         tabsOrganizer: tabsOrganizerInstance,
         Logger: ConsoleLogger,
     });

@@ -2,6 +2,7 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStore } from 'src/storage/MkStore';
 import { MkLoggerConstructor } from 'src/logs/MkLogger';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
+import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
 
 export interface MkMenu {
     connect(): void;
@@ -25,6 +26,7 @@ export interface MkMenuBrowser {
 export interface MkConstructorParams {
     browser: MkMenuBrowser;
     store: MkStore;
+    tabsGrouper: MkTabsGrouper;
     tabsOrganizer: MkTabsOrganizer;
     Logger: MkLoggerConstructor;
 }
