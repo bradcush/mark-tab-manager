@@ -50,10 +50,10 @@ export class Menu implements MkMenu {
     }
 
     private readonly browser: MkMenuBrowser;
+    private readonly logger: MkLogger;
+    private readonly store: MkStore;
     private readonly tabsGrouper: MkTabsGrouper;
     private readonly tabsOrganizer: MkTabsOrganizer;
-    private readonly store: MkStore;
-    private readonly logger: MkLogger;
 
     /**
      * Connect handler for context menu updates

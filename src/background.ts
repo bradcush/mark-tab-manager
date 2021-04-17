@@ -47,9 +47,9 @@ function initBackground() {
     const tabsOrganizerInstance = new TabsOrganizer({
         browser: tabsOrganizerBrowser,
         cache: memoryCache,
+        store: storeInstance,
         tabsGrouper: tabsGrouperInstance,
         tabsSorter: tabsSorterInstance,
-        store: storeInstance,
         Logger: ConsoleLogger,
     });
     tabsOrganizerInstance.connect();

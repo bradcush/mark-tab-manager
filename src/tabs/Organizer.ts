@@ -20,9 +20,9 @@ export class Organizer implements MkOrganizer {
     public constructor({
         browser,
         cache,
+        store,
         tabsGrouper,
         tabsSorter,
-        store,
         Logger,
     }: MkContstructorParams) {
         if (!browser) {
@@ -35,6 +35,11 @@ export class Organizer implements MkOrganizer {
         }
         this.cache = cache;
 
+        if (!store) {
+            throw new Error('No store');
+        }
+        this.store = store;
+
         if (!tabsGrouper) {
             throw new Error('No tabsGrouper');
         }
@@ -45,11 +50,6 @@ export class Organizer implements MkOrganizer {
         }
         this.tabsSorter = tabsSorter;
 
-        if (!store) {
-            throw new Error('No store');
-        }
-        this.store = store;
-
         if (!Logger) {
             throw new Error('No Logger');
         }
@@ -58,11 +58,11 @@ export class Organizer implements MkOrganizer {
     }
 
     private readonly browser: MkOrganizerBrowser;
-    private readonly tabsGrouper: MkGrouper;
-    private readonly tabsSorter: MkSorter;
-    private readonly store: MkStore;
     private readonly cache: MkCache;
     private readonly logger: MkLogger;
+    private readonly store: MkStore;
+    private readonly tabsGrouper: MkGrouper;
+    private readonly tabsSorter: MkSorter;
 
     /**
      * Connect site organizer to triggering browser events

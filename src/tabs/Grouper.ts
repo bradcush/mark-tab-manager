@@ -44,8 +44,8 @@ export class Grouper implements MkGrouper {
     }
 
     private readonly browser: MkGrouperBrowser;
-    private readonly store: MkStore;
     private readonly logger: MkLogger;
+    private readonly store: MkStore;
 
     /**
      * Add new tab groups for a given name,

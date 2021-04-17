@@ -27,8 +27,8 @@ export class Sorter implements MkSorter {
     }
 
     private readonly browser: MkSorterBrowser;
-    private readonly store: MkStore;
     private readonly logger: MkLogger;
+    private readonly store: MkStore;
 
     /**
      * Compare to be used with sorting where newtab should
