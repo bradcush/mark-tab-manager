@@ -103,7 +103,7 @@ export class Menu implements MkMenu {
         });
         // Create the browser action context menu
         // for toggling automatic grouping
-        const isTabGroupingSupported = this.tabsOrganizer.isTabGroupingSupported();
+        const isTabGroupingSupported = this.tabsGrouper.isSupported();
         if (isTabGroupingSupported) {
             const { enableAutomaticGrouping } = await this.store.getState();
             this.logger.log('create', enableAutomaticGrouping);

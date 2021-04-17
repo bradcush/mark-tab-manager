@@ -7,7 +7,6 @@ import { MkGrouper } from './MkGrouper';
 
 export interface MkOrganizer {
     connect(): void;
-    isTabGroupingSupported(): boolean;
     organize(params?: MkOrganizeParams): Promise<void>;
 }
 

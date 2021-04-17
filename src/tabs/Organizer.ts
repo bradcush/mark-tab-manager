@@ -7,10 +7,6 @@ import {
 import { MkBrowser } from 'src/api/MkBrowser';
 import { makeGroupName } from 'src/helpers/groupName';
 import { MkStore } from 'src/storage/MkStore';
-import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
-import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
-import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
-import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkCache } from 'src/storage/MkCache';
 import { MkSorter } from './MkSorter';
@@ -147,18 +143,6 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Check if all used tab grouping APIs are supported
-     */
-    public isTabGroupingSupported(): boolean {
-        return (
-            isTabGroupsUpdateSupported() &&
-            isTabGroupsQuerySupported() &&
-            isTabsGroupSupported() &&
-            isTabsUngroupSupported()
-        );
-    }
-
-    /**
      * Make list of cache information
      */
     private async makeCacheItems(tabs: MkBrowser.tabs.Tab[]) {
@@ -192,7 +176,7 @@ export class Organizer implements MkOrganizer {
             if (enableAutomaticSorting) {
                 void this.tabsSorter.renderSortedTabs(sortedTabs);
             }
-            const isTabGroupingSupported = this.isTabGroupingSupported();
+            const isTabGroupingSupported = this.tabsGrouper.isSupported();
             const { enableAutomaticGrouping } = await this.store.getState();
             const isGroupingAllowed =
                 isTabGroupingSupported && enableAutomaticGrouping;

@@ -15,6 +15,10 @@ import {
 import { MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkBrowser } from 'src/api/MkBrowser';
+import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
+import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
+import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
+import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 import { makeGroupName } from 'src/helpers/groupName';
 
 /**
@@ -147,6 +151,18 @@ export class Grouper implements MkGrouper {
             this.logger.error('getGroupInfo', error);
             throw error;
         }
+    }
+
+    /**
+     * Check if all used tab grouping APIs are supported
+     */
+    public isSupported(): boolean {
+        return (
+            isTabGroupsUpdateSupported() &&
+            isTabGroupsQuerySupported() &&
+            isTabsGroupSupported() &&
+            isTabsUngroupSupported()
+        );
     }
 
     /**

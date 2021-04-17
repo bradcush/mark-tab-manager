@@ -6,6 +6,7 @@ import { MkOrganizerType } from './MkOrganizer';
 export interface MkGrouper {
     removeAllGroups(): Promise<void>;
     renderTabGroups(params: MkRenderTabGroups): Promise<void>;
+    isSupported(): boolean;
 }
 
 interface MkBrowserTabGroups {
