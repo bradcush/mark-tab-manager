@@ -1,5 +1,6 @@
 import {
     MkContstructorParams,
+    MkIsGroupChanged,
     MkOrganizeParams,
     MkOrganizer,
     MkOrganizerBrowser,
@@ -92,10 +93,9 @@ export class Organizer implements MkOrganizer {
             void this.organize();
         });
 
-        /**
-         * Handle tabs where a URL is updated
-         */
+        // Handle tabs where a URL is updated
         this.browser.tabs.onUpdated.addListener(
+            // As sequential events don't matter, async is fine
             /* eslint-disable @typescript-eslint/no-misused-promises */
             async (tabId, changeInfo, tab) => {
                 this.logger.log('browser.tabs.onUpdated', changeInfo);
@@ -114,18 +114,13 @@ export class Organizer implements MkOrganizer {
                 if (!url) {
                     return;
                 }
-                // If the group categorization didn't change
+                // If the group assignation didn't change
                 // then we don't bother to organize
-                const {
-                    enableSubdomainFiltering,
-                } = await this.store.getState();
-                const groupType = enableSubdomainFiltering
-                    ? 'granular'
-                    : 'shared';
-                const groupName = makeGroupName({ type: groupType, url });
-                const hasGroupChanged = this.cache.get(tabId) !== groupName;
-                this.logger.log('browser.tabs.onUpdated', hasGroupChanged);
-                if (!hasGroupChanged) {
+                const isGroupChanged = await this.isGroupChanged({
+                    id: tabId,
+                    currentUrl: url,
+                });
+                if (!isGroupChanged) {
                     return;
                 }
                 void this.organize({ tab });
@@ -143,9 +138,24 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
+     * Has the group assignation for a tab changed based
+     * on it's url relative to what's in the cache
+     */
+    private async isGroupChanged({ currentUrl, id }: MkIsGroupChanged) {
+        this.logger.log('isGroupChanged');
+        const { enableSubdomainFiltering } = await this.store.getState();
+        const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
+        const groupName = makeGroupName({ type: groupType, url: currentUrl });
+        const isGroupChanged = this.cache.get(id) !== groupName;
+        this.logger.log('isTabUpdated', isGroupChanged);
+        return isGroupChanged;
+    }
+
+    /**
      * Make list of cache information
      */
     private async makeCacheItems(tabs: MkBrowser.tabs.Tab[]) {
+        this.logger.log('makeCacheItems');
         const { enableSubdomainFiltering } = await this.store.getState();
         const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
         return tabs.map(({ id, url }) => {
@@ -163,14 +173,12 @@ export class Organizer implements MkOrganizer {
         this.logger.log('organize');
         try {
             const tabs = await this.browser.tabs.query({});
-            // Cache tabs regardless settings as early as possible
-            const isCacheFilled = this.cache.exists();
-            // Cache a single addition tab or everything
-            const tabsToCache = isCacheFilled && tab ? [tab] : tabs;
+            // Cache tabs regardless of settings as early as possible
+            // and cache a single updated tab or everything
+            const tabsToCache = this.cache.exists() && tab ? [tab] : tabs;
             const cacheItems = await this.makeCacheItems(tabsToCache);
             this.cache.set(cacheItems);
-
-            // Sorted tabs are needed for sorting or grouping
+            // Sorted tabs are needed for sorting and grouping
             const sortedTabs = await this.tabsSorter.sort(tabs);
             const { enableAutomaticSorting } = await this.store.getState();
             if (enableAutomaticSorting) {
