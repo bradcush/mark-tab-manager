@@ -9,6 +9,7 @@ import {
 import { MkState, MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
+import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
 
 /**
  * Context menu creation and change handling
@@ -17,6 +18,7 @@ export class Menu implements MkMenu {
     public constructor({
         browser,
         store,
+        tabsGrouper,
         tabsOrganizer,
         Logger,
     }: MkConstructorParams) {
@@ -24,6 +26,11 @@ export class Menu implements MkMenu {
             throw new Error('No browser');
         }
         this.browser = browser;
+
+        if (!tabsGrouper) {
+            throw new Error('No tabsGrouper');
+        }
+        this.tabsGrouper = tabsGrouper;
 
         if (!tabsOrganizer) {
             throw new Error('No tabsOrganizer');
@@ -43,6 +50,7 @@ export class Menu implements MkMenu {
     }
 
     private readonly browser: MkMenuBrowser;
+    private readonly tabsGrouper: MkTabsGrouper;
     private readonly tabsOrganizer: MkTabsOrganizer;
     private readonly store: MkStore;
     private readonly logger: MkLogger;
@@ -183,7 +191,7 @@ export class Menu implements MkMenu {
         // Remove any existing groups when grouping is disabled
         const isAutomaticGrouping = menuItemId === 'enableAutomaticGrouping';
         if (isAutomaticGrouping && !checked) {
-            void this.tabsOrganizer.removeAllGroups();
+            void this.tabsGrouper.removeAllGroups();
         }
         const settings: (keyof MkState)[] = [
             'enableAutomaticGrouping',

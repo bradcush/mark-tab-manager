@@ -7,16 +7,9 @@ export const organizerBrowser = {
     runtime: {
         onInstalled: browser.runtime.onInstalled,
     },
-    tabGroups: {
-        Color: browser.tabGroups.Color,
-        query: browser.tabGroups.query,
-        update: browser.tabGroups.update,
-    },
     tabs: {
-        group: browser.tabs.group,
         onUpdated: browser.tabs.onUpdated,
         onRemoved: browser.tabs.onRemoved,
         query: browser.tabs.query,
-        ungroup: browser.tabs.ungroup,
     },
 };
