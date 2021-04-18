@@ -31,7 +31,12 @@ const contextMenus = {
     removeAll: chrome.contextMenus.removeAll,
 };
 
+const management = {
+    onEnabled: chrome.management.onEnabled,
+};
+
 const runtime = {
+    id: chrome.runtime.id,
     onInstalled: chrome.runtime.onInstalled,
 };
 
@@ -67,6 +72,7 @@ export const browser: MkBrowser = {
     action,
     bookmarks,
     contextMenus,
+    management,
     runtime,
     storage,
     tabGroups,
