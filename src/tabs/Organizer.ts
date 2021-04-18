@@ -84,6 +84,17 @@ export class Organizer implements MkOrganizer {
             void this.organize({ type: 'collapse' });
         });
 
+        // Organize tabs when enabled but previously installed
+        this.browser.management.onEnabled.addListener((info) => {
+            this.logger.log('browser.management.onEnabled', info);
+            // We only care about ourselves being enabled
+            const isEnabled = info.id === this.browser.runtime.id;
+            if (!isEnabled) {
+                return;
+            }
+            void this.organize({ type: 'collapse' });
+        });
+
         // Handle when the extension icon is clicked
         this.browser.action.onClicked.addListener(() => {
             this.logger.log('browser.action.onClicked');

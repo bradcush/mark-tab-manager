@@ -14,7 +14,12 @@ interface MkBrowserAction {
     onClicked: MkBrowser.action.OnClicked;
 }
 
+interface MkBrowserManagement {
+    onEnabled: MkBrowser.management.OnEnabled;
+}
+
 interface MkBrowserRuntime {
+    id: MkBrowser.runtime.Id;
     onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
@@ -26,6 +31,7 @@ interface MkBrowserTabs {
 
 export interface MkOrganizerBrowser {
     action: MkBrowserAction;
+    management: MkBrowserManagement;
     runtime: MkBrowserRuntime;
     tabs: MkBrowserTabs;
 }

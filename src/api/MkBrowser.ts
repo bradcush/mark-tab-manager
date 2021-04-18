@@ -21,7 +21,12 @@ interface MkBrowserContextMenus {
     removeAll: MkBrowser.contextMenus.RemoveAll;
 }
 
+interface MkBrowserManagement {
+    onEnabled: MkBrowser.management.OnEnabled;
+}
+
 interface MkBrowserRuntime {
+    id: MkBrowser.runtime.Id;
     onInstalled: MkBrowser.runtime.OnInstalled;
 }
 
@@ -53,8 +58,9 @@ interface MkBrowserTabs {
 
 export interface MkBrowser {
     action: MkBrowserAction;
-    contextMenus: MkBrowserContextMenus;
     bookmarks: MkBrowserBookmarks;
+    contextMenus: MkBrowserContextMenus;
+    management: MkBrowserManagement;
     runtime: MkBrowserRuntime;
     storage: MkBrowserStorage;
     tabGroups: MkBrowserTabGroups;
@@ -73,16 +79,6 @@ export declare namespace MkBrowser.action {
     ) => Promise<void>;
 }
 
-export declare namespace MkBrowser.contextMenus {
-    export type Create = (
-        createProperties: MkBrowser.contextMenus.CreateProperties
-    ) => Promise<void>;
-    export type CreateProperties = chrome.contextMenus.CreateProperties;
-    export type OnClicked = typeof chrome.contextMenus.onClicked;
-    export type OnClickedData = chrome.contextMenus.OnClickData;
-    export type RemoveAll = typeof chrome.contextMenus.removeAll;
-}
-
 export declare namespace MkBrowser.bookmarks {
     export type BookmarkSearchQuery =
         | chrome.bookmarks.BookmarkSearchQuery
@@ -94,7 +90,22 @@ export declare namespace MkBrowser.bookmarks {
     ) => Promise<MkBrowser.bookmarks.BookmarkTreeNode[]>;
 }
 
+export declare namespace MkBrowser.contextMenus {
+    export type Create = (
+        createProperties: MkBrowser.contextMenus.CreateProperties
+    ) => Promise<void>;
+    export type CreateProperties = chrome.contextMenus.CreateProperties;
+    export type OnClicked = typeof chrome.contextMenus.onClicked;
+    export type OnClickedData = chrome.contextMenus.OnClickData;
+    export type RemoveAll = typeof chrome.contextMenus.removeAll;
+}
+
+export declare namespace MkBrowser.management {
+    export type OnEnabled = typeof chrome.management.onEnabled;
+}
+
 export declare namespace MkBrowser.runtime {
+    export type Id = typeof chrome.runtime.id;
     export type OnInstalled = typeof chrome.runtime.onInstalled;
 }
 
