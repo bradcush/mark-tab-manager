@@ -26,6 +26,15 @@ export class MemoryCache implements MkCache {
         this.logger.log('exists', isCacheFilled);
         return isCacheFilled;
     }
+
+    /**
+     * Clear the entire cache
+     */
+    public flush(): void {
+        this.logger.log('flush');
+        this.keyValueStore.clear();
+    }
+
     /**
      * Retrieve a specific item
      */

@@ -3,6 +3,7 @@
  */
 export interface MkCache {
     exists(): boolean;
+    flush(): void;
     get(key: MkCacheKey): MkCacheValue;
     remove(key: MkCacheKey): void;
     set(items: MkCacheItem[]): void;

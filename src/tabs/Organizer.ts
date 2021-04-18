@@ -176,16 +176,25 @@ export class Organizer implements MkOrganizer {
     }
 
     /**
-     * Order and group all tabs
+     * Order and group all tabs with the ability
+     * to clean and rebuild the cache
      */
     public async organize(
-        { tab, type = 'default' }: MkOrganizeParams = { type: 'default' }
+        { clean = false, tab, type = 'default' }: MkOrganizeParams = {
+            clean: false,
+            type: 'default',
+        }
     ): Promise<void> {
         this.logger.log('organize');
         try {
             const tabs = await this.browser.tabs.query({});
+            // Clear the cache when forced so
+            // we can rebuild when desired
+            if (clean) {
+                this.cache.flush();
+            }
             // Cache tabs regardless of settings as early as possible
-            // and cache a single updated tab or everything
+            // and cache a single updated tab or rebuild everything
             const tabsToCache = this.cache.exists() && tab ? [tab] : tabs;
             const cacheItems = await this.makeCacheItems(tabsToCache);
             this.cache.set(cacheItems);
