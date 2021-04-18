@@ -53,6 +53,7 @@ export interface MkIsGroupChanged {
 export type MkOrganizerType = 'collapse' | 'default';
 
 export interface MkOrganizeParams {
+    clean?: boolean;
     tab?: MkBrowser.tabs.Tab;
     type?: MkOrganizerType;
 }

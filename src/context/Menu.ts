@@ -188,7 +188,10 @@ export class Menu implements MkMenu {
         const isSubdomainFiltering = 'enableSubdomainFiltering' === menuItemId;
         // TODO: Simpler logic could be to reorganize on any change
         if (checked || isSubdomainFiltering) {
-            void this.tabsOrganizer.organize({ type: 'collapse' });
+            void this.tabsOrganizer.organize({
+                clean: true,
+                type: 'collapse',
+            });
         }
         // Remove any existing groups when grouping is disabled
         const isAutomaticGrouping = menuItemId === 'enableAutomaticGrouping';
