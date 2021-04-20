@@ -101,7 +101,7 @@ export class Organizer implements MkOrganizer {
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
             }
-            void this.organize();
+            void this.organize({ type: 'collapse' });
         });
 
         // Handle tabs where a URL is updated

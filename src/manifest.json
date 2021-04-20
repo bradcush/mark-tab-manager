@@ -1,7 +1,7 @@
 {
     "name": "Mark tab manager",
     "description": "The missing tab manager for Chrome",
-    "version": "0.1.16",
+    "version": "0.1.17",
     "manifest_version": 3,
     "action": {
         "default_title": "Mark"
