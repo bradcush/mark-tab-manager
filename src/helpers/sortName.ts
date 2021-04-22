@@ -28,10 +28,11 @@ function makeGranularSortName(params: MkMakeGranularSortNameParams) {
     // Use the highest level subdomain or
     // nothing in if nothing is left
     const sharedSubDomain = subDomains.pop() ?? '';
-    // Shared group type gives domain precedence
-    return groupType === 'shared'
-        ? `${domain}${sharedSubDomain}`
-        : `${sharedSubDomain}${domain}`;
+    // Granular settings give subdomain precedence and
+    // shared group type gives domain precedence
+    return groupType === 'granular'
+        ? `${sharedSubDomain}${domain}`
+        : `${domain}${sharedSubDomain}`;
 }
 
 /**
