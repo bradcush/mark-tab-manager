@@ -1,8 +1,8 @@
 import { MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
-import { makeGroupName } from 'src/helpers/groupName';
 import { MkContstructorParams, MkSorter, MkSorterBrowser } from './MkSorter';
 import { MkBrowser } from 'src/api/MkBrowser';
+import { makeSortName } from 'src/helpers/sortName';
 
 /**
  * Sorting of tabs
@@ -31,19 +31,9 @@ export class Sorter implements MkSorter {
     private readonly store: MkStore;
 
     /**
-     * Compare to be used with sorting where newtab should
-     * be last and specifically in reference to that group
+     * Compare to be used with name sorting
      */
-    private compareGroups(a: string, b: string) {
-        if (a === b) {
-            return 0;
-        }
-        if (a === 'new') {
-            return 1;
-        }
-        if (b === 'new') {
-            return -1;
-        }
+    private compareNames(a: string, b: string) {
         return a.localeCompare(b);
     }
 
@@ -63,9 +53,9 @@ export class Sorter implements MkSorter {
                 throw new Error('No url for sorted tab');
             }
             const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
-            const groupOne = makeGroupName({ type: groupType, url: urlOne });
-            const groupTwo = makeGroupName({ type: groupType, url: urlTwo });
-            return this.compareGroups(groupOne, groupTwo);
+            const groupOne = makeSortName({ type: groupType, url: urlOne });
+            const groupTwo = makeSortName({ type: groupType, url: urlTwo });
+            return this.compareNames(groupOne, groupTwo);
         });
         return sortedTabs;
     }
