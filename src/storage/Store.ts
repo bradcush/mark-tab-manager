@@ -106,6 +106,7 @@ export class Store implements MkStore {
     private makeDefaultState() {
         this.logger.log('makeDefaultState');
         return {
+            clusterGroupedTabs: true,
             enableAutomaticGrouping: true,
             enableAutomaticSorting: true,
             enableSubdomainFiltering: false,

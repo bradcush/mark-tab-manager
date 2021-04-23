@@ -1,8 +1,15 @@
 import { MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
-import { MkContstructorParams, MkSorter, MkSorterBrowser } from './MkSorter';
+import {
+    MkClusterParams,
+    MkContstructorParams,
+    MkSorter,
+    MkSorterBrowser,
+    MkSortParams,
+} from './MkSorter';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { makeSortName } from 'src/helpers/sortName';
+import { makeGroupName } from 'src/helpers/groupName';
 
 /**
  * Sorting of tabs
@@ -38,26 +45,61 @@ export class Sorter implements MkSorter {
     }
 
     /**
-     * Sort tabs alphabetically using their hostname
-     * with exceptions for some specific groups
+     * Separate grouped tabs from orphans
      */
-    public async sort(
-        tabs: MkBrowser.tabs.Tab[]
-    ): Promise<MkBrowser.tabs.Tab[]> {
-        this.logger.log('sort', tabs);
+    private async cluster({ tabGroups, tabs }: MkClusterParams) {
+        this.logger.log('cluster', tabs);
         const { enableSubdomainFiltering } = await this.store.getState();
-        const sortedTabs = tabs.sort((a, b) => {
+        const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
+        // Determine if the tab is alone and not
+        // supposed to belong to any group
+        const isOrphan = (tab: MkBrowser.tabs.Tab) => {
+            const groupName = makeGroupName({ type: groupType, url: tab.url });
+            return tabGroups[groupName][tab.windowId].length < 2;
+        };
+        const groupedTabs = tabs.filter((tab) => !isOrphan(tab));
+        const orphanTabs = tabs.filter(isOrphan);
+        // Groups on the left and singles on the right
+        return [...groupedTabs, ...orphanTabs];
+    }
+
+    /**
+     * Sort tabs based on settings
+     */
+    public async sort({
+        groups,
+        tabs,
+    }: MkSortParams): Promise<MkBrowser.tabs.Tab[]> {
+        this.logger.log('sort', tabs);
+        const {
+            enableAutomaticSorting,
+            clusterGroupedTabs,
+        } = await this.store.getState();
+        const alphabetizedTabs = enableAutomaticSorting
+            ? await this.alphabetize(tabs)
+            : tabs;
+        return clusterGroupedTabs
+            ? this.cluster({ tabGroups: groups, tabs: alphabetizedTabs })
+            : alphabetizedTabs;
+    }
+
+    /**
+     * Sort tabs alphabetically with nuance
+     */
+    private async alphabetize(unsortedTabs: MkBrowser.tabs.Tab[]) {
+        this.logger.log('alphabetize', unsortedTabs);
+        const { enableSubdomainFiltering } = await this.store.getState();
+        return unsortedTabs.sort((a, b) => {
             const urlOne = a.url;
             const urlTwo = b.url;
             if (!urlOne || !urlTwo) {
                 throw new Error('No url for sorted tab');
             }
             const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
-            const groupOne = makeSortName({ type: groupType, url: urlOne });
-            const groupTwo = makeSortName({ type: groupType, url: urlTwo });
-            return this.compareNames(groupOne, groupTwo);
+            const tabOneName = makeSortName({ type: groupType, url: urlOne });
+            const tabTwoName = makeSortName({ type: groupType, url: urlTwo });
+            return this.compareNames(tabOneName, tabTwoName);
         });
-        return sortedTabs;
     }
 
     /**

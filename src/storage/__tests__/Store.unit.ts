@@ -10,6 +10,7 @@ describe('Store', () => {
     describe('when the service is initialized', () => {
         it('should cache storage in memory', async () => {
             const syncGetMock = makeSyncGet({
+                clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
                 enableSubdomainFiltering: true,
@@ -24,6 +25,7 @@ describe('Store', () => {
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
+                clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
                 enableSubdomainFiltering: true,
@@ -34,6 +36,7 @@ describe('Store', () => {
 
         it('should not cache invalid storage in memory', async () => {
             const syncGetMock = makeSyncGet({
+                clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
                 enableSubdomainFiltering: true,
@@ -48,6 +51,7 @@ describe('Store', () => {
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
+                clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
                 enableSubdomainFiltering: true,
@@ -66,6 +70,7 @@ describe('Store', () => {
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
+                clusterGroupedTabs: true,
                 enableAutomaticGrouping: true,
                 enableAutomaticSorting: true,
                 enableSubdomainFiltering: false,
@@ -84,6 +89,7 @@ describe('Store', () => {
             });
             await storageService.load();
             const state = {
+                clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
                 enableSubdomainFiltering: true,
@@ -105,6 +111,7 @@ describe('Store', () => {
             await storageService.load();
 
             const firstState = {
+                clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
                 enableAutomaticSorting: false,
                 enableSubdomainFiltering: true,
@@ -118,6 +125,7 @@ describe('Store', () => {
             expect(set).toBeCalledWith(firstItems);
 
             const secondState = {
+                clusterGroupedTabs: true,
                 enableAutomaticGrouping: true,
                 enableAutomaticSorting: true,
                 enableSubdomainFiltering: false,
@@ -142,6 +150,7 @@ describe('Store', () => {
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
+                clusterGroupedTabs: true,
                 enableAutomaticGrouping: true,
                 enableAutomaticSorting: true,
                 enableSubdomainFiltering: false,

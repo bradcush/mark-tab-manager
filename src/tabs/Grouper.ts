@@ -3,7 +3,7 @@ import {
     MkActiveTabIdsByWindowKey,
     MkActiveTabIdsByWindowValue,
     MkAddNewGroupParams,
-    MkContstructorParams,
+    MkConstructorParams,
     MkGetGroupInfoParams,
     MkGrouper,
     MkGrouperBrowser,
@@ -25,7 +25,7 @@ import { makeGroupName } from 'src/helpers/groupName';
  * Grouping and ungrouping of tabs
  */
 export class Grouper implements MkGrouper {
-    public constructor({ browser, store, Logger }: MkContstructorParams) {
+    public constructor({ browser, store, Logger }: MkConstructorParams) {
         if (!browser) {
             throw new Error('No browser');
         }
@@ -265,30 +265,31 @@ export class Grouper implements MkGrouper {
     /**
      * Group tabs in the browser
      */
-    public async render({ organizeType, tabs }: MkRender): Promise<void> {
+    public render({ groups, organizeType, tabs }: MkRender): void {
         this.logger.log('render');
-        const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
         const activeTabIdsByWindow = this.getActiveTabIdsByWindow(tabs);
-        const tabIdsByGroup = await this.sortTabIdsByGroup(nonPinnedTabs);
         this.renderGroupsByName({
             activeTabIdsByWindow,
+            tabIdsByGroup: groups,
             type: organizeType,
-            tabIdsByGroup,
         });
     }
 
     /**
-     * Sort tabs by their group name and window id
+     * Group tabs by their group name and window id
      */
-    private async sortTabIdsByGroup(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('sortTabIdsByGroup');
+    public async group(tabs: MkBrowser.tabs.Tab[]): Promise<MkTabIdsByGroup> {
+        this.logger.log('group');
+        const {
+            enableSubdomainFiltering,
+            forceWindowConsolidation,
+        } = await this.store.getState();
         const tabIdsByGroup: MkTabIdsByGroup = {};
-        const { forceWindowConsolidation } = await this.store.getState();
-        const { enableSubdomainFiltering } = await this.store.getState();
+        const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
         // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
         // "windowId" in our algorithm which the representative -2 breaks
-        const staticWindowId = tabs[0].windowId;
-        tabs.forEach((tab) => {
+        const staticWindowId = nonPinnedTabs[0].windowId;
+        nonPinnedTabs.forEach((tab) => {
             const { id, url, windowId } = tab;
             if (!id) {
                 throw new Error('No id for tab');
@@ -316,7 +317,7 @@ export class Grouper implements MkGrouper {
                 tabIdsByGroup[groupName][chosenWindowId].push(id);
             }
         });
-        this.logger.log('sortTabIdsByGroup', tabIdsByGroup);
+        this.logger.log('group', tabIdsByGroup);
         return tabIdsByGroup;
     }
 

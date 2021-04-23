@@ -21,6 +21,7 @@ export interface MkConstructorParams {
 }
 
 export interface MkState {
+    clusterGroupedTabs: boolean;
     enableAutomaticGrouping: boolean;
     enableAutomaticSorting: boolean;
     enableSubdomainFiltering: boolean;
