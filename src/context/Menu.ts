@@ -93,13 +93,13 @@ export class Menu implements MkMenu {
         // for toggling automatic sorting
         const labelId = 'settings';
         void this.createLabel(labelId);
-        const { enableAutomaticSorting } = await this.store.getState();
-        this.logger.log('create', enableAutomaticSorting);
+        const { enableAlphabeticSorting } = await this.store.getState();
+        this.logger.log('create', enableAlphabeticSorting);
         void this.createCheckbox({
-            id: 'enableAutomaticSorting',
-            isChecked: enableAutomaticSorting,
+            id: 'enableAlphabeticSorting',
+            isChecked: enableAlphabeticSorting,
             parentId: labelId,
-            title: 'Enable automatic sorting',
+            title: 'Enable alphabetic sorting',
         });
         // Create the browser action context menu
         // for toggling automatic grouping
@@ -214,7 +214,7 @@ export class Menu implements MkMenu {
         const settings: (keyof MkState)[] = [
             'clusterGroupedTabs',
             'enableAutomaticGrouping',
-            'enableAutomaticSorting',
+            'enableAlphabeticSorting',
             'enableSubdomainFiltering',
             'forceWindowConsolidation',
         ];

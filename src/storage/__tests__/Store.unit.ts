@@ -12,7 +12,7 @@ describe('Store', () => {
             const syncGetMock = makeSyncGet({
                 clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
-                enableAutomaticSorting: false,
+                enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 invalidSetting: true,
@@ -27,7 +27,7 @@ describe('Store', () => {
             const expectedState = {
                 clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
-                enableAutomaticSorting: false,
+                enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
             };
@@ -38,7 +38,7 @@ describe('Store', () => {
             const syncGetMock = makeSyncGet({
                 clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
-                enableAutomaticSorting: false,
+                enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 invalidSetting: true,
@@ -53,7 +53,7 @@ describe('Store', () => {
             const expectedState = {
                 clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
-                enableAutomaticSorting: false,
+                enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
             };
@@ -72,7 +72,7 @@ describe('Store', () => {
             const expectedState = {
                 clusterGroupedTabs: true,
                 enableAutomaticGrouping: true,
-                enableAutomaticSorting: true,
+                enableAlphabeticSorting: true,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
             };
@@ -91,7 +91,7 @@ describe('Store', () => {
             const state = {
                 clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
-                enableAutomaticSorting: false,
+                enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
             };
@@ -113,7 +113,7 @@ describe('Store', () => {
             const firstState = {
                 clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
-                enableAutomaticSorting: false,
+                enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
             };
@@ -127,7 +127,7 @@ describe('Store', () => {
             const secondState = {
                 clusterGroupedTabs: true,
                 enableAutomaticGrouping: true,
-                enableAutomaticSorting: true,
+                enableAlphabeticSorting: true,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
             };
@@ -152,7 +152,7 @@ describe('Store', () => {
             const expectedState = {
                 clusterGroupedTabs: true,
                 enableAutomaticGrouping: true,
-                enableAutomaticSorting: true,
+                enableAlphabeticSorting: true,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
             };

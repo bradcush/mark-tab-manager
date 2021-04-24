@@ -201,7 +201,7 @@ export class Organizer implements MkOrganizer {
             this.cache.set(cacheItems);
             const {
                 clusterGroupedTabs,
-                enableAutomaticSorting,
+                enableAlphabeticSorting,
             } = await this.store.getState();
             const tabGroups = await this.tabsGrouper.group(unsortedTabs);
             const sortedTabs = await this.tabsSorter.sort({
@@ -210,7 +210,7 @@ export class Organizer implements MkOrganizer {
             });
             // We currently allow clustering even
             // when grouping is disabled
-            if (enableAutomaticSorting || clusterGroupedTabs) {
+            if (enableAlphabeticSorting || clusterGroupedTabs) {
                 void this.tabsSorter.render(sortedTabs);
             }
             const isGroupingEnabled = await this.tabsGrouper.isEnabled();

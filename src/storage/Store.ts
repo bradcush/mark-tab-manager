@@ -108,7 +108,7 @@ export class Store implements MkStore {
         return {
             clusterGroupedTabs: true,
             enableAutomaticGrouping: true,
-            enableAutomaticSorting: true,
+            enableAlphabeticSorting: true,
             enableSubdomainFiltering: false,
             forceWindowConsolidation: false,
         };

@@ -72,10 +72,10 @@ export class Sorter implements MkSorter {
     }: MkSortParams): Promise<MkBrowser.tabs.Tab[]> {
         this.logger.log('sort', tabs);
         const {
-            enableAutomaticSorting,
+            enableAlphabeticSorting,
             clusterGroupedTabs,
         } = await this.store.getState();
-        const alphabetizedTabs = enableAutomaticSorting
+        const alphabetizedTabs = enableAlphabeticSorting
             ? await this.alphabetize(tabs)
             : tabs;
         return clusterGroupedTabs

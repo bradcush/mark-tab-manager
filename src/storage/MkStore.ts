@@ -23,7 +23,7 @@ export interface MkConstructorParams {
 export interface MkState {
     clusterGroupedTabs: boolean;
     enableAutomaticGrouping: boolean;
-    enableAutomaticSorting: boolean;
+    enableAlphabeticSorting: boolean;
     enableSubdomainFiltering: boolean;
     forceWindowConsolidation: boolean;
 }
