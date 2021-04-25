@@ -1,6 +1,11 @@
 import {
     MkConstructorParams,
+    MkLegacyStateKey,
+    MkMigrateState,
+    MkPotentialState,
+    MkPotentialStateKey,
     MkState,
+    MkStateKey,
     MkStore,
     MkStoreBrowser,
 } from './MkStore';
@@ -40,21 +45,6 @@ export class Store implements MkStore {
     private state: MkState;
 
     /**
-     * Load existing sync storage into memory cache
-     * and provide defaults for what hasn't been set
-     */
-    public async load(): Promise<void> {
-        this.logger.log('load');
-        await this.cacheStorage();
-        // Indicate storage is loaded for
-        // anyone who depends on it
-        if (!this.resolveLoaded) {
-            throw new Error('Resolve loaded not set');
-        }
-        this.resolveLoaded();
-    }
-
-    /**
      * Fetch valid storage values and set
      * appropriate values in memory for access
      */
@@ -80,14 +70,43 @@ export class Store implements MkStore {
     }
 
     /**
-     * Whether the key in storage should be in state
+     * Test and type guard that the key in storage
+     * is a valid key that is no longer supported
      */
-    private isKeyValid(key: string) {
+    private isLegacyKeyValid = (key: string): key is MkLegacyStateKey => {
+        this.logger.log('isLegacyKeyValid');
+        const legacyState = this.makeLegacyState();
+        const legacyStateKeys = Object.keys(legacyState);
+        return legacyStateKeys.includes(key);
+    };
+
+    /**
+     * Test and type guard that the key
+     * in storage should be in state
+     */
+    private isKeyValid = (key: string): key is MkStateKey => {
         this.logger.log('isKeyValid');
         const defaultState = this.makeDefaultState();
         const defaultStateKeys = Object.keys(defaultState);
         return defaultStateKeys.includes(key);
+    };
+
+    /**
+     * Get the new key name of an old
+     * key that has been changed
+     */
+    private getMigratedKey(key: MkLegacyStateKey) {
+        this.logger.log('getMigratedKey', key);
+        const migratedKeyByLegacy = {
+            enableAutomaticSorting: 'enableAlphabeticSorting',
+        } as const;
+        const migratedKey = migratedKeyByLegacy[key];
+        if (!migratedKey) {
+            return null;
+        }
+        return migratedKey;
     }
+
     /**
      * Retrieve the current in memory state
      */
@@ -97,6 +116,21 @@ export class Store implements MkStore {
         await this.loaded;
         this.logger.log('getState', this.state);
         return this.state;
+    }
+
+    /**
+     * Load existing sync storage into memory cache
+     * and provide defaults for what hasn't been set
+     */
+    public async load(): Promise<void> {
+        this.logger.log('load');
+        await this.cacheStorage();
+        // Indicate storage is loaded for
+        // anyone who depends on it
+        if (!this.resolveLoaded) {
+            throw new Error('Resolve loaded not set');
+        }
+        this.resolveLoaded();
     }
 
     /**
@@ -115,8 +149,41 @@ export class Store implements MkStore {
     }
 
     /**
+     * Collection of legacy keys that may exist in a users storage
+     * and their original default values for reference
+     */
+    private makeLegacyState() {
+        this.logger.log('makeLegacyState');
+        return {
+            enableAutomaticSorting: true,
+        };
+    }
+
+    /**
+     * Migrate any settings under old key
+     * names to their new key name
+     */
+    private migrateState({ keys, state }: MkMigrateState) {
+        this.logger.log('migrateState', keys);
+        const migratedState: Partial<MkState> = {};
+        const legacyStateKeys = keys.filter(this.isLegacyKeyValid);
+        legacyStateKeys.forEach((legacyStateKey) => {
+            const migratedKey = this.getMigratedKey(legacyStateKey);
+            // We might not have a valid
+            // key that we can migrate
+            if (!migratedKey) {
+                return;
+            }
+            migratedState[migratedKey] = state[legacyStateKey];
+        });
+        this.logger.log('migrateState', migratedState);
+        return migratedState;
+    }
+
+    /**
      * Parse valid values for top-level state only without
-     * checking if the types of values are what we expect
+     * checking if the types of values are what we expect.
+     * Migrate any key names that maybe have changed.
      */
     private parseValidState(state: string) {
         this.logger.log('parseValidState', state);
@@ -124,17 +191,28 @@ export class Store implements MkStore {
             throw new Error('No state to parse');
         }
         // TODO: Avoid unsafe casting to what we expect
-        const parsedState = JSON.parse(state) as MkState;
+        const parsedState = JSON.parse(state) as MkPotentialState;
         // TODO: Avoid unsafe casting to make TS happy
-        const stateKeys = Object.keys(parsedState) as (keyof MkState)[];
-        const validState: Partial<MkState> = {};
-        stateKeys.forEach((stateKey) => {
-            const isKeyValid = this.isKeyValid(stateKey);
-            if (!isKeyValid) {
-                return;
-            }
-            validState[stateKey] = parsedState[stateKey];
+        const stateKeys = Object.keys(parsedState) as MkPotentialStateKey[];
+        // Migrate any keys where the name may have changed
+        const validParsedState: Partial<MkState> = {};
+        const validStateKeys = stateKeys.filter(this.isKeyValid);
+        validStateKeys.forEach((validStateKey) => {
+            validParsedState[validStateKey] = parsedState[validStateKey];
         });
+        this.logger.log('parseValidState', validParsedState);
+        // Migrating any previously named values during parsing without
+        // immediately persisting means we rely on the setting of state
+        // later to persist a migration change and can't assume everyone
+        // who has this specific version has their migration persisted.
+        const migratedState = this.migrateState({
+            keys: stateKeys,
+            state: parsedState,
+        });
+        const validState: Partial<MkState> = {
+            ...validParsedState,
+            ...migratedState,
+        };
         this.logger.log('parseValidState', validState);
         return validState;
     }
@@ -157,7 +235,7 @@ export class Store implements MkStore {
      * Store a value directly in persistent storage
      */
     public async setState(state: Partial<MkState>): Promise<void> {
-        this.logger.log('setState');
+        this.logger.log('setState', state);
         try {
             // Wait for the initial data load
             await this.loaded;
@@ -166,6 +244,7 @@ export class Store implements MkStore {
             // at the right time when it may be accessed.
             const internalState = this.setInternalState(state);
             const serializedState = JSON.stringify(internalState);
+            this.logger.log('setState', serializedState);
             const items = { settings: serializedState };
             await this.browser.storage.sync.set(items);
         } catch (error) {

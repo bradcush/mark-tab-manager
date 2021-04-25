@@ -20,6 +20,23 @@ export interface MkConstructorParams {
     Logger: MkLoggerConstructor;
 }
 
+// A collection of previous
+// keys and their type
+interface MkLegacyState {
+    enableAutomaticSorting: boolean;
+}
+
+export type MkLegacyStateKey = keyof MkLegacyState;
+
+export interface MkMigrateState {
+    keys: MkPotentialStateKey[];
+    state: MkPotentialState;
+}
+
+export type MkPotentialState = MkState & MkLegacyState;
+
+export type MkPotentialStateKey = keyof MkState | keyof MkLegacyState;
+
 export interface MkState {
     clusterGroupedTabs: boolean;
     enableAutomaticGrouping: boolean;
@@ -27,3 +44,5 @@ export interface MkState {
     enableSubdomainFiltering: boolean;
     forceWindowConsolidation: boolean;
 }
+
+export type MkStateKey = keyof MkState;
