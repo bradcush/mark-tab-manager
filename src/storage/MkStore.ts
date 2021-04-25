@@ -29,13 +29,15 @@ interface MkLegacyState {
 export type MkLegacyStateKey = keyof MkLegacyState;
 
 export interface MkMigrateState {
-    keys: MkPotentialStateKey[];
+    keys: string[];
     state: MkPotentialState;
 }
 
-export type MkPotentialState = MkState & MkLegacyState;
+export type MkPotentialState = Record<string, boolean>;
 
-export type MkPotentialStateKey = keyof MkState | keyof MkLegacyState;
+export function isPotentialState(state: unknown): state is MkPotentialState {
+    return typeof state === 'object' && state !== null;
+}
 
 export interface MkState {
     clusterGroupedTabs: boolean;

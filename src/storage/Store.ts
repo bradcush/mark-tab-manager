@@ -1,9 +1,8 @@
 import {
+    isPotentialState,
     MkConstructorParams,
     MkLegacyStateKey,
     MkMigrateState,
-    MkPotentialState,
-    MkPotentialStateKey,
     MkState,
     MkStateKey,
     MkStore,
@@ -181,6 +180,28 @@ export class Store implements MkStore {
     }
 
     /**
+     * Parse the stringified state if possible
+     * or pretend we have nothing in storage
+     */
+    private parseState(state: string) {
+        try {
+            // Better to type JSON as unknown for safety
+            const parsedStateRaw = JSON.parse(state) as unknown;
+            if (!isPotentialState(parsedStateRaw)) {
+                const error = new Error('Error parsing state');
+                this.logger.error('parseValidState', error);
+                // Unexpected types start clean
+                return {};
+            }
+            return parsedStateRaw;
+        } catch (error) {
+            // Errors during parsing start clean
+            this.logger.error('parseValidState', error);
+            return {};
+        }
+    }
+
+    /**
      * Parse valid values for top-level state only without
      * checking if the types of values are what we expect.
      * Migrate any key names that maybe have changed.
@@ -190,10 +211,8 @@ export class Store implements MkStore {
         if (!state) {
             throw new Error('No state to parse');
         }
-        // TODO: Avoid unsafe casting to what we expect
-        const parsedState = JSON.parse(state) as MkPotentialState;
-        // TODO: Avoid unsafe casting to make TS happy
-        const stateKeys = Object.keys(parsedState) as MkPotentialStateKey[];
+        const parsedState = this.parseState(state);
+        const stateKeys = Object.keys(parsedState);
         // Migrate any keys where the name may have changed
         const validParsedState: Partial<MkState> = {};
         const validStateKeys = stateKeys.filter(this.isKeyValid);
