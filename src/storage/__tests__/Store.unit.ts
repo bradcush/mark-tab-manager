@@ -1,6 +1,7 @@
 import { Store } from '../Store';
 import { makeStoreBrowser, makeSyncGet } from '../__mocks__/storeBrowser';
 import { ConsoleLogger } from 'src/logs/ConsoleLogger';
+import { MkSyncGetItems } from 'src/api/browser/storage/sync/MkSync';
 
 describe('Store', () => {
     afterEach(() => {
@@ -34,7 +35,67 @@ describe('Store', () => {
             expect(state).toStrictEqual(expectedState);
         });
 
-        it('should not cache invalid storage in memory', async () => {
+        it('should not cache non-persisted settings in memory', async () => {
+            const nonPersistedSettings = { settings: undefined };
+            const syncGetMock = () => Promise.resolve(nonPersistedSettings);
+            const browserMock = makeStoreBrowser(syncGetMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
+            await storageService.load();
+            const state = await storageService.getState();
+            const expectedState = {
+                clusterGroupedTabs: true,
+                enableAutomaticGrouping: true,
+                enableAlphabeticSorting: true,
+                enableSubdomainFiltering: false,
+                forceWindowConsolidation: false,
+            };
+            expect(state).toStrictEqual(expectedState);
+        });
+
+        it('should not cache invalid typed settings in memory', async () => {
+            const invalidTypedSettings = { settings: true };
+            const syncGetMock = () => Promise.resolve(invalidTypedSettings);
+            const browserMock = makeStoreBrowser(syncGetMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
+            await storageService.load();
+            const state = await storageService.getState();
+            const expectedState = {
+                clusterGroupedTabs: true,
+                enableAutomaticGrouping: true,
+                enableAlphabeticSorting: true,
+                enableSubdomainFiltering: false,
+                forceWindowConsolidation: false,
+            };
+            expect(state).toStrictEqual(expectedState);
+        });
+
+        it('should not cache invalid content in memory', async () => {
+            const invalidContent = ('invalidContent' as unknown) as MkSyncGetItems;
+            const syncGetMock = makeSyncGet(invalidContent);
+            const browserMock = makeStoreBrowser(syncGetMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
+            await storageService.load();
+            const state = await storageService.getState();
+            const expectedState = {
+                clusterGroupedTabs: true,
+                enableAutomaticGrouping: true,
+                enableAlphabeticSorting: true,
+                enableSubdomainFiltering: false,
+                forceWindowConsolidation: false,
+            };
+            expect(state).toStrictEqual(expectedState);
+        });
+
+        it('should not cache invalid storage keys in memory', async () => {
             const syncGetMock = makeSyncGet({
                 clusterGroupedTabs: false,
                 enableAutomaticGrouping: false,
@@ -73,6 +134,31 @@ describe('Store', () => {
                 clusterGroupedTabs: true,
                 enableAutomaticGrouping: true,
                 enableAlphabeticSorting: true,
+                enableSubdomainFiltering: false,
+                forceWindowConsolidation: false,
+            };
+            expect(state).toStrictEqual(expectedState);
+        });
+
+        it('should migrate legacy keys to their new name', async () => {
+            const syncGetMock = makeSyncGet({
+                clusterGroupedTabs: true,
+                enableAutomaticGrouping: true,
+                enableAutomaticSorting: false,
+                enableSubdomainFiltering: false,
+                forceWindowConsolidation: false,
+            });
+            const browserMock = makeStoreBrowser(syncGetMock);
+            const storageService = new Store({
+                browser: browserMock,
+                Logger: ConsoleLogger,
+            });
+            await storageService.load();
+            const state = await storageService.getState();
+            const expectedState = {
+                clusterGroupedTabs: true,
+                enableAutomaticGrouping: true,
+                enableAlphabeticSorting: false,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
             };

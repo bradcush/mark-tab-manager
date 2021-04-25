@@ -105,9 +105,6 @@ export class Store implements MkStore {
             enableAutomaticSorting: 'enableAlphabeticSorting',
         } as const;
         const migratedKey = migratedKeyByLegacy[key];
-        if (!migratedKey) {
-            return null;
-        }
         return migratedKey;
     }
 
@@ -173,11 +170,6 @@ export class Store implements MkStore {
         const legacyStateKeys = keys.filter(this.isLegacyKeyValid);
         legacyStateKeys.forEach((legacyStateKey) => {
             const migratedKey = this.getMigratedKey(legacyStateKey);
-            // We might not have a valid
-            // key that we can migrate
-            if (!migratedKey) {
-                return;
-            }
             migratedState[migratedKey] = state[legacyStateKey];
         });
         this.logger.log('migrateState', migratedState);
@@ -213,9 +205,6 @@ export class Store implements MkStore {
      */
     private parseValidState(state: string) {
         this.logger.log('parseValidState', state);
-        if (!state) {
-            throw new Error('No state to parse');
-        }
         const parsedState = this.parseState(state);
         const stateKeys = Object.keys(parsedState);
         // Migrate any keys where the name may have changed
