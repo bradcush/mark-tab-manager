@@ -29,14 +29,14 @@ function initBackground() {
     });
     void storeInstance.load();
 
-    // Create memory cache for group caching
-    const memoryCache = new MemoryCache(ConsoleLogger);
     // Create tab grouper for grouping tabs
     const tabsGrouperInstance = new TabsGrouper({
         browser: tabsGrouperBrowser,
         store: storeInstance,
         Logger: ConsoleLogger,
     });
+    // Create memory cache for group caching
+    const memoryCache = new MemoryCache(ConsoleLogger);
     // Create tab sorter for sorting tabs
     const tabsSorterInstance = new TabsSorter({
         browser: tabsSorterBrowser,

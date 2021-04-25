@@ -4,10 +4,11 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { MkOrganizerType } from './MkOrganizer';
 
 export interface MkGrouper {
+    group(tabs: MkBrowser.tabs.Tab[]): Promise<MkTabIdsByGroup>;
     isEnabled(): Promise<boolean>;
     isSupported(): boolean;
     remove(): Promise<void>;
-    render(params: MkRender): Promise<void>;
+    render(params: MkRender): void;
 }
 
 interface MkBrowserTabGroups {
@@ -26,7 +27,7 @@ export interface MkGrouperBrowser {
     tabGroups: MkBrowserTabGroups;
     tabs: MkBrowserTabs;
 }
-export interface MkContstructorParams {
+export interface MkConstructorParams {
     browser: MkGrouperBrowser;
     store: MkStore;
     Logger: MkLoggerConstructor;
@@ -60,6 +61,7 @@ export interface MkRenderGroupsByNameParams {
 }
 
 export interface MkRender {
+    groups: MkTabIdsByGroup;
     organizeType: MkOrganizerType;
     tabs: MkBrowser.tabs.Tab[];
 }

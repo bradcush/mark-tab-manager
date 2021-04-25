@@ -187,7 +187,7 @@ export class Organizer implements MkOrganizer {
     ): Promise<void> {
         this.logger.log('organize');
         try {
-            const tabs = await this.browser.tabs.query({});
+            const unsortedTabs = await this.browser.tabs.query({});
             // Clear the cache when forced so
             // we can rebuild when desired
             if (clean) {
@@ -195,18 +195,28 @@ export class Organizer implements MkOrganizer {
             }
             // Cache tabs regardless of settings as early as possible
             // and cache a single updated tab or rebuild everything
-            const tabsToCache = this.cache.exists() && tab ? [tab] : tabs;
+            const tabsToCache =
+                this.cache.exists() && tab ? [tab] : unsortedTabs;
             const cacheItems = await this.makeCacheItems(tabsToCache);
             this.cache.set(cacheItems);
-            // Sorted tabs are needed for sorting and grouping
-            const sortedTabs = await this.tabsSorter.sort(tabs);
-            const { enableAutomaticSorting } = await this.store.getState();
-            if (enableAutomaticSorting) {
+            const {
+                clusterGroupedTabs,
+                enableAlphabeticSorting,
+            } = await this.store.getState();
+            const tabGroups = await this.tabsGrouper.group(unsortedTabs);
+            const sortedTabs = await this.tabsSorter.sort({
+                groups: tabGroups,
+                tabs: unsortedTabs,
+            });
+            // We currently allow clustering even
+            // when grouping is disabled
+            if (enableAlphabeticSorting || clusterGroupedTabs) {
                 void this.tabsSorter.render(sortedTabs);
             }
             const isGroupingEnabled = await this.tabsGrouper.isEnabled();
             if (isGroupingEnabled) {
-                void this.tabsGrouper.render({
+                this.tabsGrouper.render({
+                    groups: tabGroups,
                     organizeType: type,
                     tabs: sortedTabs,
                 });

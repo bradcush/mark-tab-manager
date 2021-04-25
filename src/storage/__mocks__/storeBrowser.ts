@@ -3,8 +3,9 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStoreBrowser } from '../MkStore';
 
 const defaultItems = {
+    clusterGroupedTabs: true,
     enableAutomaticGrouping: true,
-    enableAutomaticSorting: true,
+    enableAlphabeticSorting: true,
     enableSubdomainFiltering: false,
     forceWindowConsolidation: false,
 };

@@ -93,13 +93,13 @@ export class Menu implements MkMenu {
         // for toggling automatic sorting
         const labelId = 'settings';
         void this.createLabel(labelId);
-        const { enableAutomaticSorting } = await this.store.getState();
-        this.logger.log('create', enableAutomaticSorting);
+        const { enableAlphabeticSorting } = await this.store.getState();
+        this.logger.log('create', enableAlphabeticSorting);
         void this.createCheckbox({
-            id: 'enableAutomaticSorting',
-            isChecked: enableAutomaticSorting,
+            id: 'enableAlphabeticSorting',
+            isChecked: enableAlphabeticSorting,
             parentId: labelId,
-            title: 'Enable automatic sorting',
+            title: 'Enable alphabetic sorting',
         });
         // Create the browser action context menu
         // for toggling automatic grouping
@@ -123,6 +123,16 @@ export class Menu implements MkMenu {
             isChecked: enableSubdomainFiltering,
             parentId: labelId,
             title: 'Enable subdomain filtering',
+        });
+        // Create the browser action context menu
+        // for toggling tab group clustering
+        const { clusterGroupedTabs } = await this.store.getState();
+        this.logger.log('create', clusterGroupedTabs);
+        void this.createCheckbox({
+            id: 'clusterGroupedTabs',
+            isChecked: clusterGroupedTabs,
+            parentId: labelId,
+            title: 'Cluster grouped tabs',
         });
         // Create the browser action context menu
         // for toggling forced window consolidation
@@ -186,8 +196,11 @@ export class Menu implements MkMenu {
         // opinionated as it relies checked settings meaning enabled.
         // Additionally granularity changes need reorganization
         const isSubdomainFiltering = 'enableSubdomainFiltering' === menuItemId;
+        const isClusterGroupedTabs = 'clusterGroupedTabs' === menuItemId;
+        const isUnorganizationSetting =
+            isSubdomainFiltering || isClusterGroupedTabs;
         // TODO: Simpler logic could be to reorganize on any change
-        if (checked || isSubdomainFiltering) {
+        if (checked || isUnorganizationSetting) {
             void this.tabsOrganizer.organize({
                 clean: true,
                 type: 'collapse',
@@ -199,8 +212,9 @@ export class Menu implements MkMenu {
             void this.tabsGrouper.remove();
         }
         const settings: (keyof MkState)[] = [
+            'clusterGroupedTabs',
             'enableAutomaticGrouping',
-            'enableAutomaticSorting',
+            'enableAlphabeticSorting',
             'enableSubdomainFiltering',
             'forceWindowConsolidation',
         ];
