@@ -54,11 +54,16 @@ export class Store implements MkStore {
             const { settings } = await storage.sync.get('settings');
             this.logger.log('cacheStorage', settings);
             // If there is no storage we don't cache anything
+            // from the outside and consider this step done
             if (typeof settings === 'undefined') {
                 return;
             }
+            // Invalid storage should be logged but
+            // continue assuming local defaults
             if (typeof settings !== 'string') {
-                throw new Error('Invalid settings storage');
+                const invalidError = new Error('Invalid settings storage');
+                this.logger.error('cacheStorage', invalidError);
+                return;
             }
             const validState = this.parseValidState(settings);
             this.setInternalState(validState);
@@ -188,8 +193,8 @@ export class Store implements MkStore {
             // Better to type JSON as unknown for safety
             const parsedStateRaw = JSON.parse(state) as unknown;
             if (!isPotentialState(parsedStateRaw)) {
-                const error = new Error('Error parsing state');
-                this.logger.error('parseValidState', error);
+                const parsingError = new Error('Error parsing state');
+                this.logger.error('parseValidState', parsingError);
                 // Unexpected types start clean
                 return {};
             }
