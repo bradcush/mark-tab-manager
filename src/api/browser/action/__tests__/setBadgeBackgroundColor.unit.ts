@@ -2,9 +2,7 @@ import { setBadgeBackgroundColor } from '../setBadgeBackgroundColor';
 import { setBadgeBackgroundColorMock } from './mocks/setBadgeBackgroundColor';
 
 describe('setBadgeBackgroundColor', () => {
-    const originalSetBadgeBackgroundColor =
-        global.chrome?.action?.setBadgeBackgroundColor;
-    const originalRuntimeError = global.chrome?.runtime?.lastError;
+    const originalChrome = global.chrome;
 
     beforeAll(() => {
         global.chrome = {
@@ -15,8 +13,7 @@ describe('setBadgeBackgroundColor', () => {
         } as typeof chrome;
     });
     afterAll(() => {
-        global.chrome.action.setBadgeBackgroundColor = originalSetBadgeBackgroundColor;
-        global.chrome.runtime.lastError = originalRuntimeError;
+        global.chrome = originalChrome;
     });
 
     it('should resolve after color is correctly set', async () => {

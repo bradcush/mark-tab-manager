@@ -2,8 +2,7 @@ import { setBadgeText } from '../setBadgeText';
 import { setBadgeTextMock } from './mocks/setBadgeText';
 
 describe('setBadgeText', () => {
-    const originalSetBadgeText = global.chrome?.action?.setBadgeText;
-    const originalRuntimeError = global.chrome?.runtime?.lastError;
+    const originalChrome = global.chrome;
 
     beforeAll(() => {
         global.chrome = {
@@ -14,8 +13,7 @@ describe('setBadgeText', () => {
         } as typeof chrome;
     });
     afterAll(() => {
-        global.chrome.action.setBadgeText = originalSetBadgeText;
-        global.chrome.runtime.lastError = originalRuntimeError;
+        global.chrome = originalChrome;
     });
 
     it('should resolve after color is correctly set', async () => {
