@@ -1,5 +1,5 @@
 import { setBadgeBackgroundColor } from '../setBadgeBackgroundColor';
-import { setBadgeBackgroundColorMock } from './mocks/setBadgeBackgroundColor';
+import { setBadgeBackgroundColorMock } from '../mocks/setBadgeBackgroundColor';
 
 describe('setBadgeBackgroundColor', () => {
     const originalChrome = global.chrome;
@@ -26,11 +26,9 @@ describe('setBadgeBackgroundColor', () => {
         global.chrome.runtime.lastError = {
             message: 'error',
         };
-        try {
-            const details = { color: '#000' };
-            await setBadgeBackgroundColor(details);
-        } catch (error) {
-            expect(error).toMatchObject({ message: 'error' });
-        }
+        const details = { color: '#000' };
+        await expect(setBadgeBackgroundColor(details)).rejects.toMatchObject({
+            message: 'error',
+        });
     });
 });

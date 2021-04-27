@@ -1,5 +1,5 @@
 import { Store } from '../Store';
-import { makeStoreBrowser, makeSyncGet } from '../__mocks__/storeBrowser';
+import { makeStoreBrowser, makeSyncGet } from '../mocks/storeBrowser';
 import { ConsoleLogger } from 'src/logs/ConsoleLogger';
 import { MkSyncGetItems } from 'src/api/browser/storage/sync/MkSync';
 

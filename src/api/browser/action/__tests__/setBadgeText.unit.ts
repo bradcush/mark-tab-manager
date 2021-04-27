@@ -1,5 +1,5 @@
 import { setBadgeText } from '../setBadgeText';
-import { setBadgeTextMock } from './mocks/setBadgeText';
+import { setBadgeTextMock } from '../mocks/setBadgeText';
 
 describe('setBadgeText', () => {
     const originalChrome = global.chrome;
@@ -26,11 +26,9 @@ describe('setBadgeText', () => {
         global.chrome.runtime.lastError = {
             message: 'error',
         };
-        try {
-            const details = { text: 'text' };
-            await setBadgeText(details);
-        } catch (error) {
-            expect(error).toMatchObject({ message: 'error' });
-        }
+        const details = { text: 'text' };
+        await expect(setBadgeText(details)).rejects.toMatchObject({
+            message: 'error',
+        });
     });
 });
