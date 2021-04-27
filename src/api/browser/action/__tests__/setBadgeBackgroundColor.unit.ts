@@ -4,7 +4,7 @@ import { setBadgeBackgroundColorMock } from '../mocks/setBadgeBackgroundColor';
 describe('setBadgeBackgroundColor', () => {
     const originalChrome = global.chrome;
 
-    beforeAll(() => {
+    beforeEach(() => {
         global.chrome = {
             action: {
                 setBadgeBackgroundColor: setBadgeBackgroundColorMock,
@@ -12,7 +12,7 @@ describe('setBadgeBackgroundColor', () => {
             runtime: {},
         } as typeof chrome;
     });
-    afterAll(() => {
+    afterEach(() => {
         global.chrome = originalChrome;
     });
 
@@ -22,6 +22,7 @@ describe('setBadgeBackgroundColor', () => {
         const resolution = await setBadgeBackgroundColor(details);
         expect(resolution).toBeUndefined();
     });
+
     it('should reject with error if one exists', async () => {
         global.chrome.runtime.lastError = {
             message: 'error',

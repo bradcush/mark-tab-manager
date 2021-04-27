@@ -4,7 +4,7 @@ import { setBadgeTextMock } from '../mocks/setBadgeText';
 describe('setBadgeText', () => {
     const originalChrome = global.chrome;
 
-    beforeAll(() => {
+    beforeEach(() => {
         global.chrome = {
             action: {
                 setBadgeText: setBadgeTextMock,
@@ -12,7 +12,7 @@ describe('setBadgeText', () => {
             runtime: {},
         } as typeof chrome;
     });
-    afterAll(() => {
+    afterEach(() => {
         global.chrome = originalChrome;
     });
 
@@ -22,6 +22,7 @@ describe('setBadgeText', () => {
         const resolution = await setBadgeText(details);
         expect(resolution).toBeUndefined();
     });
+
     it('should reject with error if one exists', async () => {
         global.chrome.runtime.lastError = {
             message: 'error',
