@@ -1,4 +1,4 @@
-import { MkSyncGetItems, MkSyncGetKeys } from '../MkSync';
+import { MkSyncGetKeys, MkSyncItems } from '../MkSync';
 
 /**
  * Mock function for testing the browser
@@ -6,7 +6,7 @@ import { MkSyncGetItems, MkSyncGetKeys } from '../MkSync';
  */
 export function getMock(
     _keys: MkSyncGetKeys,
-    callback?: (items: MkSyncGetItems) => void
+    callback?: (items: MkSyncItems) => void
 ): void {
     if (!callback) {
         return;
