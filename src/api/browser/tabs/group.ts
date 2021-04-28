@@ -1,9 +1,7 @@
 import { MkOptions } from './MkGroup';
 
 export function group(options: MkOptions): Promise<number> {
-    // tabs.group not yet in official typings
-    /* eslint-disable-next-line */ /* @ts-expect-error */
-    if (!chrome.tabs.group) {
+    if (!isSupported()) {
         throw new Error('No tabs.group support');
     }
     return new Promise<number>((resolve, reject) => {
