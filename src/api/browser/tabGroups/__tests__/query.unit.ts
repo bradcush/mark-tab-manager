@@ -1,5 +1,5 @@
 import { query } from '../query';
-import { makeQueryMock } from '../mocks/query';
+import { queryMock } from '../mocks/query';
 import { MkColor } from '../MkColor';
 
 const { BLUE } = MkColor;
@@ -30,37 +30,26 @@ describe('query', () => {
         }).toThrow('No tabGroups.query support');
     });
 
-    it('should resolve empty for no query match', async () => {
-        // Setting tabGroups requires any
-        // eslint-disable-next-line
-        (global.chrome as any).tabGroups.query = makeQueryMock([]);
-        global.chrome.runtime.lastError = undefined;
-        const queryInfo = { title: 'noMatch' };
-        const groups = await query(queryInfo);
-        expect(groups.length).toBe(0);
-    });
-
     it('should resolve with matching groups for query match', async () => {
-        const group = {
-            collapsed: false,
-            color: BLUE,
-            title: 'match',
-            windowId: 1,
-        };
         // Setting tabGroups requires any
         // eslint-disable-next-line
-        (global.chrome as any).tabGroups.query = makeQueryMock([group]);
+        (global.chrome as any).tabGroups.query = queryMock;
         global.chrome.runtime.lastError = undefined;
         const queryInfo = { title: 'match' };
         const groups = await query(queryInfo);
         expect(groups.length).toBe(1);
-        expect(groups[0]).toMatchObject(group);
+        expect(groups[0]).toMatchObject({
+            collapsed: false,
+            color: BLUE,
+            title: 'match',
+            windowId: 1,
+        });
     });
 
     it('should reject with error if one exists', async () => {
         // Setting tabGroups requires any
         // eslint-disable-next-line
-        (global.chrome as any).tabGroups.query = makeQueryMock([]);
+        (global.chrome as any).tabGroups.query = queryMock;
         global.chrome.runtime.lastError = {
             message: 'error',
         };

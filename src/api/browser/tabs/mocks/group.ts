@@ -1,8 +1,8 @@
 import { MkOptions } from '../MkGroup';
 
 /**
- * Mock function for testing the browser
- * API wrapped function directly
+ * Mock tabs.group for
+ * mapped api testing
  */
 export function groupMock(
     _options: MkOptions,

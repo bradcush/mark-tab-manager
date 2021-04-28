@@ -1,8 +1,8 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 
 /**
- * Mock function for testing the browser
- * API wrapped function directly
+ * Mock action.setBadgeText
+ * for mapped api testing
  */
 export function setBadgeTextMock(
     _details: MkBrowser.action.BadgeTextDetails,

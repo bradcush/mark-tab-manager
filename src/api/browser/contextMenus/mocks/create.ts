@@ -1,8 +1,8 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 
 /**
- * Mock function for testing the browser
- * API wrapped function directly
+ * Mock contextMenus.create
+ * for mapped api testing
  */
 export function createMock(
     _createProperties: MkBrowser.contextMenus.CreateProperties,

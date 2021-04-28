@@ -1,8 +1,8 @@
 import { MkSyncGetKeys, MkSyncItems } from '../MkSync';
 
 /**
- * Mock function for testing the browser
- * API wrapped function directly
+ * Mock storage.sync.get for
+ * mapped api testing
  */
 export function getMock(
     _keys: MkSyncGetKeys,

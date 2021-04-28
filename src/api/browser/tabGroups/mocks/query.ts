@@ -1,15 +1,22 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkQueryInfo } from '../MkQuery';
+import { MkColor } from '../MkColor';
+
+const { BLUE } = MkColor;
 
 /**
- * Factory for creating mock function to test
- * the browser API wrapped function directly
+ * Mock tabGroups.query for
+ * mapped api testing
  */
-export function makeQueryMock(groups: MkBrowser.tabGroups.TabGroup[]) {
-    return (
-        _queryInfo: MkQueryInfo,
-        callback: (groups: MkBrowser.tabGroups.TabGroup[]) => void
-    ): void => {
-        callback(groups);
+export function queryMock(
+    _queryInfo: MkQueryInfo,
+    callback: (groups: MkBrowser.tabGroups.TabGroup[]) => void
+): void {
+    const group = {
+        collapsed: false,
+        color: BLUE,
+        title: 'match',
+        windowId: 1,
     };
+    callback([group]);
 }

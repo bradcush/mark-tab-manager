@@ -1,8 +1,8 @@
 import { MkUpdateProperties } from '../MkUpdate';
 
 /**
- * Mock function for testing the browser
- * API wrapped function directly
+ * Mock tabGroups.update for
+ * mapped api testing
  */
 export function updateMock(
     _groupId: number,

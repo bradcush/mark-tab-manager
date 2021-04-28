@@ -1,8 +1,8 @@
 import { MkSyncItems } from '../MkSync';
 
 /**
- * Mock function for testing the browser
- * API wrapped function directly
+ * Mock storage.sync.set for
+ * mapped api testing
  */
 export function setMock(_items: MkSyncItems, callback?: () => void): void {
     if (!callback) {

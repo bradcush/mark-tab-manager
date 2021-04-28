@@ -1,8 +1,8 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 
 /**
- * Mock function for testing the browser
- * API wrapped function directly
+ * Mock tabs.get for
+ * mapped api testing
  */
 export function getMock(
     _id: number,
