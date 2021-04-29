@@ -1,4 +1,4 @@
-import { listeners } from 'src/api/__mocks__/listeners';
+import { listeners } from 'src/api/mocks/listeners';
 
 export function onActivated(tabId: number): void {
     const { onActivatedListeners } = listeners.tabs;

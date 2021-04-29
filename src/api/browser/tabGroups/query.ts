@@ -4,9 +4,7 @@ import { MkQueryInfo } from './MkQuery';
 export function query(
     queryInfo: MkQueryInfo
 ): Promise<MkBrowser.tabGroups.TabGroup[]> {
-    // tabGroups not yet in official typings
-    /* eslint-disable-next-line */ /* @ts-expect-error */
-    if (!chrome.tabGroups?.query) {
+    if (!isSupported()) {
         throw new Error('No tabGroups.query support');
     }
     return new Promise((resolve, reject) => {

@@ -1,7 +1,5 @@
 export function ungroup(tabIds: number[]): Promise<void> {
-    // tabs.ungroup not yet in official typings
-    /* eslint-disable-next-line */ /* @ts-expect-error */
-    if (!chrome.tabs.ungroup) {
+    if (!isSupported()) {
         throw new Error('No tabs.ungroup support');
     }
     return new Promise<void>((resolve, reject) => {

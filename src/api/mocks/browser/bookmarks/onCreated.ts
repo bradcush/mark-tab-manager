@@ -1,4 +1,4 @@
-import { listeners } from 'src/api/__mocks__/listeners';
+import { listeners } from 'src/api/mocks/listeners';
 
 export function onCreated(): void {
     const { onCreatedListeners } = listeners.bookmarks;

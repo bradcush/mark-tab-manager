@@ -2,7 +2,10 @@
     "verbose": true,
     "collectCoverageFrom": [
         "<rootDir>/**/*.ts",
-        "!<rootDir>/**node_modules/**"
+        "!<rootDir>/meta/**/*.ts",
+        "!<rootDir>/**/mocks/**",
+        "!<rootDir>/**/node_modules/**",
+        "!<rootDir>/typings/**"
     ],
     "globals": {
         "ENABLE_BOOKMARK_COUNTER": false,

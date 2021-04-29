@@ -1,4 +1,4 @@
-import { MkSyncGetItems } from 'src/api/browser/storage/sync/MkSync';
+import { MkSyncItems } from 'src/api/browser/storage/sync/MkSync';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStoreBrowser } from '../MkStore';
 
@@ -11,7 +11,7 @@ const defaultItems = {
 };
 
 export function makeSyncGet(
-    items: MkSyncGetItems = defaultItems
+    items: MkSyncItems = defaultItems
 ): MkBrowser.storage.sync.Get {
     return () => {
         const settings = JSON.stringify(items);

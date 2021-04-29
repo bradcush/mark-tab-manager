@@ -4,9 +4,7 @@ export function update(
     groupId: number,
     updateProperties: MkUpdateProperties
 ): Promise<void> {
-    // tabGroups not yet in official typings
-    /* eslint-disable-next-line */ /* @ts-expect-error */
-    if (!chrome.tabGroups?.update) {
+    if (!isSupported()) {
         throw new Error('No tabGroups.update support');
     }
     return new Promise((resolve, reject) => {

@@ -1,5 +1,5 @@
 import { MkBrowser } from 'src/api/MkBrowser';
-import { listeners } from 'src/api/__mocks__/listeners';
+import { listeners } from 'src/api/mocks/listeners';
 import { onActivated as tabsOnActivated } from './browser/tabs/onActivated';
 import { onCreated as bookmarksOnCreated } from './browser/bookmarks/onCreated';
 import { onUpdated as tabsOnUpdated } from './browser/tabs/onUpdated';

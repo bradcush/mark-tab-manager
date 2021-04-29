@@ -1,7 +1,7 @@
 import { Store } from '../Store';
-import { makeStoreBrowser, makeSyncGet } from '../__mocks__/storeBrowser';
+import { makeStoreBrowser, makeSyncGet } from '../mocks/storeBrowser';
 import { ConsoleLogger } from 'src/logs/ConsoleLogger';
-import { MkSyncGetItems } from 'src/api/browser/storage/sync/MkSync';
+import { MkSyncItems } from 'src/api/browser/storage/sync/MkSync';
 
 describe('Store', () => {
     afterEach(() => {
@@ -76,7 +76,7 @@ describe('Store', () => {
         });
 
         it('should not cache invalid content in memory', async () => {
-            const invalidContent = ('invalidContent' as unknown) as MkSyncGetItems;
+            const invalidContent = ('invalidContent' as unknown) as MkSyncItems;
             const syncGetMock = makeSyncGet(invalidContent);
             const browserMock = makeStoreBrowser(syncGetMock);
             const storageService = new Store({

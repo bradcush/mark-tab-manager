@@ -1,4 +1,4 @@
-import { listeners } from 'src/api/__mocks__/listeners';
+import { listeners } from 'src/api/mocks/listeners';
 import { MkBrowser } from 'src/api/MkBrowser';
 
 export function onClicked(info: MkBrowser.contextMenus.OnClickedData): void {

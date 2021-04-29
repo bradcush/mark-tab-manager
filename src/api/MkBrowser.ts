@@ -1,4 +1,4 @@
-import { MkSyncGetItems, MkSyncGetKeys } from './browser/storage/sync/MkSync';
+import { MkSyncGetKeys, MkSyncItems } from './browser/storage/sync/MkSync';
 import { MkColor as MkTabGroupsColor } from './browser/tabGroups/MkColor';
 import { MkUpdateProperties as MkTabGroupsUpdateProperties } from './browser/tabGroups/MkUpdate';
 import { MkOptions as MkTabsGroupOptions } from './browser/tabs/MkGroup';
@@ -110,8 +110,8 @@ export declare namespace MkBrowser.runtime {
 }
 
 export declare namespace MkBrowser.storage.sync {
-    export type Get = (keys: MkSyncGetKeys) => Promise<MkSyncGetItems>;
-    export type Set = (items: MkSyncGetItems) => Promise<void>;
+    export type Get = (keys: MkSyncGetKeys) => Promise<MkSyncItems>;
+    export type Set = (items: MkSyncItems) => Promise<void>;
 }
 
 export declare namespace MkBrowser.storage {
