@@ -1,4 +1,6 @@
-export const ColorMap = {
+import { MkColor } from './MkColor';
+
+const ColorMap = {
     BLUE: 'blue',
     CYAN: 'cyan',
     GREEN: 'green',
@@ -9,6 +11,8 @@ export const ColorMap = {
     YELLOW: 'yellow',
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error tabGroups not yet in official typings
-export const { tabGroups: { Color = ColorMap } = {} } = chrome;
+export function makeColor(): MkColor {
+    // tabGroups not yet in official typings
+    /* eslint-disable-next-line */ /* @ts-expect-error */
+    return chrome.tabGroups?.Color ?? ColorMap;
+}

@@ -2,7 +2,7 @@ import { MkBrowser } from 'src/api/MkBrowser';
 import { get as storageGet } from './browser/storage/sync/get';
 import { set as storageSet } from './browser/storage/sync/set';
 import { query as tabsQuery } from './browser/tabs/query';
-import { Color as tabGroupsColor } from './browser/tabGroups/Color';
+import { makeColor as makeTabGroupsColor } from './browser/tabGroups/Color';
 import { update as tabGroupsUpdate } from './browser/tabGroups/update';
 import { query as tabGroupsQuery } from './browser/tabGroups/query';
 import { group as tabsGroup } from './browser/tabs/group';
@@ -52,9 +52,7 @@ const storage = {
 const tabGroups = {
     update: tabGroupsUpdate,
     query: tabGroupsQuery,
-    // Color isn't officially typed
-    // eslint-disable-next-line
-    Color: tabGroupsColor,
+    Color: makeTabGroupsColor(),
 };
 
 const tabs = {
