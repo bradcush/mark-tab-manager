@@ -1,7 +1,7 @@
 import { setBadgeText } from '../setBadgeText';
 import { setBadgeTextMock } from '../mocks/setBadgeText';
 
-describe('setBadgeText', () => {
+describe('action/setBadgeText', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

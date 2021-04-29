@@ -1,7 +1,7 @@
 import { group } from '../group';
 import { groupMock } from '../mocks/group';
 
-describe('group', () => {
+describe('tabs/group', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

@@ -4,7 +4,7 @@ import { MkColor } from '../MkColor';
 
 const { BLUE } = MkColor;
 
-describe('query', () => {
+describe('tabGroups/query', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

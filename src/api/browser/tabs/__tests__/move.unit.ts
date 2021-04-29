@@ -1,7 +1,7 @@
 import { move } from '../move';
 import { moveMock } from '../mocks/move';
 
-describe('move', () => {
+describe('tabs/move', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

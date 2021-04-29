@@ -1,7 +1,7 @@
 import { create } from '../create';
 import { createMock } from '../mocks/create';
 
-describe('create', () => {
+describe('contextMenus/create', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

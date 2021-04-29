@@ -1,7 +1,7 @@
 import { search } from '../search';
 import { searchMock } from '../mocks/search';
 
-describe('search', () => {
+describe('bookmarks/search', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

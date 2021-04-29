@@ -1,7 +1,7 @@
 import { setBadgeBackgroundColor } from '../setBadgeBackgroundColor';
 import { setBadgeBackgroundColorMock } from '../mocks/setBadgeBackgroundColor';
 
-describe('setBadgeBackgroundColor', () => {
+describe('action/setBadgeBackgroundColor', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

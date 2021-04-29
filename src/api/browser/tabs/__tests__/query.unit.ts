@@ -1,7 +1,7 @@
 import { query } from '../query';
 import { queryMock } from '../mocks/query';
 
-describe('query', () => {
+describe('tabs/query', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

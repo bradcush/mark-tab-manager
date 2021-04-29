@@ -1,7 +1,7 @@
 import { get } from '../get';
 import { getMock } from '../mocks/get';
 
-describe('get', () => {
+describe('storage/get', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

@@ -1,7 +1,7 @@
 import { update } from '../update';
 import { updateMock } from '../mocks/update';
 
-describe('update', () => {
+describe('tabGroups/update', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

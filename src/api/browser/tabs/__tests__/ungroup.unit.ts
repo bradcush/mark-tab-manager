@@ -1,7 +1,7 @@
 import { ungroup } from '../ungroup';
 import { ungroupMock } from '../mocks/ungroup';
 
-describe('ungroup', () => {
+describe('tabs/ungroup', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

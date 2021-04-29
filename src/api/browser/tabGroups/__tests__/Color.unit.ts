@@ -1,6 +1,6 @@
 import { makeColor } from '../Color';
 
-describe('Color', () => {
+describe('tabGroups/Color', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {

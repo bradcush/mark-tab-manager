@@ -1,7 +1,7 @@
 import { set } from '../set';
 import { setMock } from '../mocks/set';
 
-describe('set', () => {
+describe('storage/set', () => {
     const originalChrome = global.chrome;
 
     beforeEach(() => {
