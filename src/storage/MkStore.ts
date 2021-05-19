@@ -45,6 +45,7 @@ export interface MkState {
     enableAlphabeticSorting: boolean;
     enableSubdomainFiltering: boolean;
     forceWindowConsolidation: boolean;
+    showGroupTabCount: boolean;
 }
 
 export type MkStateKey = keyof MkState;

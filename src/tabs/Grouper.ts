@@ -60,12 +60,15 @@ export class Grouper implements MkGrouper {
     }: MkAddNewGroupParams) {
         this.logger.log('addNewGroup', name, windowId);
         try {
+            const { showGroupTabCount } = await this.store.getState();
             // We need to get the state before resetting groups using the
             // exact name. As a repercussion of this method, groups where the
             // count has changed are automatically reopened. This shouldn't
             // reopen groups that are collapsed as the user experience for a
             // collapsed group prevents the user from removing a tab.
-            const title = `(${tabIds.length}) ${name}`;
+            const title = showGroupTabCount
+                ? `(${tabIds.length}) ${name}`
+                : name;
             const prevGroup = await this.getGroupInfo({
                 id: windowId,
                 title,

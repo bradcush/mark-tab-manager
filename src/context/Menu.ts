@@ -135,6 +135,15 @@ export class Menu implements MkMenu {
             title: 'Cluster grouped tabs',
         });
         // Create the browser action context menu
+        // for showing the group tab count
+        const { showGroupTabCount } = await this.store.getState();
+        void this.createCheckbox({
+            id: 'showGroupTabCount',
+            isChecked: showGroupTabCount,
+            parentId: labelId,
+            title: 'Show group tab count',
+        });
+        // Create the browser action context menu
         // for toggling forced window consolidation
         const { forceWindowConsolidation } = await this.store.getState();
         void this.createCheckbox({
@@ -199,8 +208,9 @@ export class Menu implements MkMenu {
         const isClusterGroupedTabs = 'clusterGroupedTabs' === menuItemId;
         const isUnorganizationSetting =
             isSubdomainFiltering || isClusterGroupedTabs;
+        const isLabelSetting = 'showGroupTabCount' === menuItemId;
         // TODO: Simpler logic could be to reorganize on any change
-        if (checked || isUnorganizationSetting) {
+        if (checked || isUnorganizationSetting || isLabelSetting) {
             void this.tabsOrganizer.organize({
                 clean: true,
                 type: 'collapse',
@@ -217,6 +227,7 @@ export class Menu implements MkMenu {
             'enableAlphabeticSorting',
             'enableSubdomainFiltering',
             'forceWindowConsolidation',
+            'showGroupTabCount',
         ];
         if (!settings.includes(menuItemId)) {
             // Menu item id can be any but we assume a string for now
