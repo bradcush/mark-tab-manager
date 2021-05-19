@@ -48,14 +48,22 @@ export class Sorter implements MkSorter {
      * Separate grouped tabs from orphans
      */
     private async cluster({ tabGroups, tabs }: MkClusterParams) {
-        this.logger.log('cluster', tabs);
-        const { enableSubdomainFiltering } = await this.store.getState();
+        this.logger.log('cluster', tabGroups, tabs);
+        const {
+            enableSubdomainFiltering,
+            forceWindowConsolidation,
+        } = await this.store.getState();
         const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
         // Determine if the tab is alone and not
         // supposed to belong to any group
         const isOrphan = (tab: MkBrowser.tabs.Tab) => {
             const groupName = makeGroupName({ type: groupType, url: tab.url });
-            return tabGroups[groupName][tab.windowId].length < 2;
+            this.logger.log('cluster', groupName, tab.windowId);
+            // Specify the current window as the forced window
+            const chosenWindowId = forceWindowConsolidation
+                ? tabs[0].windowId
+                : tab.windowId;
+            return tabGroups[groupName][chosenWindowId].length < 2;
         };
         const groupedTabs = tabs.filter((tab) => !isOrphan(tab));
         const orphanTabs = tabs.filter(isOrphan);
