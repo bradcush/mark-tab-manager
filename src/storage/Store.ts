@@ -146,6 +146,7 @@ export class Store implements MkStore {
             enableAlphabeticSorting: true,
             enableSubdomainFiltering: false,
             forceWindowConsolidation: false,
+            showGroupTabCount: true,
         };
     }
 

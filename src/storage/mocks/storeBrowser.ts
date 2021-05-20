@@ -8,6 +8,7 @@ const defaultItems = {
     enableAlphabeticSorting: true,
     enableSubdomainFiltering: false,
     forceWindowConsolidation: false,
+    showGroupTabCount: true,
 };
 
 export function makeSyncGet(
