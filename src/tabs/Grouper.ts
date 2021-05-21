@@ -92,16 +92,6 @@ export class Grouper implements MkGrouper {
     }
 
     /**
-     * Remove tabs that are pinned from the list
-     */
-    private filterNonPinnedTabs(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('filterNonPinnedTabs');
-        const isTabPinned = (tab: MkBrowser.tabs.Tab) => !!tab.pinned;
-        const nonPinnedTabs = tabs.filter((tab) => !isTabPinned(tab));
-        return nonPinnedTabs;
-    }
-
-    /**
      * Get all the active tabs across all windows
      */
     private getActiveTabIdsByWindow(tabs: MkBrowser.tabs.Tab[]) {
@@ -288,11 +278,10 @@ export class Grouper implements MkGrouper {
             forceWindowConsolidation,
         } = await this.store.getState();
         const tabIdsByGroup: MkTabIdsByGroup = {};
-        const nonPinnedTabs = this.filterNonPinnedTabs(tabs);
         // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
         // "windowId" in our algorithm which the representative -2 breaks
-        const staticWindowId = nonPinnedTabs[0].windowId;
-        nonPinnedTabs.forEach((tab) => {
+        const staticWindowId = tabs[0].windowId;
+        tabs.forEach((tab) => {
             const { id, url, windowId } = tab;
             if (!id) {
                 throw new Error('No id for tab');

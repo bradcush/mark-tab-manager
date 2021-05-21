@@ -72,6 +72,16 @@ export class Sorter implements MkSorter {
     }
 
     /**
+     * Remove tabs that are pinned from the list
+     */
+    public filter(tabs: MkBrowser.tabs.Tab[]): MkBrowser.tabs.Tab[] {
+        this.logger.log('filter');
+        const isTabPinned = (tab: MkBrowser.tabs.Tab) => !!tab.pinned;
+        const nonPinnedTabs = tabs.filter((tab) => !isTabPinned(tab));
+        return nonPinnedTabs;
+    }
+
+    /**
      * Sort tabs based on settings
      */
     public async sort({

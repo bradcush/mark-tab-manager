@@ -188,6 +188,8 @@ export class Organizer implements MkOrganizer {
         this.logger.log('organize');
         try {
             const unsortedTabs = await this.browser.tabs.query({});
+            // Filter to organize only the tabs want to
+            const filteredTabs = this.tabsSorter.filter(unsortedTabs);
             // Clear the cache when forced so
             // we can rebuild when desired
             if (clean) {
@@ -196,17 +198,17 @@ export class Organizer implements MkOrganizer {
             // Cache tabs regardless of settings as early as possible
             // and cache a single updated tab or rebuild everything
             const tabsToCache =
-                this.cache.exists() && tab ? [tab] : unsortedTabs;
+                this.cache.exists() && tab ? [tab] : filteredTabs;
             const cacheItems = await this.makeCacheItems(tabsToCache);
             this.cache.set(cacheItems);
             const {
                 clusterGroupedTabs,
                 enableAlphabeticSorting,
             } = await this.store.getState();
-            const tabGroups = await this.tabsGrouper.group(unsortedTabs);
+            const tabGroups = await this.tabsGrouper.group(filteredTabs);
             const sortedTabs = await this.tabsSorter.sort({
                 groups: tabGroups,
-                tabs: unsortedTabs,
+                tabs: filteredTabs,
             });
             // We currently allow clustering even
             // when grouping is disabled
