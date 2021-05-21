@@ -58,11 +58,11 @@ export class Sorter implements MkSorter {
         // supposed to belong to any group
         const isOrphan = (tab: MkBrowser.tabs.Tab) => {
             const groupName = makeGroupName({ type: groupType, url: tab.url });
-            this.logger.log('cluster', groupName, tab.windowId);
             // Specify the current window as the forced window
             const chosenWindowId = forceWindowConsolidation
                 ? tabs[0].windowId
                 : tab.windowId;
+            this.logger.log('cluster', groupName, chosenWindowId);
             return tabGroups[groupName][chosenWindowId].length < 2;
         };
         const groupedTabs = tabs.filter((tab) => !isOrphan(tab));
