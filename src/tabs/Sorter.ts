@@ -58,17 +58,27 @@ export class Sorter implements MkSorter {
         // supposed to belong to any group
         const isOrphan = (tab: MkBrowser.tabs.Tab) => {
             const groupName = makeGroupName({ type: groupType, url: tab.url });
-            this.logger.log('cluster', groupName, tab.windowId);
             // Specify the current window as the forced window
             const chosenWindowId = forceWindowConsolidation
                 ? tabs[0].windowId
                 : tab.windowId;
+            this.logger.log('cluster', groupName, chosenWindowId);
             return tabGroups[groupName][chosenWindowId].length < 2;
         };
         const groupedTabs = tabs.filter((tab) => !isOrphan(tab));
         const orphanTabs = tabs.filter(isOrphan);
         // Groups on the left and singles on the right
         return [...groupedTabs, ...orphanTabs];
+    }
+
+    /**
+     * Remove tabs that are pinned from the list
+     */
+    public filter(tabs: MkBrowser.tabs.Tab[]): MkBrowser.tabs.Tab[] {
+        this.logger.log('filter');
+        const isTabPinned = (tab: MkBrowser.tabs.Tab) => !!tab.pinned;
+        const nonPinnedTabs = tabs.filter((tab) => !isTabPinned(tab));
+        return nonPinnedTabs;
     }
 
     /**
