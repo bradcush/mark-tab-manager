@@ -8,6 +8,7 @@ const defaultItems = {
     enableAlphabeticSorting: true,
     enableSubdomainFiltering: false,
     forceWindowConsolidation: false,
+    groupOrphanTabs: false,
     showGroupTabCount: true,
 };
 

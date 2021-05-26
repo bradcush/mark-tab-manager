@@ -1,4 +1,4 @@
-import { SYSTEM_GROUP_NAME } from './groupName';
+import { NEW_GROUP_NAME, SYSTEM_GROUP_NAME } from './groupName';
 import {
     extractHostname,
     isCommonPrefix,
@@ -48,7 +48,7 @@ export function makeSortName({ type, url }: MkMakeSortNameParams): string {
     // New tabs should be sorted last which using zzz is meant to represent
     // since domains can only include numbers, letters, and hyphens
     if (isNewTab(host)) {
-        return 'zzz';
+        return NEW_GROUP_NAME;
     }
     const parseResult = parseValidDomainInfo(host);
     if (!parseResult) {

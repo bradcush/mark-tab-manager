@@ -45,7 +45,8 @@ export class Sorter implements MkSorter {
     }
 
     /**
-     * Separate grouped tabs from orphans
+     * Separate grouped tabs from orphans even if
+     * orphan tabs are chosen to be grouped
      */
     private async cluster({ tabGroups, tabs }: MkClusterParams) {
         this.logger.log('cluster', tabGroups, tabs);
@@ -92,11 +93,13 @@ export class Sorter implements MkSorter {
         const {
             enableAlphabeticSorting,
             clusterGroupedTabs,
+            groupOrphanTabs,
         } = await this.store.getState();
         const alphabetizedTabs = enableAlphabeticSorting
             ? await this.alphabetize(tabs)
             : tabs;
-        return clusterGroupedTabs
+        // Orphans shouldn't be clustered when grouped
+        return clusterGroupedTabs && !groupOrphanTabs
             ? this.cluster({ tabGroups: groups, tabs: alphabetizedTabs })
             : alphabetizedTabs;
     }

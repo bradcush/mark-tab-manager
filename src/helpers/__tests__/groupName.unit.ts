@@ -1,4 +1,4 @@
-import { makeGroupName, SYSTEM_GROUP_NAME } from '../groupName';
+import { makeGroupName, NEW_GROUP_NAME, SYSTEM_GROUP_NAME } from '../groupName';
 
 describe('makeGroupName', () => {
     describe('when any sorting is specified', () => {
@@ -13,7 +13,7 @@ describe('makeGroupName', () => {
             const type = 'granular';
             const url = 'chrome://newtab';
             const groupName = makeGroupName({ type, url });
-            expect(groupName).toBe('new');
+            expect(groupName).toBe(NEW_GROUP_NAME);
         });
 
         it('should return system group for unlisted urls', () => {

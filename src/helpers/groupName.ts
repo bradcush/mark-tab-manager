@@ -9,6 +9,9 @@ import {
     parseValidDomainInfo,
 } from './domainHelpers';
 
+const CALCULATED_GROUP_PREFIX = '#';
+export const NEW_GROUP_NAME = `${CALCULATED_GROUP_PREFIX}new`;
+export const ORPHAN_GROUP_NAME = `${CALCULATED_GROUP_PREFIX}singles`;
 export const SYSTEM_GROUP_NAME = '#';
 
 /**
@@ -47,7 +50,7 @@ export function makeGroupName({ type, url }: MkMakeGroupNameParams): string {
     const host = extractHostname(url);
     // New tabs get their own group name
     if (isNewTab(host)) {
-        return 'new';
+        return NEW_GROUP_NAME;
     }
     const parseResult = parseValidDomainInfo(host);
     if (!parseResult) {

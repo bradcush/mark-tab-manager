@@ -16,6 +16,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
+                groupOrphanTabs: true,
                 showGroupTabCount: false,
                 invalidSetting: true,
             });
@@ -32,6 +33,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
+                groupOrphanTabs: true,
                 showGroupTabCount: false,
             };
             expect(state).toStrictEqual(expectedState);
@@ -53,6 +55,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: true,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
+                groupOrphanTabs: false,
                 showGroupTabCount: true,
             };
             expect(state).toStrictEqual(expectedState);
@@ -74,6 +77,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: true,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
+                groupOrphanTabs: false,
                 showGroupTabCount: true,
             };
             expect(state).toStrictEqual(expectedState);
@@ -95,6 +99,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: true,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
+                groupOrphanTabs: false,
                 showGroupTabCount: true,
             };
             expect(state).toStrictEqual(expectedState);
@@ -107,6 +112,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
+                groupOrphanTabs: true,
                 showGroupTabCount: false,
                 invalidSetting: true,
             });
@@ -123,6 +129,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
+                groupOrphanTabs: true,
                 showGroupTabCount: false,
             };
             expect(state).toStrictEqual(expectedState);
@@ -143,6 +150,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: true,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
+                groupOrphanTabs: false,
                 showGroupTabCount: true,
             };
             expect(state).toStrictEqual(expectedState);
@@ -155,6 +163,7 @@ describe('Store', () => {
                 enableAutomaticSorting: false,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
+                groupOrphanTabs: false,
                 showGroupTabCount: true,
             });
             const browserMock = makeStoreBrowser(syncGetMock);
@@ -170,6 +179,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: false,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
+                groupOrphanTabs: false,
                 showGroupTabCount: true,
             };
             expect(state).toStrictEqual(expectedState);
@@ -190,6 +200,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
+                groupOrphanTabs: true,
                 showGroupTabCount: false,
             };
             await storageService.setState(state);
@@ -213,6 +224,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: false,
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
+                groupOrphanTabs: true,
                 showGroupTabCount: false,
             };
             await storageService.setState(firstState);
@@ -228,6 +240,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: true,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
+                groupOrphanTabs: false,
                 showGroupTabCount: true,
             };
             await storageService.setState(secondState);
@@ -254,6 +267,7 @@ describe('Store', () => {
                 enableAlphabeticSorting: true,
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
+                groupOrphanTabs: false,
                 showGroupTabCount: true,
             };
             expect(state).toStrictEqual(expectedState);

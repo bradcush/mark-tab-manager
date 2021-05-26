@@ -19,7 +19,7 @@ import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGr
 import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
-import { makeGroupName } from 'src/helpers/groupName';
+import { makeGroupName, ORPHAN_GROUP_NAME } from 'src/helpers/groupName';
 
 /**
  * Grouping and ungrouping of tabs
@@ -276,6 +276,7 @@ export class Grouper implements MkGrouper {
         const {
             enableSubdomainFiltering,
             forceWindowConsolidation,
+            groupOrphanTabs,
         } = await this.store.getState();
         const tabIdsByGroup: MkTabIdsByGroup = {};
         // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
@@ -310,6 +311,43 @@ export class Grouper implements MkGrouper {
             }
         });
         this.logger.log('group', tabIdsByGroup);
+        return groupOrphanTabs
+            ? this.regroupOrphans(tabIdsByGroup)
+            : tabIdsByGroup;
+    }
+
+    /**
+     * Regroup orphan tabs into their own group
+     * TODO: Find a better way than to re-loop over
+     * the set of groups we already created
+     */
+    private regroupOrphans(groups: MkTabIdsByGroup) {
+        this.logger.log('regroupOrphans', groups);
+        const tabIdsByGroup: MkTabIdsByGroup = {};
+        const groupNames = Object.keys(groups);
+        groupNames.forEach((groupName) => {
+            const tabIdsByWindowId = groups[groupName];
+            const windowIds = Object.keys(tabIdsByWindowId);
+            windowIds.forEach((windowId) => {
+                const tabIds = groups[groupName][windowId];
+                // Copy each real group already created
+                if (tabIds.length > 1) {
+                    tabIdsByGroup[groupName] = {
+                        [windowId]: tabIds,
+                    };
+                } else if (!tabIdsByGroup[ORPHAN_GROUP_NAME]) {
+                    tabIdsByGroup[ORPHAN_GROUP_NAME] = {
+                        [windowId]: tabIds,
+                    };
+                } else {
+                    tabIdsByGroup[ORPHAN_GROUP_NAME][windowId] = [
+                        ...tabIdsByGroup[ORPHAN_GROUP_NAME][windowId],
+                        ...tabIds,
+                    ];
+                }
+            });
+        });
+        this.logger.log('regroupOrphans', tabIdsByGroup);
         return tabIdsByGroup;
     }
 
