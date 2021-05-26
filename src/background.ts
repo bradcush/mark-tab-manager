@@ -1,5 +1,3 @@
-import { Counter as BookmarkCounter } from './bookmarks/Counter';
-import { counterBrowser as bookmarkCounterBrowser } from './bookmarks/counterBrowser';
 import { Organizer as TabsOrganizer } from './tabs/Organizer';
 import { organizerBrowser as tabsOrganizerBrowser } from './tabs/organizerBrowser';
 import { Menu as ContextMenu } from './context/Menu';
@@ -64,15 +62,6 @@ function initBackground() {
     });
     // Connect for creation and handling events
     contextMenu.connect();
-
-    // Start bookmark counter to track criteria matches
-    if (ENABLE_BOOKMARK_COUNTER) {
-        const bookmarkCounter = new BookmarkCounter({
-            browser: bookmarkCounterBrowser,
-            Logger: ConsoleLogger,
-        });
-        bookmarkCounter.connect();
-    }
 }
 
 initBackground();

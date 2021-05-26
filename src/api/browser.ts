@@ -9,7 +9,6 @@ import { group as tabsGroup } from './browser/tabs/group';
 import { ungroup as tabsUngroup } from './browser/tabs/ungroup';
 import { setBadgeBackgroundColor as actionSetBadgeBackgroundColor } from './browser/action/setBadgeBackgroundColor';
 import { setBadgeText as actionSetBadgeText } from './browser/action/setBadgeText';
-import { search as bookmarksSearch } from './browser/bookmarks/search';
 import { get as tabsGet } from './browser/tabs/get';
 import { create as contextMenusCreate } from './browser/contextMenus/create';
 import { move as tabsMove } from './browser/tabs/move';
@@ -18,11 +17,6 @@ const action = {
     onClicked: chrome.action.onClicked,
     setBadgeBackgroundColor: actionSetBadgeBackgroundColor,
     setBadgeText: actionSetBadgeText,
-};
-
-const bookmarks = {
-    onCreated: chrome.bookmarks.onCreated,
-    search: bookmarksSearch,
 };
 
 const contextMenus = {
@@ -59,7 +53,6 @@ const tabs = {
     get: tabsGet,
     group: tabsGroup,
     move: tabsMove,
-    onActivated: chrome.tabs.onActivated,
     onUpdated: chrome.tabs.onUpdated,
     onRemoved: chrome.tabs.onRemoved,
     query: tabsQuery,
@@ -68,7 +61,6 @@ const tabs = {
 
 export const browser: MkBrowser = {
     action,
-    bookmarks,
     contextMenus,
     management,
     runtime,

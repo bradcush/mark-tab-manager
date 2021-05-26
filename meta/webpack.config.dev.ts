@@ -18,7 +18,6 @@ const config: Configuration = merge(baseConfig, {
     plugins: [
         // Specify build-time globals
         new DefinePlugin({
-            ENABLE_BOOKMARK_COUNTER: JSON.stringify(true),
             ENABLE_LOGGING: JSON.stringify(true),
         }),
     ],

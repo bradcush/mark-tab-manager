@@ -8,7 +8,6 @@
         "!<rootDir>/typings/**"
     ],
     "globals": {
-        "ENABLE_BOOKMARK_COUNTER": false,
         "ENABLE_LOGGING": false
     },
     "transform": {
