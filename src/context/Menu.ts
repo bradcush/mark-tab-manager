@@ -99,7 +99,7 @@ export class Menu implements MkMenu {
             id: 'enableAlphabeticSorting',
             isChecked: enableAlphabeticSorting,
             parentId: labelId,
-            title: 'Enable alphabetic sorting',
+            title: 'Sort tabs alphabetically',
         });
         // Create the browser action context menu
         // for toggling automatic grouping
@@ -111,7 +111,7 @@ export class Menu implements MkMenu {
                 id: 'enableAutomaticGrouping',
                 isChecked: enableAutomaticGrouping,
                 parentId: labelId,
-                title: 'Enable automatic grouping',
+                title: 'Group tabs automatically',
             });
         }
         // Create the browser action context menu
@@ -122,7 +122,7 @@ export class Menu implements MkMenu {
             id: 'enableSubdomainFiltering',
             isChecked: enableSubdomainFiltering,
             parentId: labelId,
-            title: 'Enable subdomain filtering',
+            title: 'Filter tabs by subdomain',
         });
         // Create the browser action context menu
         // for toggling tab group clustering
@@ -201,21 +201,11 @@ export class Menu implements MkMenu {
         // Menu item id can be any as described by official typings
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { checked, menuItemId } = info;
-        // Automatically organize as soon as any setting is checked which is
-        // opinionated as it relies checked settings meaning enabled.
-        // Additionally granularity changes need reorganization
-        const isSubdomainFiltering = 'enableSubdomainFiltering' === menuItemId;
-        const isClusterGroupedTabs = 'clusterGroupedTabs' === menuItemId;
-        const isUnorganizationSetting =
-            isSubdomainFiltering || isClusterGroupedTabs;
-        const isLabelSetting = 'showGroupTabCount' === menuItemId;
-        // TODO: Simpler logic could be to reorganize on any change
-        if (checked || isUnorganizationSetting || isLabelSetting) {
-            void this.tabsOrganizer.organize({
-                clean: true,
-                type: 'collapse',
-            });
-        }
+        // Various settings changes require reorganization
+        void this.tabsOrganizer.organize({
+            clean: true,
+            type: 'collapse',
+        });
         // Remove any existing groups when grouping is disabled
         const isAutomaticGrouping = menuItemId === 'enableAutomaticGrouping';
         if (isAutomaticGrouping && !checked) {
