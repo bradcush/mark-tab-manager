@@ -10,11 +10,6 @@ interface MkBrowserAction {
     setBadgeText: MkBrowser.action.SetBadgeText;
 }
 
-interface MkBrowserBookmarks {
-    onCreated: MkBrowser.bookmarks.OnCreated;
-    search: MkBrowser.bookmarks.Search;
-}
-
 interface MkBrowserContextMenus {
     create: MkBrowser.contextMenus.Create;
     onClicked: MkBrowser.contextMenus.OnClicked;
@@ -49,7 +44,6 @@ interface MkBrowserTabs {
     get: MkBrowser.tabs.Get;
     group: MkBrowser.tabs.Group;
     move: MkBrowser.tabs.Move;
-    onActivated: MkBrowser.tabs.OnActivated;
     onUpdated: MkBrowser.tabs.OnUpdated;
     onRemoved: MkBrowser.tabs.OnRemoved;
     query: MkBrowser.tabs.Query;
@@ -58,7 +52,6 @@ interface MkBrowserTabs {
 
 export interface MkBrowser {
     action: MkBrowserAction;
-    bookmarks: MkBrowserBookmarks;
     contextMenus: MkBrowserContextMenus;
     management: MkBrowserManagement;
     runtime: MkBrowserRuntime;
@@ -77,17 +70,6 @@ export declare namespace MkBrowser.action {
     export type SetBadgeText = (
         details: MkBrowser.action.BadgeTextDetails
     ) => Promise<void>;
-}
-
-export declare namespace MkBrowser.bookmarks {
-    export type BookmarkSearchQuery =
-        | chrome.bookmarks.BookmarkSearchQuery
-        | string;
-    export type BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
-    export type OnCreated = typeof chrome.bookmarks.onCreated;
-    export type Search = (
-        query: string
-    ) => Promise<MkBrowser.bookmarks.BookmarkTreeNode[]>;
 }
 
 export declare namespace MkBrowser.contextMenus {
@@ -147,7 +129,6 @@ export declare namespace MkBrowser.tabs {
         moveProperties: MkBrowser.tabs.MoveProperties
     ) => Promise<void>;
     export type MoveProperties = chrome.tabs.MoveProperties;
-    export type OnActivated = typeof chrome.tabs.onActivated;
     export type OnUpdated = typeof chrome.tabs.onUpdated;
     export type OnRemoved = typeof chrome.tabs.onRemoved;
     export type Query = (
