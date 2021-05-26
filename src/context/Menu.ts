@@ -99,7 +99,7 @@ export class Menu implements MkMenu {
             id: 'enableAlphabeticSorting',
             isChecked: enableAlphabeticSorting,
             parentId: labelId,
-            title: 'Enable alphabetic sorting',
+            title: 'Sort tabs alphabetically',
         });
         // Create the browser action context menu
         // for toggling automatic grouping
@@ -111,7 +111,7 @@ export class Menu implements MkMenu {
                 id: 'enableAutomaticGrouping',
                 isChecked: enableAutomaticGrouping,
                 parentId: labelId,
-                title: 'Enable automatic grouping',
+                title: 'Group tabs automatically',
             });
         }
         // Create the browser action context menu
@@ -122,7 +122,7 @@ export class Menu implements MkMenu {
             id: 'enableSubdomainFiltering',
             isChecked: enableSubdomainFiltering,
             parentId: labelId,
-            title: 'Enable subdomain filtering',
+            title: 'Filter tabs by subdomain',
         });
         // Create the browser action context menu
         // for toggling tab group clustering
