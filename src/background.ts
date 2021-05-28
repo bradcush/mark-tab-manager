@@ -10,6 +10,8 @@ import { Store } from './storage/Store';
 import { storeBrowser } from './storage/storeBrowser';
 import { ConsoleLogger } from './logs/ConsoleLogger';
 import { MemoryCache } from './storage/MemoryCache';
+import { setUninstallUrl as setUninstallSurveyUrl } from './survey/uninstall';
+import { uninstallBrowser as uninstallSurveyBrowser } from './survey/uninstallBrowser';
 
 // When the service worker starts
 const logger = new ConsoleLogger();
@@ -20,6 +22,9 @@ logger.log('Service worker started');
  * and all top-level listeners
  */
 function initBackground() {
+    // Set the survey to be opened on uninstall
+    setUninstallSurveyUrl(uninstallSurveyBrowser);
+
     // Load settings from storage into state
     const storeInstance = new Store({
         browser: storeBrowser,

@@ -23,6 +23,7 @@ interface MkBrowserManagement {
 interface MkBrowserRuntime {
     id: MkBrowser.runtime.Id;
     onInstalled: MkBrowser.runtime.OnInstalled;
+    setUninstallURL: MkBrowser.runtime.SetUninstallURL;
 }
 
 interface MkBrowserStorageSync {
@@ -89,6 +90,7 @@ export declare namespace MkBrowser.management {
 export declare namespace MkBrowser.runtime {
     export type Id = typeof chrome.runtime.id;
     export type OnInstalled = typeof chrome.runtime.onInstalled;
+    export type SetUninstallURL = (url: string) => Promise<void>;
 }
 
 export declare namespace MkBrowser.storage.sync {

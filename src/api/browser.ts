@@ -12,6 +12,7 @@ import { setBadgeText as actionSetBadgeText } from './browser/action/setBadgeTex
 import { get as tabsGet } from './browser/tabs/get';
 import { create as contextMenusCreate } from './browser/contextMenus/create';
 import { move as tabsMove } from './browser/tabs/move';
+import { setUninstallURL as runtimeSetUninstallUrl } from './browser/runtime/setUninstallURL';
 
 const action = {
     onClicked: chrome.action.onClicked,
@@ -32,6 +33,7 @@ const management = {
 const runtime = {
     id: chrome.runtime.id,
     onInstalled: chrome.runtime.onInstalled,
+    setUninstallURL: runtimeSetUninstallUrl,
 };
 
 const syncStorage = {
