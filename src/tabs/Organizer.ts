@@ -205,9 +205,9 @@ export class Organizer implements MkOrganizer {
                 clusterGroupedTabs,
                 enableAlphabeticSorting,
             } = await this.store.getState();
-            const tabGroups = await this.tabsGrouper.group(filteredTabs);
+            const unsortedGroups = await this.tabsGrouper.group(filteredTabs);
             const sortedTabs = await this.tabsSorter.sort({
-                groups: tabGroups,
+                groups: unsortedGroups,
                 tabs: filteredTabs,
             });
             // We currently allow clustering even
@@ -217,8 +217,13 @@ export class Organizer implements MkOrganizer {
             }
             const isGroupingEnabled = await this.tabsGrouper.isEnabled();
             if (isGroupingEnabled) {
+                // Important to recalculate groups so the object insertion
+                // order matches expected visual group order. We may depend on
+                // this order when iterating later to create groups and update
+                // properties like their color predictably.
+                const sortedGroups = await this.tabsGrouper.group(sortedTabs);
                 this.tabsGrouper.render({
-                    groups: tabGroups,
+                    groups: sortedGroups,
                     organizeType: type,
                     tabs: sortedTabs,
                 });
