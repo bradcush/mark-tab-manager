@@ -238,11 +238,14 @@ export class Grouper implements MkGrouper {
                 const activeTabId = activeTabIdsByWindow.get(windowId);
                 // Collapse non-active groups
                 const forceCollapse =
-                    // Complexity isn't good here but it should be
-                    // ok since collapse should be very rarely used
-                    type === 'collapse' && typeof activeTabId !== 'undefined'
-                        ? !tabIds.includes(activeTabId)
+                    type === 'collapse'
+                        ? // When the active tab for the window is
+                          // undefined it can't be in the group
+                          typeof activeTabId !== 'undefined'
+                            ? !tabIds.includes(activeTabId)
+                            : true
                         : false;
+                this.logger.log('renderGroupsByName', activeTabId);
                 this.logger.log('renderGroupsByName', forceCollapse);
                 void this.addNewGroup({
                     idx: groupIdx,
