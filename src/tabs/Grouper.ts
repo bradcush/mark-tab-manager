@@ -238,11 +238,14 @@ export class Grouper implements MkGrouper {
                 const activeTabId = activeTabIdsByWindow.get(windowId);
                 // Collapse non-active groups
                 const forceCollapse =
-                    // Complexity isn't good here but it should be
-                    // ok since collapse should be very rarely used
-                    type === 'collapse' && typeof activeTabId !== 'undefined'
-                        ? !tabIds.includes(activeTabId)
+                    type === 'collapse'
+                        ? // When the active tab for the window is
+                          // undefined it can't be in the group
+                          typeof activeTabId !== 'undefined'
+                            ? !tabIds.includes(activeTabId)
+                            : true
                         : false;
+                this.logger.log('renderGroupsByName', activeTabId);
                 this.logger.log('renderGroupsByName', forceCollapse);
                 void this.addNewGroup({
                     idx: groupIdx,
@@ -277,11 +280,10 @@ export class Grouper implements MkGrouper {
             enableSubdomainFiltering,
             forceWindowConsolidation,
         } = await this.store.getState();
-        const tabIdsByGroup: MkTabIdsByGroup = {};
         // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
         // "windowId" in our algorithm which the representative -2 breaks
         const staticWindowId = tabs[0].windowId;
-        tabs.forEach((tab) => {
+        const tabIdsByGroup = tabs.reduce<MkTabIdsByGroup>((acc, tab) => {
             const { id, url, windowId } = tab;
             if (!id) {
                 throw new Error('No id for tab');
@@ -296,19 +298,20 @@ export class Grouper implements MkGrouper {
             const chosenWindowId = forceWindowConsolidation
                 ? staticWindowId
                 : windowId;
-            if (!tabIdsByGroup[groupName]) {
-                tabIdsByGroup[groupName] = {
+            if (!acc[groupName]) {
+                acc[groupName] = {
                     [chosenWindowId]: [id],
                 };
-            } else if (!tabIdsByGroup[groupName][chosenWindowId]) {
-                tabIdsByGroup[groupName] = {
-                    ...tabIdsByGroup[groupName],
+            } else if (!acc[groupName][chosenWindowId]) {
+                acc[groupName] = {
+                    ...acc[groupName],
                     [chosenWindowId]: [id],
                 };
             } else {
-                tabIdsByGroup[groupName][chosenWindowId].push(id);
+                acc[groupName][chosenWindowId].push(id);
             }
-        });
+            return acc;
+        }, {});
         this.logger.log('group', tabIdsByGroup);
         return tabIdsByGroup;
     }
