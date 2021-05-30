@@ -246,7 +246,6 @@ export class Grouper implements MkGrouper {
                             : true
                         : false;
                 this.logger.log('renderGroupsByName', activeTabId);
-                this.logger.log('renderGroupsByName', forceCollapse);
                 void this.addNewGroup({
                     idx: groupIdx,
                     forceCollapse,
@@ -325,7 +324,7 @@ export class Grouper implements MkGrouper {
         groupId,
         title,
     }: MkUpdateGroupTitleParams) {
-        this.logger.log('updateGroupProperties');
+        this.logger.log('updateGroupProperties', color);
         try {
             const updateProperties = { collapsed, color, title };
             await this.browser.tabGroups.update(groupId, updateProperties);
