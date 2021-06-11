@@ -1,10 +1,10 @@
 import {
+    MkAction,
     MkConstructorParams,
     MkCreateCheckboxParams,
     MkHandleToggleParams,
     MkMakeCheckboxPropertiesParams,
-    MkMenu,
-} from './MkMenu';
+} from './MkAction';
 import { MkState, MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
@@ -12,9 +12,10 @@ import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
 import { browser } from 'src/api/browser';
 
 /**
- * Context menu creation and change handling
+ * Action context menu creation
+ * and change handling
  */
-export class Menu implements MkMenu {
+export class Action implements MkAction {
     public constructor({
         store,
         tabsGrouper,
@@ -39,7 +40,7 @@ export class Menu implements MkMenu {
         if (!Logger) {
             throw new Error('No Logger');
         }
-        this.logger = new Logger('context/Menu');
+        this.logger = new Logger('menu/Action');
         this.logger.log('constructor');
     }
 

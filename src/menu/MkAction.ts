@@ -4,7 +4,7 @@ import { MkLoggerConstructor } from 'src/logs/MkLogger';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
 import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
 
-export interface MkMenu {
+export interface MkAction {
     connect(): void;
 }
 

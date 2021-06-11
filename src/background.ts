@@ -1,5 +1,5 @@
 import { Organizer as TabsOrganizer } from './tabs/Organizer';
-import { Menu as ContextMenu } from './context/Menu';
+import { Action as ActionMenu } from './menu/Action';
 import { Sorter as TabsSorter } from './tabs/Sorter';
 import { Grouper as TabsGrouper } from './tabs/Grouper';
 import { Store } from './storage/Store';
@@ -46,14 +46,14 @@ function initBackground() {
     tabsOrganizerInstance.connect();
 
     // Create various context menus that dictate client behaviour
-    const contextMenu = new ContextMenu({
+    const actionMenu = new ActionMenu({
         store: storeInstance,
         tabsGrouper: tabsGrouperInstance,
         tabsOrganizer: tabsOrganizerInstance,
         Logger: ConsoleLogger,
     });
     // Connect for creation and handling events
-    contextMenu.connect();
+    actionMenu.connect();
 }
 
 initBackground();
