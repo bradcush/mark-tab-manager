@@ -8,23 +8,7 @@ export interface MkMenu {
     connect(): void;
 }
 
-interface MkContextMenus {
-    create: MkBrowser.contextMenus.Create;
-    onClicked: MkBrowser.contextMenus.OnClicked;
-    removeAll: MkBrowser.contextMenus.RemoveAll;
-}
-
-interface MkRuntime {
-    onInstalled: MkBrowser.runtime.OnInstalled;
-}
-
-export interface MkMenuBrowser {
-    contextMenus: MkContextMenus;
-    runtime: MkRuntime;
-}
-
 export interface MkConstructorParams {
-    browser: MkMenuBrowser;
     store: MkStore;
     tabsGrouper: MkTabsGrouper;
     tabsOrganizer: MkTabsOrganizer;

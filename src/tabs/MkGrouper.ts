@@ -11,24 +11,7 @@ export interface MkGrouper {
     render(params: MkRender): void;
 }
 
-interface MkBrowserTabGroups {
-    Color: MkBrowser.tabGroups.Color;
-    query: MkBrowser.tabGroups.Query;
-    update: MkBrowser.tabGroups.Update;
-}
-
-interface MkBrowserTabs {
-    group: MkBrowser.tabs.Group;
-    query: MkBrowser.tabs.Query;
-    ungroup: MkBrowser.tabs.Ungroup;
-}
-
-export interface MkGrouperBrowser {
-    tabGroups: MkBrowserTabGroups;
-    tabs: MkBrowserTabs;
-}
 export interface MkConstructorParams {
-    browser: MkGrouperBrowser;
     store: MkStore;
     Logger: MkLoggerConstructor;
 }

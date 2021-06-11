@@ -10,34 +10,7 @@ export interface MkOrganizer {
     organize(params?: MkOrganizeParams): Promise<void>;
 }
 
-interface MkBrowserAction {
-    onClicked: MkBrowser.action.OnClicked;
-}
-
-interface MkBrowserManagement {
-    onEnabled: MkBrowser.management.OnEnabled;
-}
-
-interface MkBrowserRuntime {
-    id: MkBrowser.runtime.Id;
-    onInstalled: MkBrowser.runtime.OnInstalled;
-}
-
-interface MkBrowserTabs {
-    onUpdated: MkBrowser.tabs.OnUpdated;
-    onRemoved: MkBrowser.tabs.OnRemoved;
-    query: MkBrowser.tabs.Query;
-}
-
-export interface MkOrganizerBrowser {
-    action: MkBrowserAction;
-    management: MkBrowserManagement;
-    runtime: MkBrowserRuntime;
-    tabs: MkBrowserTabs;
-}
-
 export interface MkContstructorParams {
-    browser: MkOrganizerBrowser;
     cache: MkCache;
     tabsGrouper: MkGrouper;
     tabsSorter: MkSorter;

@@ -3,7 +3,6 @@ import {
     MkIsGroupChanged,
     MkOrganizeParams,
     MkOrganizer,
-    MkOrganizerBrowser,
 } from './MkOrganizer';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { makeGroupName } from 'src/helpers/groupName';
@@ -12,24 +11,19 @@ import { MkLogger } from 'src/logs/MkLogger';
 import { MkCache } from 'src/storage/MkCache';
 import { MkSorter } from './MkSorter';
 import { MkGrouper } from './MkGrouper';
+import { browser } from 'src/api/browser';
 
 /**
  * Organize open tabs
  */
 export class Organizer implements MkOrganizer {
     public constructor({
-        browser,
         cache,
         store,
         tabsGrouper,
         tabsSorter,
         Logger,
     }: MkContstructorParams) {
-        if (!browser) {
-            throw new Error('No browser');
-        }
-        this.browser = browser;
-
         if (!cache) {
             throw new Error('No cache');
         }
@@ -57,7 +51,6 @@ export class Organizer implements MkOrganizer {
         this.logger.log('constructor');
     }
 
-    private readonly browser: MkOrganizerBrowser;
     private readonly cache: MkCache;
     private readonly logger: MkLogger;
     private readonly store: MkStore;
@@ -72,7 +65,7 @@ export class Organizer implements MkOrganizer {
 
         // Organize tabs on install and update
         // TODO: Perfect candidate for business API creation
-        this.browser.runtime.onInstalled.addListener((details) => {
+        browser.runtime.onInstalled.addListener((details) => {
             this.logger.log('browser.runtime.onInstalled', details);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
@@ -85,10 +78,10 @@ export class Organizer implements MkOrganizer {
         });
 
         // Organize tabs when enabled but previously installed
-        this.browser.management.onEnabled.addListener((info) => {
+        browser.management.onEnabled.addListener((info) => {
             this.logger.log('browser.management.onEnabled', info);
             // We only care about ourselves being enabled
-            const isEnabled = info.id === this.browser.runtime.id;
+            const isEnabled = info.id === browser.runtime.id;
             if (!isEnabled) {
                 return;
             }
@@ -96,7 +89,7 @@ export class Organizer implements MkOrganizer {
         });
 
         // Handle when the extension icon is clicked
-        this.browser.action.onClicked.addListener(() => {
+        browser.action.onClicked.addListener(() => {
             this.logger.log('browser.action.onClicked');
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
@@ -105,7 +98,7 @@ export class Organizer implements MkOrganizer {
         });
 
         // Handle tabs where a URL is updated
-        this.browser.tabs.onUpdated.addListener(
+        browser.tabs.onUpdated.addListener(
             // Handlers can be async since we just care to fire and forget
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             async (tabId, changeInfo, tab) => {
@@ -139,7 +132,7 @@ export class Organizer implements MkOrganizer {
         );
 
         // Handle removed tabs
-        this.browser.tabs.onRemoved.addListener((tabId) => {
+        browser.tabs.onRemoved.addListener((tabId) => {
             this.logger.log('browser.tabs.onRemoved', tabId);
             // Remove the current tab id from group tracking regardless
             // of if we are automatically sorting to stay updated
@@ -187,7 +180,7 @@ export class Organizer implements MkOrganizer {
     ): Promise<void> {
         this.logger.log('organize');
         try {
-            const unsortedTabs = await this.browser.tabs.query({});
+            const unsortedTabs = await browser.tabs.query({});
             // Filter to organize only the tabs want to
             const filteredTabs = this.tabsSorter.filter(unsortedTabs);
             // Clear the cache when forced so

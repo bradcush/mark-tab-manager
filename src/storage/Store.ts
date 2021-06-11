@@ -1,14 +1,13 @@
 import {
     isPotentialState,
-    MkConstructorParams,
     MkLegacyStateKey,
     MkMigrateState,
     MkState,
     MkStateKey,
     MkStore,
-    MkStoreBrowser,
 } from './MkStore';
-import { MkLogger } from 'src/logs/MkLogger';
+import { MkLogger, MkLoggerConstructor } from 'src/logs/MkLogger';
+import { browser } from 'src/api/browser';
 
 /**
  * Loading, caching, and setting storage
@@ -16,12 +15,7 @@ import { MkLogger } from 'src/logs/MkLogger';
  * port and be passed a "SyncStorage" adapter
  */
 export class Store implements MkStore {
-    public constructor({ browser, Logger }: MkConstructorParams) {
-        if (!browser) {
-            throw new Error('No browser');
-        }
-        this.browser = browser;
-
+    public constructor(Logger: MkLoggerConstructor) {
         if (!Logger) {
             throw new Error('No Logger');
         }
@@ -37,7 +31,6 @@ export class Store implements MkStore {
         this.state = this.makeDefaultState();
     }
 
-    private readonly browser: MkStoreBrowser;
     private readonly loaded: Promise<void>;
     private readonly logger: MkLogger;
     private resolveLoaded: (() => void) | null = null;
@@ -50,7 +43,7 @@ export class Store implements MkStore {
     private async cacheStorage() {
         this.logger.log('cacheStorage');
         try {
-            const { storage } = this.browser;
+            const { storage } = browser;
             const { settings } = await storage.sync.get('settings');
             this.logger.log('cacheStorage', settings);
             // If there is no storage we don't cache anything
@@ -260,7 +253,7 @@ export class Store implements MkStore {
             const serializedState = JSON.stringify(internalState);
             this.logger.log('setState', serializedState);
             const items = { settings: serializedState };
-            await this.browser.storage.sync.set(items);
+            await browser.storage.sync.set(items);
         } catch (error) {
             this.logger.error('setState', error);
             throw error;

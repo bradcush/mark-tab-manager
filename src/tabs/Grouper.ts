@@ -6,7 +6,6 @@ import {
     MkConstructorParams,
     MkGetGroupInfoParams,
     MkGrouper,
-    MkGrouperBrowser,
     MkRender,
     MkRenderGroupsByNameParams,
     MkTabIdsByGroup,
@@ -20,17 +19,13 @@ import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGro
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 import { makeGroupName } from 'src/helpers/groupName';
+import { browser } from 'src/api/browser';
 
 /**
  * Grouping and ungrouping of tabs
  */
 export class Grouper implements MkGrouper {
-    public constructor({ browser, store, Logger }: MkConstructorParams) {
-        if (!browser) {
-            throw new Error('No browser');
-        }
-        this.browser = browser;
-
+    public constructor({ store, Logger }: MkConstructorParams) {
         if (!store) {
             throw new Error('No store');
         }
@@ -43,7 +38,6 @@ export class Grouper implements MkGrouper {
         this.logger.log('constructor');
     }
 
-    private readonly browser: MkGrouperBrowser;
     private readonly logger: MkLogger;
     private readonly store: MkStore;
 
@@ -75,7 +69,7 @@ export class Grouper implements MkGrouper {
             });
             const createProperties = { windowId };
             const options = { createProperties, tabIds };
-            const groupId = await this.browser.tabs.group(options);
+            const groupId = await browser.tabs.group(options);
             const color = this.getColorForGroup(idx);
             // Rely on the previous state when we don't force
             const collapsed = (forceCollapse || prevGroup?.collapsed) ?? false;
@@ -115,7 +109,7 @@ export class Grouper implements MkGrouper {
      */
     private getColorForGroup(index: number) {
         this.logger.log('getColorForGroup', index);
-        const colorsByEnum = this.browser.tabGroups.Color;
+        const colorsByEnum = browser.tabGroups.Color;
         this.logger.log('getColorForGroup', colorsByEnum);
         const colorKeys = Object.keys(colorsByEnum);
         const colors = colorKeys.map((colorKey) =>
@@ -137,7 +131,7 @@ export class Grouper implements MkGrouper {
             // Be careful of the title as query titles are patterns where
             // chars can have special meaning (eg. * is a universal selector)
             const queryInfo = { title, windowId: id };
-            const tabGroups = await this.browser.tabGroups.query(queryInfo);
+            const tabGroups = await browser.tabGroups.query(queryInfo);
             this.logger.log('getGroupInfo', tabGroups);
             return tabGroups[0];
         } catch (error) {
@@ -176,7 +170,7 @@ export class Grouper implements MkGrouper {
     public async remove(): Promise<void> {
         this.logger.log('remove');
         try {
-            const tabs = await this.browser.tabs.query({});
+            const tabs = await browser.tabs.query({});
             const filterIds = (id: number | undefined): id is number =>
                 typeof id !== 'undefined';
             const ids = tabs.map((tab) => tab.id).filter(filterIds);
@@ -194,7 +188,7 @@ export class Grouper implements MkGrouper {
     private async removeGroupsForTabIds(ids: number[]) {
         this.logger.log('removeGroupsForTabIds', ids);
         try {
-            await this.browser.tabs.ungroup(ids);
+            await browser.tabs.ungroup(ids);
         } catch (error) {
             this.logger.error('removeGroupsForTabIds', error);
             throw error;
@@ -327,7 +321,7 @@ export class Grouper implements MkGrouper {
         this.logger.log('updateGroupProperties', color);
         try {
             const updateProperties = { collapsed, color, title };
-            await this.browser.tabGroups.update(groupId, updateProperties);
+            await browser.tabGroups.update(groupId, updateProperties);
         } catch (error) {
             this.logger.error('updateGroupProperties', error);
             throw error;

@@ -9,16 +9,7 @@ export interface MkSorter {
     sort(params: MkSortParams): Promise<MkBrowser.tabs.Tab[]>;
 }
 
-interface MkBrowserTabs {
-    move: MkBrowser.tabs.Move;
-}
-
-export interface MkSorterBrowser {
-    tabs: MkBrowserTabs;
-}
-
 export interface MkContstructorParams {
-    browser: MkSorterBrowser;
     store: MkStore;
     Logger: MkLoggerConstructor;
 }

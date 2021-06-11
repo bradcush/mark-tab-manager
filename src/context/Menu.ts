@@ -4,29 +4,23 @@ import {
     MkHandleToggleParams,
     MkMakeCheckboxPropertiesParams,
     MkMenu,
-    MkMenuBrowser,
 } from './MkMenu';
 import { MkState, MkStore } from 'src/storage/MkStore';
 import { MkLogger } from 'src/logs/MkLogger';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
 import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
+import { browser } from 'src/api/browser';
 
 /**
  * Context menu creation and change handling
  */
 export class Menu implements MkMenu {
     public constructor({
-        browser,
         store,
         tabsGrouper,
         tabsOrganizer,
         Logger,
     }: MkConstructorParams) {
-        if (!browser) {
-            throw new Error('No browser');
-        }
-        this.browser = browser;
-
         if (!tabsGrouper) {
             throw new Error('No tabsGrouper');
         }
@@ -49,7 +43,6 @@ export class Menu implements MkMenu {
         this.logger.log('constructor');
     }
 
-    private readonly browser: MkMenuBrowser;
     private readonly logger: MkLogger;
     private readonly store: MkStore;
     private readonly tabsGrouper: MkTabsGrouper;
@@ -62,7 +55,7 @@ export class Menu implements MkMenu {
         this.logger.log('connect');
 
         // Only create menus when installed
-        this.browser.runtime.onInstalled.addListener((details) => {
+        browser.runtime.onInstalled.addListener((details) => {
             this.logger.log('browser.runtime.onInstalled', details);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
@@ -75,7 +68,7 @@ export class Menu implements MkMenu {
         });
 
         // Handle clicks on any context menu item
-        this.browser.contextMenus.onClicked.addListener((info, tab) => {
+        browser.contextMenus.onClicked.addListener((info, tab) => {
             this.logger.log('browser.contextMenus.onClicked', info);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
@@ -171,7 +164,7 @@ export class Menu implements MkMenu {
                 labelId: parentId,
                 text: title,
             });
-            await this.browser.contextMenus.create(createProperties);
+            await browser.contextMenus.create(createProperties);
         } catch (error) {
             this.logger.error('createCheckbox', error);
             throw error;
@@ -185,7 +178,7 @@ export class Menu implements MkMenu {
         this.logger.log('createLabel');
         try {
             const createProperties = this.makeLabelProperties(id);
-            await this.browser.contextMenus.create(createProperties);
+            await browser.contextMenus.create(createProperties);
         } catch (error) {
             this.logger.error('createLabel', error);
             throw error;

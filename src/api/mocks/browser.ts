@@ -44,12 +44,9 @@ const action = {
             onClickedListeners.push(handler);
         },
     },
-    setBadgeBackgroundColor: jest.fn(),
-    setBadgeText: jest.fn(),
 };
 
 const contextMenus = {
-    create: jest.fn(),
     onClicked: {
         addListener: (handler: MkContextMenusOnClickedHandler) => {
             const { onClickedListeners } = listeners.contextMenus;
@@ -58,15 +55,7 @@ const contextMenus = {
     },
 };
 
-const storage = {
-    sync: {
-        get: jest.fn(),
-        set: jest.fn(),
-    },
-};
-
 const tabs = {
-    get: jest.fn(),
     onUpdated: {
         addListener: (handler: MkOnUpdatedHandler) => {
             const { onUpdatedListeners } = listeners.tabs;
@@ -79,13 +68,11 @@ const tabs = {
             onRemovedListeners.push(handler);
         },
     },
-    query: jest.fn(),
 };
 
 export const browser = ({
     action,
     contextMenus,
-    storage,
     tabs,
     // Mocking requires any assertion
     // eslint-disable-next-line

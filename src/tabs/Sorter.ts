@@ -4,23 +4,18 @@ import {
     MkClusterParams,
     MkContstructorParams,
     MkSorter,
-    MkSorterBrowser,
     MkSortParams,
 } from './MkSorter';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { makeSortName } from 'src/helpers/sortName';
 import { makeGroupName } from 'src/helpers/groupName';
+import { browser } from 'src/api/browser';
 
 /**
  * Sorting of tabs
  */
 export class Sorter implements MkSorter {
-    public constructor({ browser, store, Logger }: MkContstructorParams) {
-        if (!browser) {
-            throw new Error('No browser');
-        }
-        this.browser = browser;
-
+    public constructor({ store, Logger }: MkContstructorParams) {
         if (!store) {
             throw new Error('No store');
         }
@@ -33,7 +28,6 @@ export class Sorter implements MkSorter {
         this.logger.log('constructor');
     }
 
-    private readonly browser: MkSorterBrowser;
     private readonly logger: MkLogger;
     private readonly store: MkStore;
 
@@ -149,7 +143,7 @@ export class Sorter implements MkSorter {
                     : baseMoveProperties;
                 // We expect calls to move to still run in parallel
                 // but await simply to catch errors properly
-                await this.browser.tabs.move(id, moveProperties);
+                await browser.tabs.move(id, moveProperties);
             });
         } catch (error) {
             this.logger.error('render', error);
