@@ -187,14 +187,14 @@ export class Store implements MkStore {
             const parsedStateRaw = JSON.parse(state) as unknown;
             if (!isPotentialState(parsedStateRaw)) {
                 const parsingError = new Error('Error parsing state');
-                this.logger.error('parseValidState', parsingError);
+                this.logger.error('parseState', parsingError);
                 // Unexpected types start clean
                 return {};
             }
             return parsedStateRaw;
         } catch (error) {
             // Errors during parsing start clean
-            this.logger.error('parseValidState', error);
+            this.logger.error('parseState', error);
             return {};
         }
     }
