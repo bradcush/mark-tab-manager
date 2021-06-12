@@ -6,21 +6,15 @@ import {
     MkStateKey,
     MkStore,
 } from './MkStore';
-import { MkLogger, MkLoggerConstructor } from 'src/logs/MkLogger';
 import { browser } from 'src/api/browser';
+import { logError, logVerbose } from 'src/logs/console';
 
 /**
  * Loading, caching, and setting storage
- * TODO: Store should specify a "GenericStorage"
- * port and be passed a "SyncStorage" adapter
  */
 export class Store implements MkStore {
-    public constructor(Logger: MkLoggerConstructor) {
-        if (!Logger) {
-            throw new Error('No Logger');
-        }
-        this.logger = new Logger('Store');
-        this.logger.log('constructor');
+    public constructor() {
+        logVerbose('constructor');
 
         // Promise to resolve when state is loaded
         this.loaded = new Promise((resolve) => {
@@ -32,7 +26,6 @@ export class Store implements MkStore {
     }
 
     private readonly loaded: Promise<void>;
-    private readonly logger: MkLogger;
     private resolveLoaded: (() => void) | null = null;
     private state: MkState;
 
@@ -41,11 +34,11 @@ export class Store implements MkStore {
      * appropriate values in memory for access
      */
     private async cacheStorage() {
-        this.logger.log('cacheStorage');
+        logVerbose('cacheStorage');
         try {
             const { storage } = browser;
             const { settings } = await storage.sync.get('settings');
-            this.logger.log('cacheStorage', settings);
+            logVerbose('cacheStorage', settings);
             // If there is no storage we don't cache anything
             // from the outside and consider this step done
             if (typeof settings === 'undefined') {
@@ -55,13 +48,13 @@ export class Store implements MkStore {
             // continue assuming local defaults
             if (typeof settings !== 'string') {
                 const invalidError = new Error('Invalid settings storage');
-                this.logger.error('cacheStorage', invalidError);
+                logError('cacheStorage', invalidError);
                 return;
             }
             const validState = this.parseValidState(settings);
             this.setInternalState(validState);
         } catch (error) {
-            this.logger.error('cacheStorage', error);
+            logError('cacheStorage', error);
             throw error;
         }
     }
@@ -71,7 +64,7 @@ export class Store implements MkStore {
      * is a valid key that is no longer supported
      */
     private isLegacyKeyValid = (key: string): key is MkLegacyStateKey => {
-        this.logger.log('isLegacyKeyValid');
+        logVerbose('isLegacyKeyValid');
         const legacyState = this.makeLegacyState();
         const legacyStateKeys = Object.keys(legacyState);
         return legacyStateKeys.includes(key);
@@ -82,7 +75,7 @@ export class Store implements MkStore {
      * in storage should be in state
      */
     private isKeyValid = (key: string): key is MkStateKey => {
-        this.logger.log('isKeyValid');
+        logVerbose('isKeyValid');
         const defaultState = this.makeDefaultState();
         const defaultStateKeys = Object.keys(defaultState);
         return defaultStateKeys.includes(key);
@@ -93,7 +86,7 @@ export class Store implements MkStore {
      * key that has been changed
      */
     private getMigratedKey(key: MkLegacyStateKey) {
-        this.logger.log('getMigratedKey', key);
+        logVerbose('getMigratedKey', key);
         const migratedKeyByLegacy = {
             enableAutomaticSorting: 'enableAlphabeticSorting',
         } as const;
@@ -105,10 +98,10 @@ export class Store implements MkStore {
      * Retrieve the current in memory state
      */
     public async getState(): Promise<MkState> {
-        this.logger.log('getState');
+        logVerbose('getState');
         // Wait for the initial data load
         await this.loaded;
-        this.logger.log('getState', this.state);
+        logVerbose('getState', this.state);
         return this.state;
     }
 
@@ -117,7 +110,7 @@ export class Store implements MkStore {
      * and provide defaults for what hasn't been set
      */
     public async load(): Promise<void> {
-        this.logger.log('load');
+        logVerbose('load');
         await this.cacheStorage();
         // Indicate storage is loaded for
         // anyone who depends on it
@@ -132,7 +125,7 @@ export class Store implements MkStore {
      * store and persistent storage should contain
      */
     private makeDefaultState() {
-        this.logger.log('makeDefaultState');
+        logVerbose('makeDefaultState');
         return {
             clusterGroupedTabs: true,
             enableAutomaticGrouping: true,
@@ -148,7 +141,7 @@ export class Store implements MkStore {
      * and their original default values for reference
      */
     private makeLegacyState() {
-        this.logger.log('makeLegacyState');
+        logVerbose('makeLegacyState');
         return {
             enableAutomaticSorting: true,
         };
@@ -159,14 +152,14 @@ export class Store implements MkStore {
      * names to their new key name
      */
     private migrateState({ keys, state }: MkMigrateState) {
-        this.logger.log('migrateState', keys);
+        logVerbose('migrateState', keys);
         const migratedState: Partial<MkState> = {};
         const legacyStateKeys = keys.filter(this.isLegacyKeyValid);
         legacyStateKeys.forEach((legacyStateKey) => {
             const migratedKey = this.getMigratedKey(legacyStateKey);
             migratedState[migratedKey] = state[legacyStateKey];
         });
-        this.logger.log('migrateState', migratedState);
+        logVerbose('migrateState', migratedState);
         return migratedState;
     }
 
@@ -180,14 +173,14 @@ export class Store implements MkStore {
             const parsedStateRaw = JSON.parse(state) as unknown;
             if (!isPotentialState(parsedStateRaw)) {
                 const parsingError = new Error('Error parsing state');
-                this.logger.error('parseState', parsingError);
+                logError('parseState', parsingError);
                 // Unexpected types start clean
                 return {};
             }
             return parsedStateRaw;
         } catch (error) {
             // Errors during parsing start clean
-            this.logger.error('parseState', error);
+            logError('parseState', error);
             return {};
         }
     }
@@ -198,7 +191,7 @@ export class Store implements MkStore {
      * Migrate any key names that maybe have changed.
      */
     private parseValidState(state: string) {
-        this.logger.log('parseValidState', state);
+        logVerbose('parseValidState', state);
         const parsedState = this.parseState(state);
         const stateKeys = Object.keys(parsedState);
         // Migrate any keys where the name may have changed
@@ -207,7 +200,7 @@ export class Store implements MkStore {
         validStateKeys.forEach((validStateKey) => {
             validParsedState[validStateKey] = parsedState[validStateKey];
         });
-        this.logger.log('parseValidState', validParsedState);
+        logVerbose('parseValidState', validParsedState);
         // Migrating any previously named values during parsing without
         // immediately persisting means we rely on the setting of state
         // later to persist a migration change and can't assume everyone
@@ -220,7 +213,7 @@ export class Store implements MkStore {
             ...validParsedState,
             ...migratedState,
         };
-        this.logger.log('parseValidState', validState);
+        logVerbose('parseValidState', validState);
         return validState;
     }
 
@@ -229,7 +222,7 @@ export class Store implements MkStore {
      * expected to be only one level and not support deep copies
      */
     private setInternalState(internalState: Partial<MkState>) {
-        this.logger.log('setInternalState', internalState);
+        logVerbose('setInternalState', internalState);
         const state = {
             ...this.state,
             ...internalState,
@@ -242,7 +235,7 @@ export class Store implements MkStore {
      * Store a value directly in persistent storage
      */
     public async setState(state: Partial<MkState>): Promise<void> {
-        this.logger.log('setState', state);
+        logVerbose('setState', state);
         try {
             // Wait for the initial data load
             await this.loaded;
@@ -251,11 +244,11 @@ export class Store implements MkStore {
             // at the right time when it may be accessed.
             const internalState = this.setInternalState(state);
             const serializedState = JSON.stringify(internalState);
-            this.logger.log('setState', serializedState);
+            logVerbose('setState', serializedState);
             const items = { settings: serializedState };
             await browser.storage.sync.set(items);
         } catch (error) {
-            this.logger.error('setState', error);
+            logError('setState', error);
             throw error;
         }
     }

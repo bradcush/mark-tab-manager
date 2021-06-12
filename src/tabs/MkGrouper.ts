@@ -1,5 +1,3 @@
-import { MkStore } from 'src/storage/MkStore';
-import { MkLoggerConstructor } from 'src/logs/MkLogger';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkOrganizerType } from './MkOrganizer';
 
@@ -9,11 +7,6 @@ export interface MkGrouper {
     isSupported(): boolean;
     remove(): Promise<void>;
     render(params: MkRender): void;
-}
-
-export interface MkConstructorParams {
-    store: MkStore;
-    Logger: MkLoggerConstructor;
 }
 
 export interface MkAddNewGroupParams {

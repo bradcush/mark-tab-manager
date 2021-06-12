@@ -1,6 +1,5 @@
 import { Store } from '../Store';
 import { makeSyncGet } from '../mocks/storeBrowser';
-import { ConsoleLogger } from 'src/logs/ConsoleLogger';
 import { MkSyncItems } from 'src/api/browser/storage/sync/MkSync';
 import { browser } from 'src/api/browser';
 
@@ -34,7 +33,7 @@ describe('Store', () => {
             });
             const { get } = browser.storage.sync;
             (get as jest.Mock).mockImplementation(syncGetMock);
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
@@ -53,7 +52,7 @@ describe('Store', () => {
             const syncGetMock = () => Promise.resolve(nonPersistedSettings);
             const { get } = browser.storage.sync;
             (get as jest.Mock).mockImplementation(syncGetMock);
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
@@ -72,7 +71,7 @@ describe('Store', () => {
             const syncGetMock = () => Promise.resolve(invalidTypedSettings);
             const { get } = browser.storage.sync;
             (get as jest.Mock).mockImplementation(syncGetMock);
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
@@ -91,7 +90,7 @@ describe('Store', () => {
             const syncGetMock = makeSyncGet(invalidContent);
             const { get } = browser.storage.sync;
             (get as jest.Mock).mockImplementation(syncGetMock);
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
@@ -117,7 +116,7 @@ describe('Store', () => {
             });
             const { get } = browser.storage.sync;
             (get as jest.Mock).mockImplementation(syncGetMock);
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
@@ -135,7 +134,7 @@ describe('Store', () => {
             const syncGetMock = makeSyncGet({});
             const { get } = browser.storage.sync;
             (get as jest.Mock).mockImplementation(syncGetMock);
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
@@ -160,7 +159,7 @@ describe('Store', () => {
             });
             const { get } = browser.storage.sync;
             (get as jest.Mock).mockImplementation(syncGetMock);
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {
@@ -183,7 +182,7 @@ describe('Store', () => {
         });
 
         it('should add new keys in storage and state', async () => {
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
             const state = {
                 clusterGroupedTabs: false,
@@ -201,7 +200,7 @@ describe('Store', () => {
         });
 
         it('should update existing keys in storage and state', async () => {
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
 
             const firstState = {
@@ -240,7 +239,7 @@ describe('Store', () => {
             const syncGetMock = makeSyncGet();
             const { get } = browser.storage.sync;
             (get as jest.Mock).mockImplementation(syncGetMock);
-            const storageService = new Store(ConsoleLogger);
+            const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
             const expectedState = {

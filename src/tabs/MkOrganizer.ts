@@ -1,6 +1,5 @@
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkStore } from 'src/storage/MkStore';
-import { MkLoggerConstructor } from 'src/logs/MkLogger';
 import { MkCache } from 'src/storage/MkCache';
 import { MkSorter } from './MkSorter';
 import { MkGrouper } from './MkGrouper';
@@ -15,7 +14,6 @@ export interface MkContstructorParams {
     tabsGrouper: MkGrouper;
     tabsSorter: MkSorter;
     store: MkStore;
-    Logger: MkLoggerConstructor;
 }
 
 export interface MkIsGroupChanged {
