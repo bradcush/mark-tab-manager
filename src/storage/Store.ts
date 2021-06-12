@@ -1,7 +1,7 @@
 import {
-    isPotentialState,
     MkLegacyStateKey,
     MkMigrateState,
+    MkPotentialState,
     MkState,
     MkStateKey,
     MkStore,
@@ -60,28 +60,6 @@ export class Store implements MkStore {
     }
 
     /**
-     * Test and type guard that the key in storage
-     * is a valid key that is no longer supported
-     */
-    private isLegacyKeyValid = (key: string): key is MkLegacyStateKey => {
-        logVerbose('isLegacyKeyValid');
-        const legacyState = this.makeLegacyState();
-        const legacyStateKeys = Object.keys(legacyState);
-        return legacyStateKeys.includes(key);
-    };
-
-    /**
-     * Test and type guard that the key
-     * in storage should be in state
-     */
-    private isKeyValid = (key: string): key is MkStateKey => {
-        logVerbose('isKeyValid');
-        const defaultState = this.makeDefaultState();
-        const defaultStateKeys = Object.keys(defaultState);
-        return defaultStateKeys.includes(key);
-    };
-
-    /**
      * Get the new key name of an old
      * key that has been changed
      */
@@ -103,6 +81,36 @@ export class Store implements MkStore {
         await this.loaded;
         logVerbose('getState', this.state);
         return this.state;
+    }
+
+    /**
+     * Test and type guard that the key
+     * in storage should be in state
+     */
+    private isKeyValid = (key: string): key is MkStateKey => {
+        logVerbose('isKeyValid');
+        const defaultState = this.makeDefaultState();
+        const defaultStateKeys = Object.keys(defaultState);
+        return defaultStateKeys.includes(key);
+    };
+
+    /**
+     * Test and type guard that the key in storage
+     * is a valid key that is no longer supported
+     */
+    private isLegacyKeyValid = (key: string): key is MkLegacyStateKey => {
+        logVerbose('isLegacyKeyValid');
+        const legacyState = this.makeLegacyState();
+        const legacyStateKeys = Object.keys(legacyState);
+        return legacyStateKeys.includes(key);
+    };
+
+    /**
+     * Type guard for what comes from storage to ensure
+     * it looks like what we expect for state shape
+     */
+    private isPotentialState(state: unknown): state is MkPotentialState {
+        return typeof state === 'object' && state !== null;
     }
 
     /**
@@ -171,7 +179,7 @@ export class Store implements MkStore {
         try {
             // Better to type JSON as unknown for safety
             const parsedStateRaw = JSON.parse(state) as unknown;
-            if (!isPotentialState(parsedStateRaw)) {
+            if (!this.isPotentialState(parsedStateRaw)) {
                 const parsingError = new Error('Error parsing state');
                 logError('parseState', parsingError);
                 // Unexpected types start clean

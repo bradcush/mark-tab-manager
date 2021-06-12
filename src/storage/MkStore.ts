@@ -19,10 +19,6 @@ export interface MkMigrateState {
 
 export type MkPotentialState = Record<string, boolean>;
 
-export function isPotentialState(state: unknown): state is MkPotentialState {
-    return typeof state === 'object' && state !== null;
-}
-
 export interface MkState {
     clusterGroupedTabs: boolean;
     enableAutomaticGrouping: boolean;
