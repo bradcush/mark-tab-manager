@@ -1,5 +1,6 @@
 import { Organizer as TabsOrganizer } from './tabs/Organizer';
-import { Action as ActionMenu } from './menu/Action';
+import { connect as connectMenu } from './menu/connect';
+import { create as createMenu, toggle as toggleMenu } from './menu/settings';
 import { Sorter as TabsSorter } from './tabs/Sorter';
 import { Grouper as TabsGrouper } from './tabs/Grouper';
 import { setStore, Store } from './storage/Store';
@@ -37,12 +38,14 @@ function initBackground() {
     });
     tabsOrganizerInstance.connect();
 
-    // Create menus that control client behaviour
-    const actionMenu = new ActionMenu({
-        tabsGrouper: tabsGrouperInstance,
-        tabsOrganizer: tabsOrganizerInstance,
+    // Create menus that drive system
+    // and user interaction
+    connectMenu({
+        create: createMenu,
+        grouper: tabsGrouperInstance,
+        organizer: tabsOrganizerInstance,
+        toggle: toggleMenu,
     });
-    actionMenu.connect();
 }
 
 initBackground();

@@ -1,31 +1,16 @@
-import { MkBrowser } from 'src/api/MkBrowser';
-import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
-import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
-
-export interface MkAction {
-    connect(): void;
-}
-
-export interface MkConstructorParams {
-    tabsGrouper: MkTabsGrouper;
-    tabsOrganizer: MkTabsOrganizer;
-}
-
-export interface MkHandleToggleParams {
-    info: MkBrowser.contextMenus.OnClickedData;
-    tab: MkBrowser.tabs.Tab | undefined;
-}
-
-export interface MkMakeCheckboxPropertiesParams {
+export interface MkMakeMenuItem {
     identifier: string;
-    checked: boolean;
-    labelId: string;
-    text: string;
+    isChecked: boolean;
+    format: string;
+    title: string;
 }
 
-export interface MkCreateCheckboxParams {
-    id: string;
-    isChecked: boolean;
-    parentId: string;
-    title: string;
+/**
+ * Generic port for
+ * creating complex menus
+ */
+export interface MkMakeMenu {
+    heading: string;
+    items: MkMakeMenuItem[];
+    label: string;
 }
