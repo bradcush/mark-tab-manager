@@ -1,25 +1,18 @@
-import { MkStore } from 'src/storage/MkStore';
 import { MkClusterParams, MkSorter, MkSortParams } from './MkSorter';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { makeSortName } from 'src/helpers/sortName';
 import { makeGroupName } from 'src/helpers/groupName';
 import { browser } from 'src/api/browser';
 import { logError, logVerbose } from 'src/logs/console';
+import { getStore } from 'src/storage/Store';
 
 /**
  * Sorting of tabs
  */
 export class Sorter implements MkSorter {
-    public constructor(store: MkStore) {
-        if (!store) {
-            throw new Error('No store');
-        }
-        this.store = store;
-
+    public constructor() {
         logVerbose('constructor');
     }
-
-    private readonly store: MkStore;
 
     /**
      * Compare to be used with name sorting
@@ -36,7 +29,7 @@ export class Sorter implements MkSorter {
         const {
             enableSubdomainFiltering,
             forceWindowConsolidation,
-        } = await this.store.getState();
+        } = await getStore().getState();
         const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
         // Determine if the tab is alone and not
         // supposed to belong to any group
@@ -76,7 +69,7 @@ export class Sorter implements MkSorter {
         const {
             enableAlphabeticSorting,
             clusterGroupedTabs,
-        } = await this.store.getState();
+        } = await getStore().getState();
         const alphabetizedTabs = enableAlphabeticSorting
             ? await this.alphabetize(tabs)
             : tabs;
@@ -90,7 +83,7 @@ export class Sorter implements MkSorter {
      */
     private async alphabetize(unsortedTabs: MkBrowser.tabs.Tab[]) {
         logVerbose('alphabetize', unsortedTabs);
-        const { enableSubdomainFiltering } = await this.store.getState();
+        const { enableSubdomainFiltering } = await getStore().getState();
         return unsortedTabs.sort((a, b) => {
             const urlOne = a.url;
             const urlTwo = b.url;
@@ -114,7 +107,7 @@ export class Sorter implements MkSorter {
             // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
             // "windowId" in our algorithm which the representative -2 breaks
             const staticWindowId = tabs[0].windowId;
-            const { forceWindowConsolidation } = await this.store.getState();
+            const { forceWindowConsolidation } = await getStore().getState();
             // We only care about catching errors with await in this case
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             tabs.forEach(async (tab) => {

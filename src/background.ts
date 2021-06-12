@@ -2,7 +2,7 @@ import { Organizer as TabsOrganizer } from './tabs/Organizer';
 import { Action as ActionMenu } from './menu/Action';
 import { Sorter as TabsSorter } from './tabs/Sorter';
 import { Grouper as TabsGrouper } from './tabs/Grouper';
-import { Store } from './storage/Store';
+import { setStore, Store } from './storage/Store';
 import { MemoryCache } from './storage/MemoryCache';
 import { setUninstallUrl as setUninstallSurveyUrl } from './survey/uninstall';
 import { logVerbose } from './logs/console';
@@ -15,35 +15,33 @@ logVerbose('Service worker started');
  * and all top-level listeners
  */
 function initBackground() {
-    // Set the survey to be opened on uninstall
-    setUninstallSurveyUrl();
-
     // Load settings from storage into state
     const storeInstance = new Store();
     void storeInstance.load();
+    // Set instance for direct use
+    setStore(storeInstance);
 
-    // Create tab grouper for grouping tabs
-    const tabsGrouperInstance = new TabsGrouper(storeInstance);
-    // Create memory cache for group caching
+    // Set the survey to be opened
+    setUninstallSurveyUrl();
+
+    // Prepare deps needed for organization
+    const tabsGrouperInstance = new TabsGrouper();
     const memoryCache = new MemoryCache();
-    // Create tab sorter for sorting tabs
-    const tabsSorterInstance = new TabsSorter(storeInstance);
+    const tabsSorterInstance = new TabsSorter();
+
     // Start tab organizer for organizing tabs
     const tabsOrganizerInstance = new TabsOrganizer({
         cache: memoryCache,
-        store: storeInstance,
         tabsGrouper: tabsGrouperInstance,
         tabsSorter: tabsSorterInstance,
     });
     tabsOrganizerInstance.connect();
 
-    // Create various context menus that dictate client behaviour
+    // Create menus that control client behaviour
     const actionMenu = new ActionMenu({
-        store: storeInstance,
         tabsGrouper: tabsGrouperInstance,
         tabsOrganizer: tabsOrganizerInstance,
     });
-    // Connect for creation and handling events
     actionMenu.connect();
 }
 

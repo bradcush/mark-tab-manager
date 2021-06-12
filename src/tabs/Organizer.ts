@@ -6,12 +6,12 @@ import {
 } from './MkOrganizer';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { makeGroupName } from 'src/helpers/groupName';
-import { MkStore } from 'src/storage/MkStore';
 import { MkCache } from 'src/storage/MkCache';
 import { MkSorter } from './MkSorter';
 import { MkGrouper } from './MkGrouper';
 import { browser } from 'src/api/browser';
 import { logError, logVerbose } from 'src/logs/console';
+import { getStore } from 'src/storage/Store';
 
 /**
  * Organize open tabs
@@ -19,7 +19,6 @@ import { logError, logVerbose } from 'src/logs/console';
 export class Organizer implements MkOrganizer {
     public constructor({
         cache,
-        store,
         tabsGrouper,
         tabsSorter,
     }: MkContstructorParams) {
@@ -27,11 +26,6 @@ export class Organizer implements MkOrganizer {
             throw new Error('No cache');
         }
         this.cache = cache;
-
-        if (!store) {
-            throw new Error('No store');
-        }
-        this.store = store;
 
         if (!tabsGrouper) {
             throw new Error('No tabsGrouper');
@@ -47,7 +41,6 @@ export class Organizer implements MkOrganizer {
     }
 
     private readonly cache: MkCache;
-    private readonly store: MkStore;
     private readonly tabsGrouper: MkGrouper;
     private readonly tabsSorter: MkSorter;
 
@@ -141,7 +134,7 @@ export class Organizer implements MkOrganizer {
      */
     private async isGroupChanged({ currentUrl, id }: MkIsGroupChanged) {
         logVerbose('isGroupChanged');
-        const { enableSubdomainFiltering } = await this.store.getState();
+        const { enableSubdomainFiltering } = await getStore().getState();
         const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
         const groupName = makeGroupName({ type: groupType, url: currentUrl });
         const isGroupChanged = this.cache.get(id) !== groupName;
@@ -154,7 +147,7 @@ export class Organizer implements MkOrganizer {
      */
     private async makeCacheItems(tabs: MkBrowser.tabs.Tab[]) {
         logVerbose('makeCacheItems');
-        const { enableSubdomainFiltering } = await this.store.getState();
+        const { enableSubdomainFiltering } = await getStore().getState();
         const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
         return tabs.map(({ id, url }) => {
             const groupName = makeGroupName({ type: groupType, url });
@@ -191,7 +184,7 @@ export class Organizer implements MkOrganizer {
             const {
                 clusterGroupedTabs,
                 enableAlphabeticSorting,
-            } = await this.store.getState();
+            } = await getStore().getState();
             const unsortedGroups = await this.tabsGrouper.group(filteredTabs);
             const sortedTabs = await this.tabsSorter.sort({
                 groups: unsortedGroups,

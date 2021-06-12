@@ -1,5 +1,4 @@
 import { MkBrowser } from 'src/api/MkBrowser';
-import { MkStore } from 'src/storage/MkStore';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
 import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
 
@@ -8,7 +7,6 @@ export interface MkAction {
 }
 
 export interface MkConstructorParams {
-    store: MkStore;
     tabsGrouper: MkTabsGrouper;
     tabsOrganizer: MkTabsOrganizer;
 }

@@ -10,7 +10,6 @@ import {
     MkTabIdsByGroup,
     MkUpdateGroupTitleParams,
 } from './MkGrouper';
-import { MkStore } from 'src/storage/MkStore';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
 import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
@@ -19,21 +18,15 @@ import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungr
 import { makeGroupName } from 'src/helpers/groupName';
 import { browser } from 'src/api/browser';
 import { logError, logVerbose } from 'src/logs/console';
+import { getStore } from 'src/storage/Store';
 
 /**
  * Grouping and ungrouping of tabs
  */
 export class Grouper implements MkGrouper {
-    public constructor(store: MkStore) {
-        if (!store) {
-            throw new Error('No store');
-        }
-        this.store = store;
-
+    public constructor() {
         logVerbose('constructor');
     }
-
-    private readonly store: MkStore;
 
     /**
      * Add new tab groups for a given name,
@@ -48,7 +41,7 @@ export class Grouper implements MkGrouper {
     }: MkAddNewGroupParams) {
         logVerbose('addNewGroup', name, windowId);
         try {
-            const { showGroupTabCount } = await this.store.getState();
+            const { showGroupTabCount } = await getStore().getState();
             // We need to get the state before resetting groups using the
             // exact name. As a repercussion of this method, groups where the
             // count has changed are automatically reopened. This shouldn't
@@ -141,7 +134,7 @@ export class Grouper implements MkGrouper {
     public async isEnabled(): Promise<boolean> {
         logVerbose('isEnabled');
         const isSupported = this.isSupported();
-        const { enableAutomaticGrouping } = await this.store.getState();
+        const { enableAutomaticGrouping } = await getStore().getState();
         return isSupported && enableAutomaticGrouping;
     }
 
@@ -266,7 +259,7 @@ export class Grouper implements MkGrouper {
         const {
             enableSubdomainFiltering,
             forceWindowConsolidation,
-        } = await this.store.getState();
+        } = await getStore().getState();
         // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
         // "windowId" in our algorithm which the representative -2 breaks
         const staticWindowId = tabs[0].windowId;

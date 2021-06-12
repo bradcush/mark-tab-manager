@@ -261,3 +261,23 @@ export class Store implements MkStore {
         }
     }
 }
+
+// Prepared to hold the store instance
+let store: MkStore | null = null;
+
+/**
+ * Retrieve the store instance
+ */
+export function getStore(): MkStore {
+    if (!store) {
+        throw new Error('No store instance');
+    }
+    return store;
+}
+
+/**
+ * Set the single store instance
+ */
+export function setStore(instance: MkStore): void {
+    store = instance;
+}

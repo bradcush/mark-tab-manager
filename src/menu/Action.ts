@@ -5,22 +5,19 @@ import {
     MkHandleToggleParams,
     MkMakeCheckboxPropertiesParams,
 } from './MkAction';
-import { MkState, MkStore } from 'src/storage/MkStore';
+import { MkState } from 'src/storage/MkStore';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
 import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
 import { browser } from 'src/api/browser';
 import { logError, logVerbose } from 'src/logs/console';
+import { getStore } from 'src/storage/Store';
 
 /**
  * Action context menu creation
  * and change handling
  */
 export class Action implements MkAction {
-    public constructor({
-        store,
-        tabsGrouper,
-        tabsOrganizer,
-    }: MkConstructorParams) {
+    public constructor({ tabsGrouper, tabsOrganizer }: MkConstructorParams) {
         if (!tabsGrouper) {
             throw new Error('No tabsGrouper');
         }
@@ -31,15 +28,9 @@ export class Action implements MkAction {
         }
         this.tabsOrganizer = tabsOrganizer;
 
-        if (!store) {
-            throw new Error('No store');
-        }
-        this.store = store;
-
         logVerbose('constructor');
     }
 
-    private readonly store: MkStore;
     private readonly tabsGrouper: MkTabsGrouper;
     private readonly tabsOrganizer: MkTabsOrganizer;
 
@@ -81,7 +72,7 @@ export class Action implements MkAction {
         // for toggling automatic sorting
         const labelId = 'settings';
         void this.createLabel(labelId);
-        const { enableAlphabeticSorting } = await this.store.getState();
+        const { enableAlphabeticSorting } = await getStore().getState();
         logVerbose('create', enableAlphabeticSorting);
         void this.createCheckbox({
             id: 'enableAlphabeticSorting',
@@ -93,7 +84,7 @@ export class Action implements MkAction {
         // for toggling automatic grouping
         const isTabGroupingSupported = this.tabsGrouper.isSupported();
         if (isTabGroupingSupported) {
-            const { enableAutomaticGrouping } = await this.store.getState();
+            const { enableAutomaticGrouping } = await getStore().getState();
             logVerbose('create', enableAutomaticGrouping);
             void this.createCheckbox({
                 id: 'enableAutomaticGrouping',
@@ -104,7 +95,7 @@ export class Action implements MkAction {
         }
         // Create the browser action context menu
         // for toggling use of granular domains
-        const { enableSubdomainFiltering } = await this.store.getState();
+        const { enableSubdomainFiltering } = await getStore().getState();
         logVerbose('create', enableSubdomainFiltering);
         void this.createCheckbox({
             id: 'enableSubdomainFiltering',
@@ -114,7 +105,7 @@ export class Action implements MkAction {
         });
         // Create the browser action context menu
         // for toggling tab group clustering
-        const { clusterGroupedTabs } = await this.store.getState();
+        const { clusterGroupedTabs } = await getStore().getState();
         logVerbose('create', clusterGroupedTabs);
         void this.createCheckbox({
             id: 'clusterGroupedTabs',
@@ -124,7 +115,7 @@ export class Action implements MkAction {
         });
         // Create the browser action context menu
         // for showing the group tab count
-        const { showGroupTabCount } = await this.store.getState();
+        const { showGroupTabCount } = await getStore().getState();
         void this.createCheckbox({
             id: 'showGroupTabCount',
             isChecked: showGroupTabCount,
@@ -133,7 +124,7 @@ export class Action implements MkAction {
         });
         // Create the browser action context menu
         // for toggling forced window consolidation
-        const { forceWindowConsolidation } = await this.store.getState();
+        const { forceWindowConsolidation } = await getStore().getState();
         void this.createCheckbox({
             id: 'forceWindowConsolidation',
             isChecked: forceWindowConsolidation,
@@ -214,10 +205,10 @@ export class Action implements MkAction {
         }
         // Rely on the menu item to automatically update itself
         // "menuItemId" is expected to be mapped to settings keys
-        // TODO: Typeguard so "menuItemId" is known to be acceptable
+        // TODO: Type guard so "menuItemId" is known to be acceptable
         logVerbose('handleToggle', menuItemId);
         const data = { [menuItemId]: checked };
-        void this.store.setState(data);
+        void getStore().setState(data);
     }
 
     /**
