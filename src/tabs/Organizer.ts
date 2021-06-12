@@ -3,42 +3,29 @@ import {
     MkIsGroupChanged,
     MkOrganizeParams,
     MkOrganizer,
-    MkOrganizerBrowser,
 } from './MkOrganizer';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { makeGroupName } from 'src/helpers/groupName';
-import { MkStore } from 'src/storage/MkStore';
-import { MkLogger } from 'src/logs/MkLogger';
 import { MkCache } from 'src/storage/MkCache';
 import { MkSorter } from './MkSorter';
 import { MkGrouper } from './MkGrouper';
+import { browser } from 'src/api/browser';
+import { logError, logVerbose } from 'src/logs/console';
+import { getStore } from 'src/storage/Store';
 
 /**
  * Organize open tabs
  */
 export class Organizer implements MkOrganizer {
     public constructor({
-        browser,
         cache,
-        store,
         tabsGrouper,
         tabsSorter,
-        Logger,
     }: MkContstructorParams) {
-        if (!browser) {
-            throw new Error('No browser');
-        }
-        this.browser = browser;
-
         if (!cache) {
             throw new Error('No cache');
         }
         this.cache = cache;
-
-        if (!store) {
-            throw new Error('No store');
-        }
-        this.store = store;
 
         if (!tabsGrouper) {
             throw new Error('No tabsGrouper');
@@ -50,17 +37,10 @@ export class Organizer implements MkOrganizer {
         }
         this.tabsSorter = tabsSorter;
 
-        if (!Logger) {
-            throw new Error('No Logger');
-        }
-        this.logger = new Logger('tabs/Organizer');
-        this.logger.log('constructor');
+        logVerbose('constructor');
     }
 
-    private readonly browser: MkOrganizerBrowser;
     private readonly cache: MkCache;
-    private readonly logger: MkLogger;
-    private readonly store: MkStore;
     private readonly tabsGrouper: MkGrouper;
     private readonly tabsSorter: MkSorter;
 
@@ -68,12 +48,12 @@ export class Organizer implements MkOrganizer {
      * Connect site organizer to triggering browser events
      */
     public connect(): void {
-        this.logger.log('connect');
+        logVerbose('connect');
 
         // Organize tabs on install and update
         // TODO: Perfect candidate for business API creation
-        this.browser.runtime.onInstalled.addListener((details) => {
-            this.logger.log('browser.runtime.onInstalled', details);
+        browser.runtime.onInstalled.addListener((details) => {
+            logVerbose('browser.runtime.onInstalled', details);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
             }
@@ -85,10 +65,10 @@ export class Organizer implements MkOrganizer {
         });
 
         // Organize tabs when enabled but previously installed
-        this.browser.management.onEnabled.addListener((info) => {
-            this.logger.log('browser.management.onEnabled', info);
+        browser.management.onEnabled.addListener((info) => {
+            logVerbose('browser.management.onEnabled', info);
             // We only care about ourselves being enabled
-            const isEnabled = info.id === this.browser.runtime.id;
+            const isEnabled = info.id === browser.runtime.id;
             if (!isEnabled) {
                 return;
             }
@@ -96,8 +76,8 @@ export class Organizer implements MkOrganizer {
         });
 
         // Handle when the extension icon is clicked
-        this.browser.action.onClicked.addListener(() => {
-            this.logger.log('browser.action.onClicked');
+        browser.action.onClicked.addListener(() => {
+            logVerbose('browser.action.onClicked');
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
             }
@@ -105,11 +85,11 @@ export class Organizer implements MkOrganizer {
         });
 
         // Handle tabs where a URL is updated
-        this.browser.tabs.onUpdated.addListener(
+        browser.tabs.onUpdated.addListener(
             // Handlers can be async since we just care to fire and forget
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             async (tabId, changeInfo, tab) => {
-                this.logger.log('browser.tabs.onUpdated', changeInfo);
+                logVerbose('browser.tabs.onUpdated', changeInfo);
                 if (chrome.runtime.lastError) {
                     throw chrome.runtime.lastError;
                 }
@@ -139,8 +119,8 @@ export class Organizer implements MkOrganizer {
         );
 
         // Handle removed tabs
-        this.browser.tabs.onRemoved.addListener((tabId) => {
-            this.logger.log('browser.tabs.onRemoved', tabId);
+        browser.tabs.onRemoved.addListener((tabId) => {
+            logVerbose('browser.tabs.onRemoved', tabId);
             // Remove the current tab id from group tracking regardless
             // of if we are automatically sorting to stay updated
             this.cache.remove(tabId);
@@ -153,12 +133,12 @@ export class Organizer implements MkOrganizer {
      * on it's url relative to what's in the cache
      */
     private async isGroupChanged({ currentUrl, id }: MkIsGroupChanged) {
-        this.logger.log('isGroupChanged');
-        const { enableSubdomainFiltering } = await this.store.getState();
+        logVerbose('isGroupChanged');
+        const { enableSubdomainFiltering } = await getStore().getState();
         const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
         const groupName = makeGroupName({ type: groupType, url: currentUrl });
         const isGroupChanged = this.cache.get(id) !== groupName;
-        this.logger.log('isTabUpdated', isGroupChanged);
+        logVerbose('isTabUpdated', isGroupChanged);
         return isGroupChanged;
     }
 
@@ -166,8 +146,8 @@ export class Organizer implements MkOrganizer {
      * Make list of cache information
      */
     private async makeCacheItems(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('makeCacheItems');
-        const { enableSubdomainFiltering } = await this.store.getState();
+        logVerbose('makeCacheItems');
+        const { enableSubdomainFiltering } = await getStore().getState();
         const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
         return tabs.map(({ id, url }) => {
             const groupName = makeGroupName({ type: groupType, url });
@@ -185,9 +165,9 @@ export class Organizer implements MkOrganizer {
             type: 'default',
         }
     ): Promise<void> {
-        this.logger.log('organize');
+        logVerbose('organize');
         try {
-            const unsortedTabs = await this.browser.tabs.query({});
+            const unsortedTabs = await browser.tabs.query({});
             // Filter to organize only the tabs want to
             const filteredTabs = this.tabsSorter.filter(unsortedTabs);
             // Clear the cache when forced so
@@ -204,7 +184,7 @@ export class Organizer implements MkOrganizer {
             const {
                 clusterGroupedTabs,
                 enableAlphabeticSorting,
-            } = await this.store.getState();
+            } = await getStore().getState();
             const unsortedGroups = await this.tabsGrouper.group(filteredTabs);
             const sortedTabs = await this.tabsSorter.sort({
                 groups: unsortedGroups,
@@ -229,7 +209,7 @@ export class Organizer implements MkOrganizer {
                 });
             }
         } catch (error) {
-            this.logger.error('organize', error);
+            logError('organize', error);
             throw error;
         }
     }

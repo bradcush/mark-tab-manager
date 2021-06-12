@@ -1,5 +1,3 @@
-import { MkStore } from 'src/storage/MkStore';
-import { MkLoggerConstructor } from 'src/logs/MkLogger';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { MkOrganizerType } from './MkOrganizer';
 
@@ -9,28 +7,6 @@ export interface MkGrouper {
     isSupported(): boolean;
     remove(): Promise<void>;
     render(params: MkRender): void;
-}
-
-interface MkBrowserTabGroups {
-    Color: MkBrowser.tabGroups.Color;
-    query: MkBrowser.tabGroups.Query;
-    update: MkBrowser.tabGroups.Update;
-}
-
-interface MkBrowserTabs {
-    group: MkBrowser.tabs.Group;
-    query: MkBrowser.tabs.Query;
-    ungroup: MkBrowser.tabs.Ungroup;
-}
-
-export interface MkGrouperBrowser {
-    tabGroups: MkBrowserTabGroups;
-    tabs: MkBrowserTabs;
-}
-export interface MkConstructorParams {
-    browser: MkGrouperBrowser;
-    store: MkStore;
-    Logger: MkLoggerConstructor;
 }
 
 export interface MkAddNewGroupParams {

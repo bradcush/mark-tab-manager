@@ -3,49 +3,30 @@ import {
     MkActiveTabIdsByWindowKey,
     MkActiveTabIdsByWindowValue,
     MkAddNewGroupParams,
-    MkConstructorParams,
     MkGetGroupInfoParams,
     MkGrouper,
-    MkGrouperBrowser,
     MkRender,
     MkRenderGroupsByNameParams,
     MkTabIdsByGroup,
     MkUpdateGroupTitleParams,
 } from './MkGrouper';
-import { MkStore } from 'src/storage/MkStore';
-import { MkLogger } from 'src/logs/MkLogger';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
 import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 import { makeGroupName } from 'src/helpers/groupName';
+import { browser } from 'src/api/browser';
+import { logError, logVerbose } from 'src/logs/console';
+import { getStore } from 'src/storage/Store';
 
 /**
  * Grouping and ungrouping of tabs
  */
 export class Grouper implements MkGrouper {
-    public constructor({ browser, store, Logger }: MkConstructorParams) {
-        if (!browser) {
-            throw new Error('No browser');
-        }
-        this.browser = browser;
-
-        if (!store) {
-            throw new Error('No store');
-        }
-        this.store = store;
-
-        if (!Logger) {
-            throw new Error('No Logger');
-        }
-        this.logger = new Logger('tabs/Grouper');
-        this.logger.log('constructor');
+    public constructor() {
+        logVerbose('constructor');
     }
-
-    private readonly browser: MkGrouperBrowser;
-    private readonly logger: MkLogger;
-    private readonly store: MkStore;
 
     /**
      * Add new tab groups for a given name,
@@ -58,9 +39,9 @@ export class Grouper implements MkGrouper {
         tabIds,
         windowId,
     }: MkAddNewGroupParams) {
-        this.logger.log('addNewGroup', name, windowId);
+        logVerbose('addNewGroup', name, windowId);
         try {
-            const { showGroupTabCount } = await this.store.getState();
+            const { showGroupTabCount } = await getStore().getState();
             // We need to get the state before resetting groups using the
             // exact name. As a repercussion of this method, groups where the
             // count has changed are automatically reopened. This shouldn't
@@ -75,7 +56,7 @@ export class Grouper implements MkGrouper {
             });
             const createProperties = { windowId };
             const options = { createProperties, tabIds };
-            const groupId = await this.browser.tabs.group(options);
+            const groupId = await browser.tabs.group(options);
             const color = this.getColorForGroup(idx);
             // Rely on the previous state when we don't force
             const collapsed = (forceCollapse || prevGroup?.collapsed) ?? false;
@@ -86,7 +67,7 @@ export class Grouper implements MkGrouper {
                 title,
             });
         } catch (error) {
-            this.logger.error('addNewGroup', error);
+            logError('addNewGroup', error);
             throw error;
         }
     }
@@ -95,7 +76,7 @@ export class Grouper implements MkGrouper {
      * Get all the active tabs across all windows
      */
     private getActiveTabIdsByWindow(tabs: MkBrowser.tabs.Tab[]) {
-        this.logger.log('getActiveTabIdsByWindow');
+        logVerbose('getActiveTabIdsByWindow');
         const activeTabs = tabs.filter((tab) => tab.active);
         // Best to use domain specific typings here
         const activeTabIdsByWindow: MkActiveTabIdsByWindow = new Map<
@@ -105,7 +86,7 @@ export class Grouper implements MkGrouper {
         activeTabs.forEach(({ id, windowId }) => {
             activeTabIdsByWindow.set(windowId, id);
         });
-        this.logger.log('getActiveTabIdsByWindow', activeTabIdsByWindow);
+        logVerbose('getActiveTabIdsByWindow', activeTabIdsByWindow);
         return activeTabIdsByWindow;
     }
 
@@ -114,16 +95,16 @@ export class Grouper implements MkGrouper {
      * retain the same color regardless of a group re-render
      */
     private getColorForGroup(index: number) {
-        this.logger.log('getColorForGroup', index);
-        const colorsByEnum = this.browser.tabGroups.Color;
-        this.logger.log('getColorForGroup', colorsByEnum);
+        logVerbose('getColorForGroup', index);
+        const colorsByEnum = browser.tabGroups.Color;
+        logVerbose('getColorForGroup', colorsByEnum);
         const colorKeys = Object.keys(colorsByEnum);
         const colors = colorKeys.map((colorKey) =>
             colorKey.toLocaleLowerCase()
         );
         const colorIdx = index % colorKeys.length;
         const color = colors[colorIdx];
-        this.logger.log('getColorForGroup', color);
+        logVerbose('getColorForGroup', color);
         return color;
     }
 
@@ -132,16 +113,16 @@ export class Grouper implements MkGrouper {
      * a given name for a specific window id
      */
     private async getGroupInfo({ id, title }: MkGetGroupInfoParams) {
-        this.logger.log('getGroupInfo', title);
+        logVerbose('getGroupInfo', title);
         try {
             // Be careful of the title as query titles are patterns where
             // chars can have special meaning (eg. * is a universal selector)
             const queryInfo = { title, windowId: id };
-            const tabGroups = await this.browser.tabGroups.query(queryInfo);
-            this.logger.log('getGroupInfo', tabGroups);
+            const tabGroups = await browser.tabGroups.query(queryInfo);
+            logVerbose('getGroupInfo', tabGroups);
             return tabGroups[0];
         } catch (error) {
-            this.logger.error('getGroupInfo', error);
+            logError('getGroupInfo', error);
             throw error;
         }
     }
@@ -151,9 +132,9 @@ export class Grouper implements MkGrouper {
      * and whether the feature is activated
      */
     public async isEnabled(): Promise<boolean> {
-        this.logger.log('isEnabled');
+        logVerbose('isEnabled');
         const isSupported = this.isSupported();
-        const { enableAutomaticGrouping } = await this.store.getState();
+        const { enableAutomaticGrouping } = await getStore().getState();
         return isSupported && enableAutomaticGrouping;
     }
 
@@ -161,7 +142,7 @@ export class Grouper implements MkGrouper {
      * Check if all used tab grouping APIs are supported
      */
     public isSupported(): boolean {
-        this.logger.log('isSupported');
+        logVerbose('isSupported');
         return (
             isTabGroupsUpdateSupported() &&
             isTabGroupsQuerySupported() &&
@@ -174,15 +155,15 @@ export class Grouper implements MkGrouper {
      * Remove all existing groups
      */
     public async remove(): Promise<void> {
-        this.logger.log('remove');
+        logVerbose('remove');
         try {
-            const tabs = await this.browser.tabs.query({});
+            const tabs = await browser.tabs.query({});
             const filterIds = (id: number | undefined): id is number =>
                 typeof id !== 'undefined';
             const ids = tabs.map((tab) => tab.id).filter(filterIds);
             void this.removeGroupsForTabIds(ids);
         } catch (error) {
-            this.logger.error('remove', error);
+            logError('remove', error);
             throw error;
         }
     }
@@ -192,11 +173,11 @@ export class Grouper implements MkGrouper {
      * and the group itself when empty
      */
     private async removeGroupsForTabIds(ids: number[]) {
-        this.logger.log('removeGroupsForTabIds', ids);
+        logVerbose('removeGroupsForTabIds', ids);
         try {
-            await this.browser.tabs.ungroup(ids);
+            await browser.tabs.ungroup(ids);
         } catch (error) {
-            this.logger.error('removeGroupsForTabIds', error);
+            logError('removeGroupsForTabIds', error);
             throw error;
         }
     }
@@ -210,12 +191,12 @@ export class Grouper implements MkGrouper {
         tabIdsByGroup,
         type,
     }: MkRenderGroupsByNameParams) {
-        this.logger.log('renderGroupsByName', tabIdsByGroup);
+        logVerbose('renderGroupsByName', tabIdsByGroup);
         // Offset the index to ignore orphan groups
         let groupIdxOffset = 0;
         const names = Object.keys(tabIdsByGroup);
         names.forEach((name, idx) => {
-            this.logger.log('renderGroupsByName', name);
+            logVerbose('renderGroupsByName', name);
             // Groups are represented by the window id
             const group = Object.keys(tabIdsByGroup[name]);
             const isRealGroup = (windowId: string) =>
@@ -245,7 +226,7 @@ export class Grouper implements MkGrouper {
                             ? !tabIds.includes(activeTabId)
                             : true
                         : false;
-                this.logger.log('renderGroupsByName', activeTabId);
+                logVerbose('renderGroupsByName', activeTabId);
                 void this.addNewGroup({
                     idx: groupIdx,
                     forceCollapse,
@@ -261,7 +242,7 @@ export class Grouper implements MkGrouper {
      * Group tabs in the browser
      */
     public render({ groups, organizeType, tabs }: MkRender): void {
-        this.logger.log('render');
+        logVerbose('render');
         const activeTabIdsByWindow = this.getActiveTabIdsByWindow(tabs);
         this.renderGroupsByName({
             activeTabIdsByWindow,
@@ -274,11 +255,11 @@ export class Grouper implements MkGrouper {
      * Group tabs by their group name and window id
      */
     public async group(tabs: MkBrowser.tabs.Tab[]): Promise<MkTabIdsByGroup> {
-        this.logger.log('group');
+        logVerbose('group');
         const {
             enableSubdomainFiltering,
             forceWindowConsolidation,
-        } = await this.store.getState();
+        } = await getStore().getState();
         // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
         // "windowId" in our algorithm which the representative -2 breaks
         const staticWindowId = tabs[0].windowId;
@@ -311,7 +292,7 @@ export class Grouper implements MkGrouper {
             }
             return acc;
         }, {});
-        this.logger.log('group', tabIdsByGroup);
+        logVerbose('group', tabIdsByGroup);
         return tabIdsByGroup;
     }
 
@@ -324,12 +305,12 @@ export class Grouper implements MkGrouper {
         groupId,
         title,
     }: MkUpdateGroupTitleParams) {
-        this.logger.log('updateGroupProperties', color);
+        logVerbose('updateGroupProperties', color);
         try {
             const updateProperties = { collapsed, color, title };
-            await this.browser.tabGroups.update(groupId, updateProperties);
+            await browser.tabGroups.update(groupId, updateProperties);
         } catch (error) {
-            this.logger.error('updateGroupProperties', error);
+            logError('updateGroupProperties', error);
             throw error;
         }
     }

@@ -1,19 +1,13 @@
-import { MkLogger, MkLoggerConstructor } from 'src/logs/MkLogger';
 import { MkCache, MkCacheItem, MkCacheKey, MkCacheValue } from './MkCache';
+import { logVerbose } from 'src/logs/console';
 
 /**
  * Adapter for caching items in memory
  */
 export class MemoryCache implements MkCache {
-    public constructor(Logger: MkLoggerConstructor) {
-        if (!Logger) {
-            throw new Error('No Logger');
-        }
-        this.logger = new Logger('Cache');
-        this.logger.log('constructor');
+    public constructor() {
+        logVerbose('constructor');
     }
-
-    private readonly logger: MkLogger;
 
     // Used for the actual caching in memory
     private keyValueStore = new Map<MkCacheKey, MkCacheValue>();
@@ -23,7 +17,7 @@ export class MemoryCache implements MkCache {
      */
     public exists(): boolean {
         const isCacheFilled = this.keyValueStore.size > 0;
-        this.logger.log('exists', isCacheFilled);
+        logVerbose('exists', isCacheFilled);
         return isCacheFilled;
     }
 
@@ -31,7 +25,7 @@ export class MemoryCache implements MkCache {
      * Clear the entire cache
      */
     public flush(): void {
-        this.logger.log('flush');
+        logVerbose('flush');
         this.keyValueStore.clear();
     }
 
@@ -39,7 +33,7 @@ export class MemoryCache implements MkCache {
      * Retrieve a specific item
      */
     public get(key: MkCacheKey): MkCacheValue {
-        this.logger.log('get', key);
+        logVerbose('get', key);
         return this.keyValueStore.get(key);
     }
 
@@ -47,9 +41,9 @@ export class MemoryCache implements MkCache {
      * Remove a particular item
      */
     public remove(key: MkCacheKey): void {
-        this.logger.log('remove', key);
+        logVerbose('remove', key);
         this.keyValueStore.delete(key);
-        this.logger.log('remove', this.keyValueStore);
+        logVerbose('remove', this.keyValueStore);
     }
 
     /**
@@ -57,12 +51,12 @@ export class MemoryCache implements MkCache {
      * addition or fresh cache creation
      */
     public set(items: MkCacheItem[]): void {
-        this.logger.log('set', items);
+        logVerbose('set', items);
         // We don't need to update if nothing has changed
         // TODO: There is an issue when the cache only
         // contains one item and we want to add one item
         if (items.length === this.keyValueStore.size) {
-            this.logger.log('set', false);
+            logVerbose('set', false);
             return;
         }
         items.forEach((item) => {
@@ -75,6 +69,6 @@ export class MemoryCache implements MkCache {
             }
             this.keyValueStore.set(key, value);
         });
-        this.logger.log('set', this.keyValueStore);
+        logVerbose('set', this.keyValueStore);
     }
 }

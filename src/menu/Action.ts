@@ -1,32 +1,23 @@
 import {
+    MkAction,
     MkConstructorParams,
     MkCreateCheckboxParams,
     MkHandleToggleParams,
     MkMakeCheckboxPropertiesParams,
-    MkMenu,
-    MkMenuBrowser,
-} from './MkMenu';
-import { MkState, MkStore } from 'src/storage/MkStore';
-import { MkLogger } from 'src/logs/MkLogger';
+} from './MkAction';
+import { MkState } from 'src/storage/MkStore';
 import { MkOrganizer as MkTabsOrganizer } from 'src/tabs/MkOrganizer';
 import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
+import { browser } from 'src/api/browser';
+import { logError, logVerbose } from 'src/logs/console';
+import { getStore } from 'src/storage/Store';
 
 /**
- * Context menu creation and change handling
+ * Action context menu creation
+ * and change handling
  */
-export class Menu implements MkMenu {
-    public constructor({
-        browser,
-        store,
-        tabsGrouper,
-        tabsOrganizer,
-        Logger,
-    }: MkConstructorParams) {
-        if (!browser) {
-            throw new Error('No browser');
-        }
-        this.browser = browser;
-
+export class Action implements MkAction {
+    public constructor({ tabsGrouper, tabsOrganizer }: MkConstructorParams) {
         if (!tabsGrouper) {
             throw new Error('No tabsGrouper');
         }
@@ -37,21 +28,9 @@ export class Menu implements MkMenu {
         }
         this.tabsOrganizer = tabsOrganizer;
 
-        if (!store) {
-            throw new Error('No store');
-        }
-        this.store = store;
-
-        if (!Logger) {
-            throw new Error('No Logger');
-        }
-        this.logger = new Logger('context/Menu');
-        this.logger.log('constructor');
+        logVerbose('constructor');
     }
 
-    private readonly browser: MkMenuBrowser;
-    private readonly logger: MkLogger;
-    private readonly store: MkStore;
     private readonly tabsGrouper: MkTabsGrouper;
     private readonly tabsOrganizer: MkTabsOrganizer;
 
@@ -59,11 +38,11 @@ export class Menu implements MkMenu {
      * Connect handler for context menu updates
      */
     public connect(): void {
-        this.logger.log('connect');
+        logVerbose('connect');
 
         // Only create menus when installed
-        this.browser.runtime.onInstalled.addListener((details) => {
-            this.logger.log('browser.runtime.onInstalled', details);
+        browser.runtime.onInstalled.addListener((details) => {
+            logVerbose('browser.runtime.onInstalled', details);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
             }
@@ -75,8 +54,8 @@ export class Menu implements MkMenu {
         });
 
         // Handle clicks on any context menu item
-        this.browser.contextMenus.onClicked.addListener((info, tab) => {
-            this.logger.log('browser.contextMenus.onClicked', info);
+        browser.contextMenus.onClicked.addListener((info, tab) => {
+            logVerbose('browser.contextMenus.onClicked', info);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
             }
@@ -88,13 +67,13 @@ export class Menu implements MkMenu {
      * Initialize creation of and interaction with all context menus
      */
     private async create(): Promise<void> {
-        this.logger.log('create');
+        logVerbose('create');
         // Create the browser action context menu
         // for toggling automatic sorting
         const labelId = 'settings';
         void this.createLabel(labelId);
-        const { enableAlphabeticSorting } = await this.store.getState();
-        this.logger.log('create', enableAlphabeticSorting);
+        const { enableAlphabeticSorting } = await getStore().getState();
+        logVerbose('create', enableAlphabeticSorting);
         void this.createCheckbox({
             id: 'enableAlphabeticSorting',
             isChecked: enableAlphabeticSorting,
@@ -105,8 +84,8 @@ export class Menu implements MkMenu {
         // for toggling automatic grouping
         const isTabGroupingSupported = this.tabsGrouper.isSupported();
         if (isTabGroupingSupported) {
-            const { enableAutomaticGrouping } = await this.store.getState();
-            this.logger.log('create', enableAutomaticGrouping);
+            const { enableAutomaticGrouping } = await getStore().getState();
+            logVerbose('create', enableAutomaticGrouping);
             void this.createCheckbox({
                 id: 'enableAutomaticGrouping',
                 isChecked: enableAutomaticGrouping,
@@ -116,8 +95,8 @@ export class Menu implements MkMenu {
         }
         // Create the browser action context menu
         // for toggling use of granular domains
-        const { enableSubdomainFiltering } = await this.store.getState();
-        this.logger.log('create', enableSubdomainFiltering);
+        const { enableSubdomainFiltering } = await getStore().getState();
+        logVerbose('create', enableSubdomainFiltering);
         void this.createCheckbox({
             id: 'enableSubdomainFiltering',
             isChecked: enableSubdomainFiltering,
@@ -126,8 +105,8 @@ export class Menu implements MkMenu {
         });
         // Create the browser action context menu
         // for toggling tab group clustering
-        const { clusterGroupedTabs } = await this.store.getState();
-        this.logger.log('create', clusterGroupedTabs);
+        const { clusterGroupedTabs } = await getStore().getState();
+        logVerbose('create', clusterGroupedTabs);
         void this.createCheckbox({
             id: 'clusterGroupedTabs',
             isChecked: clusterGroupedTabs,
@@ -136,7 +115,7 @@ export class Menu implements MkMenu {
         });
         // Create the browser action context menu
         // for showing the group tab count
-        const { showGroupTabCount } = await this.store.getState();
+        const { showGroupTabCount } = await getStore().getState();
         void this.createCheckbox({
             id: 'showGroupTabCount',
             isChecked: showGroupTabCount,
@@ -145,7 +124,7 @@ export class Menu implements MkMenu {
         });
         // Create the browser action context menu
         // for toggling forced window consolidation
-        const { forceWindowConsolidation } = await this.store.getState();
+        const { forceWindowConsolidation } = await getStore().getState();
         void this.createCheckbox({
             id: 'forceWindowConsolidation',
             isChecked: forceWindowConsolidation,
@@ -163,7 +142,7 @@ export class Menu implements MkMenu {
         parentId,
         title,
     }: MkCreateCheckboxParams) {
-        this.logger.log('createCheckbox');
+        logVerbose('createCheckbox');
         try {
             const createProperties = this.makeCheckboxProperties({
                 checked: isChecked,
@@ -171,9 +150,9 @@ export class Menu implements MkMenu {
                 labelId: parentId,
                 text: title,
             });
-            await this.browser.contextMenus.create(createProperties);
+            await browser.contextMenus.create(createProperties);
         } catch (error) {
-            this.logger.error('createCheckbox', error);
+            logError('createCheckbox', error);
             throw error;
         }
     }
@@ -182,12 +161,12 @@ export class Menu implements MkMenu {
      * Create a new label menu item
      */
     private async createLabel(id: string) {
-        this.logger.log('createLabel');
+        logVerbose('createLabel');
         try {
             const createProperties = this.makeLabelProperties(id);
-            await this.browser.contextMenus.create(createProperties);
+            await browser.contextMenus.create(createProperties);
         } catch (error) {
-            this.logger.error('createLabel', error);
+            logError('createLabel', error);
             throw error;
         }
     }
@@ -197,7 +176,7 @@ export class Menu implements MkMenu {
      * by updating a temporary internal state only
      */
     private handleToggle({ info }: MkHandleToggleParams) {
-        this.logger.log('handleToggle', info);
+        logVerbose('handleToggle', info);
         // Menu item id can be any as described by official typings
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { checked, menuItemId } = info;
@@ -226,10 +205,10 @@ export class Menu implements MkMenu {
         }
         // Rely on the menu item to automatically update itself
         // "menuItemId" is expected to be mapped to settings keys
-        // TODO: Typeguard so "menuItemId" is known to be acceptable
-        this.logger.log('handleToggle', menuItemId);
+        // TODO: Type guard so "menuItemId" is known to be acceptable
+        logVerbose('handleToggle', menuItemId);
         const data = { [menuItemId]: checked };
-        void this.store.setState(data);
+        void getStore().setState(data);
     }
 
     /**
@@ -241,7 +220,7 @@ export class Menu implements MkMenu {
         labelId,
         text,
     }: MkMakeCheckboxPropertiesParams) {
-        this.logger.log('makeCheckboxProperties');
+        logVerbose('makeCheckboxProperties');
         return {
             checked,
             contexts: ['action'],
@@ -257,7 +236,7 @@ export class Menu implements MkMenu {
      * Make properties used for specifying a label to be created
      */
     private makeLabelProperties(labelId: string) {
-        this.logger.log('makeLabelProperties');
+        logVerbose('makeLabelProperties');
         return {
             contexts: ['action'],
             id: labelId,

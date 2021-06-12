@@ -1,16 +1,15 @@
 import { MemoryCache } from '../MemoryCache';
-import { ConsoleLogger } from 'src/logs/ConsoleLogger';
 
 describe('MemoryCache', () => {
     describe('when checking if anything exists in the cache', () => {
         it('should indicate when no items exist', () => {
-            const memoryCache = new MemoryCache(ConsoleLogger);
+            const memoryCache = new MemoryCache();
             const isCacheFilled = memoryCache.exists();
             expect(isCacheFilled).toBe(false);
         });
 
         it('should indicate when any number of items exist', () => {
-            const memoryCache = new MemoryCache(ConsoleLogger);
+            const memoryCache = new MemoryCache();
             const keyName = 123;
             const groupName = 'group';
             const item = { key: keyName, value: groupName };
@@ -22,7 +21,7 @@ describe('MemoryCache', () => {
 
     describe('when an item is retrieved from the cache', () => {
         it('should retrieve the item if present', () => {
-            const memoryCache = new MemoryCache(ConsoleLogger);
+            const memoryCache = new MemoryCache();
             const keyName = 123;
             const groupName = 'group';
             const item = { key: keyName, value: groupName };
@@ -32,7 +31,7 @@ describe('MemoryCache', () => {
         });
 
         it('should retrieve nothing if the item is not present', () => {
-            const memoryCache = new MemoryCache(ConsoleLogger);
+            const memoryCache = new MemoryCache();
             const value = memoryCache.get(123);
             expect(value).toBeUndefined();
         });
@@ -40,7 +39,7 @@ describe('MemoryCache', () => {
 
     describe('when an item is removed from the cache', () => {
         it('should remove the item if present', () => {
-            const memoryCache = new MemoryCache(ConsoleLogger);
+            const memoryCache = new MemoryCache();
             const keyName = 123;
             const groupName = 'group';
             const item = { key: keyName, value: groupName };
@@ -55,7 +54,7 @@ describe('MemoryCache', () => {
 
     describe('when an item is added to the cache', () => {
         it('should add the item if not already present', () => {
-            const memoryCache = new MemoryCache(ConsoleLogger);
+            const memoryCache = new MemoryCache();
             const keyName = 123;
             const groupName = 'group';
             const item = { key: keyName, value: groupName };
@@ -65,7 +64,7 @@ describe('MemoryCache', () => {
         });
 
         it('should replace the item if already present', () => {
-            const memoryCache = new MemoryCache(ConsoleLogger);
+            const memoryCache = new MemoryCache();
             const keyName = 123;
             const firstGroupName = 'group';
             const firstItem = {
@@ -93,7 +92,7 @@ describe('MemoryCache', () => {
         });
 
         it('should not add the item if cache contains the same number', () => {
-            const memoryCache = new MemoryCache(ConsoleLogger);
+            const memoryCache = new MemoryCache();
             const firstKeyName = 123;
             const groupName = 'group';
             const firstItem = {
@@ -114,7 +113,7 @@ describe('MemoryCache', () => {
         });
 
         it('should throw if the item key or value is not set', () => {
-            const memoryCache = new MemoryCache(ConsoleLogger);
+            const memoryCache = new MemoryCache();
             const firstKeyName = undefined;
             const firstGroupName = 'group';
             const firstItem = {
