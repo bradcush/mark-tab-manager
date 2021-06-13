@@ -1,13 +1,5 @@
 import { MkBrowser } from 'src/api/MkBrowser';
-import { MkOrganizerType } from './MkOrganizer';
-
-export interface MkGrouper {
-    group(tabs: MkBrowser.tabs.Tab[]): Promise<MkTabIdsByGroup>;
-    isEnabled(): Promise<boolean>;
-    isSupported(): boolean;
-    remove(): Promise<void>;
-    render(params: MkRender): void;
-}
+import { MkOrganizerType } from './MkOrganize';
 
 export interface MkAddNewGroupParams {
     idx: number;

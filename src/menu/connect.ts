@@ -6,12 +6,7 @@ import { MkConnectParams } from './MkConnect';
  * Handle driven context menu
  * updates from the browser
  */
-export function connect({
-    create,
-    grouper,
-    organizer,
-    toggle,
-}: MkConnectParams): void {
+export function connect({ create, toggle }: MkConnectParams): void {
     logVerbose('connect');
 
     // Only create menus when installed
@@ -24,7 +19,7 @@ export function connect({
         if (details.reason === 'shared_module_update') {
             return;
         }
-        void create(grouper);
+        void create();
     });
 
     // Handle clicks on any context menu item
@@ -36,8 +31,6 @@ export function connect({
         toggle({
             identifier: menuItemId,
             isChecked: checked,
-            tabsGrouper: grouper,
-            tabsOrganizer: organizer,
         });
     });
 }

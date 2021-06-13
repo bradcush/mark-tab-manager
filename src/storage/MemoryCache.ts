@@ -72,3 +72,24 @@ export class MemoryCache implements MkCache {
         logVerbose('set', this.keyValueStore);
     }
 }
+
+// Prepared to hold the cache instance
+// TODO: This should be a configurable dependency
+let cache: MkCache | null = null;
+
+/**
+ * Retrieve the cache instance
+ */
+export function getMemoryCache(): MkCache {
+    if (!cache) {
+        throw new Error('No cache instance');
+    }
+    return cache;
+}
+
+/**
+ * Set the single cache instance
+ */
+export function setMemoryCache(instance: MkCache): void {
+    cache = instance;
+}

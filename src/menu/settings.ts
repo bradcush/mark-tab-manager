@@ -1,16 +1,20 @@
 import { MkToggleParams } from './MkSettings';
 import { MkStateKey } from 'src/storage/MkStore';
-import { MkGrouper as MkTabsGrouper } from 'src/tabs/MkGrouper';
 import { logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
 import { makeMenu } from './action';
 import { MkMakeMenuItem } from './MkAction';
+import { organize } from 'src/tabs/organize';
+import {
+    isSupported as isTabGroupingSupported,
+    remove as removeGroups,
+} from 'src/tabs/group';
 
 /**
  * Create settings menu with all
  * supported configurations
  */
-export async function create(tabsGrouper: MkTabsGrouper): Promise<void> {
+export async function create(): Promise<void> {
     logVerbose('create');
 
     const {
@@ -33,8 +37,7 @@ export async function create(tabsGrouper: MkTabsGrouper): Promise<void> {
         title: 'Sort tabs alphabetically',
     });
     // Some browser versions don't support grouping
-    const isTabGroupingSupported = tabsGrouper.isSupported();
-    if (isTabGroupingSupported) {
+    if (isTabGroupingSupported()) {
         logVerbose('create', enableAutomaticGrouping);
         menuItems.push({
             format: 'checkbox',
@@ -99,24 +102,19 @@ function isMenuItemValid(id: unknown): id is MkStateKey {
  * Handle auto sort context menu setting clicks
  * by updating a temporary internal state only
  */
-export function toggle({
-    identifier,
-    isChecked,
-    tabsGrouper,
-    tabsOrganizer,
-}: MkToggleParams): void {
+export function toggle({ identifier, isChecked }: MkToggleParams): void {
     logVerbose('toggle', identifier);
     // Menu item id can be any as described by official typings
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     // Various settings changes require reorganization
-    void tabsOrganizer.organize({
+    void organize({
         clean: true,
         type: 'collapse',
     });
     // Remove any existing groups when grouping is disabled
     const isAutomaticGrouping = identifier === 'enableAutomaticGrouping';
     if (isAutomaticGrouping && !isChecked) {
-        void tabsGrouper.remove();
+        void removeGroups();
     }
     if (!isMenuItemValid(identifier)) {
         // Menu item id can be any but we assume a string for now

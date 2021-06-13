@@ -1,10 +1,9 @@
-import { Organizer as TabsOrganizer } from './tabs/Organizer';
+import { connect as connectTabs } from './tabs/connect';
 import { connect as connectMenu } from './menu/connect';
 import { create as createMenu, toggle as toggleMenu } from './menu/settings';
-import { Sorter as TabsSorter } from './tabs/Sorter';
-import { Grouper as TabsGrouper } from './tabs/Grouper';
+import { organize as organizeTabs } from './tabs/organize';
 import { setStore, Store } from './storage/Store';
-import { MemoryCache } from './storage/MemoryCache';
+import { MemoryCache, setMemoryCache } from './storage/MemoryCache';
 import { setUninstallUrl as setUninstallSurveyUrl } from './survey/uninstall';
 import { logVerbose } from './logs/console';
 
@@ -25,25 +24,18 @@ function initBackground() {
     // Set the survey to be opened
     setUninstallSurveyUrl();
 
-    // Prepare deps needed for organization
-    const tabsGrouperInstance = new TabsGrouper();
+    // Set memoryCache instance for direct use
     const memoryCache = new MemoryCache();
-    const tabsSorterInstance = new TabsSorter();
+    setMemoryCache(memoryCache);
 
-    // Start tab organizer for organizing tabs
-    const tabsOrganizerInstance = new TabsOrganizer({
-        cache: memoryCache,
-        tabsGrouper: tabsGrouperInstance,
-        tabsSorter: tabsSorterInstance,
-    });
-    tabsOrganizerInstance.connect();
+    // Connect tab related events that
+    // drive tab organization
+    connectTabs(organizeTabs);
 
     // Create menus that drive system
-    // and user interaction
+    // and connect user interaction
     connectMenu({
         create: createMenu,
-        grouper: tabsGrouperInstance,
-        organizer: tabsOrganizerInstance,
         toggle: toggleMenu,
     });
 }
