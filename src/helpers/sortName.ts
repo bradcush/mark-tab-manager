@@ -4,7 +4,7 @@ import {
     isCommonPrefix,
     isNewTab,
     parseValidDomainInfo,
-} from './domainHelpers';
+} from './domain';
 import {
     MkMakeGranularSortNameParams,
     MkMakeSortNameParams,

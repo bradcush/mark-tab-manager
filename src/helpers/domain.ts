@@ -1,5 +1,5 @@
 import { parseDomain, ParseResultType } from 'parse-domain';
-import { MkParseValidDomainInfoResult } from './MkDomainHelpers';
+import { MkParseValidDomainInfoResult } from './MkDomain';
 
 /**
  * Extract the hostname from a URL
