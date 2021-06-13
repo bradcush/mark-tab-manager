@@ -12,26 +12,31 @@ export async function makeMenu({
     items,
     label,
 }: MkMakeMenu): Promise<void> {
-    logVerbose('makeMenu');
-    // Specific to the action context
-    const location = 'action';
-    await makeItem({
-        contexts: [location],
-        id: label,
-        title: heading,
-        visible: true,
-    });
-    items.forEach(({ format, identifier, isChecked, title }) => {
-        void makeItem({
-            checked: isChecked,
+    try {
+        logVerbose('makeMenu');
+        // Specific to the action context
+        const location = 'action';
+        await makeItem({
             contexts: [location],
-            id: identifier,
-            parentId: label,
-            title: title,
-            type: format,
+            id: label,
+            title: heading,
             visible: true,
         });
-    });
+        items.forEach(({ format, identifier, isChecked, title }) => {
+            void makeItem({
+                checked: isChecked,
+                contexts: [location],
+                id: identifier,
+                parentId: label,
+                title: title,
+                type: format,
+                visible: true,
+            });
+        });
+    } catch (error) {
+        logError('makeItem', error);
+        throw error;
+    }
 }
 
 /**

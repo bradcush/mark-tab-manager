@@ -29,8 +29,8 @@ async function addNewGroup({
     tabIds,
     windowId,
 }: MkAddNewGroupParams) {
-    logVerbose('addNewGroup', name, windowId);
     try {
+        logVerbose('addNewGroup', name, windowId);
         const { showGroupTabCount } = await getStore().getState();
         // We need to get the state before resetting groups using the
         // exact name. As a repercussion of this method, groups where the
@@ -99,8 +99,8 @@ function getColorForGroup(index: number) {
  * a given name for a specific window id
  */
 async function getGroupInfo({ id, title }: MkGetGroupInfoParams) {
-    logVerbose('getGroupInfo', title);
     try {
+        logVerbose('getGroupInfo', title);
         // Be careful of the title as query titles are patterns where
         // chars can have special meaning (eg. * is a universal selector)
         const queryInfo = { title, windowId: id };
@@ -140,8 +140,8 @@ export function isSupported(): boolean {
  * Remove all existing groups
  */
 export async function remove(): Promise<void> {
-    logVerbose('remove');
     try {
+        logVerbose('remove');
         const tabs = await browser.tabs.query({});
         const filterIds = (id: number | undefined): id is number =>
             typeof id !== 'undefined';
@@ -158,8 +158,8 @@ export async function remove(): Promise<void> {
  * and the group itself when empty
  */
 async function removeGroupsForTabIds(ids: number[]) {
-    logVerbose('removeGroupsForTabIds', ids);
     try {
+        logVerbose('removeGroupsForTabIds', ids);
         await browser.tabs.ungroup(ids);
     } catch (error) {
         logError('removeGroupsForTabIds', error);
@@ -251,8 +251,8 @@ async function updateGroupProperties({
     groupId,
     title,
 }: MkUpdateGroupTitleParams) {
-    logVerbose('updateGroupProperties', color);
     try {
+        logVerbose('updateGroupProperties', color);
         const updateProperties = { collapsed, color, title };
         await browser.tabGroups.update(groupId, updateProperties);
     } catch (error) {
