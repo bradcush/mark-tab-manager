@@ -1,10 +1,10 @@
-import { MkClusterParams, MkSortParams } from './MkSort';
 import { MkBrowser } from 'src/api/MkBrowser';
 import { makeSortName } from 'src/helpers/sortName';
 import { makeGroupName } from 'src/helpers/groupName';
 import { browser } from 'src/api/browser';
 import { logError, logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
+import { categorize as categorizeTabs } from './categorize';
 
 /**
  * Compare to be used with name sorting
@@ -16,13 +16,14 @@ function compareNames(a: string, b: string) {
 /**
  * Separate grouped tabs from orphans
  */
-async function cluster({ tabGroups, tabs }: MkClusterParams) {
-    logVerbose('cluster', tabGroups, tabs);
+async function cluster(tabs: MkBrowser.tabs.Tab[]) {
+    logVerbose('cluster', tabs);
     const {
         enableSubdomainFiltering,
         forceWindowConsolidation,
     } = await getStore().getState();
     const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
+    const categorizedTabs = await categorizeTabs(tabs);
     // Determine if the tab is alone and not
     // supposed to belong to any group
     const isOrphan = (tab: MkBrowser.tabs.Tab) => {
@@ -32,7 +33,7 @@ async function cluster({ tabGroups, tabs }: MkClusterParams) {
             ? tabs[0].windowId
             : tab.windowId;
         logVerbose('cluster', groupName, chosenWindowId);
-        return tabGroups[groupName][chosenWindowId].length < 2;
+        return categorizedTabs[groupName][chosenWindowId].length < 2;
     };
     const groupedTabs = tabs.filter((tab) => !isOrphan(tab));
     const orphanTabs = tabs.filter(isOrphan);
@@ -53,10 +54,9 @@ export function filter(tabs: MkBrowser.tabs.Tab[]): MkBrowser.tabs.Tab[] {
 /**
  * Sort tabs based on settings
  */
-export async function sort({
-    groups,
-    tabs,
-}: MkSortParams): Promise<MkBrowser.tabs.Tab[]> {
+export async function sort(
+    tabs: MkBrowser.tabs.Tab[]
+): Promise<MkBrowser.tabs.Tab[]> {
     logVerbose('sort', tabs);
     const {
         enableAlphabeticSorting,
@@ -65,9 +65,7 @@ export async function sort({
     const alphabetizedTabs = enableAlphabeticSorting
         ? await alphabetize(tabs)
         : tabs;
-    return clusterGroupedTabs
-        ? cluster({ tabGroups: groups, tabs: alphabetizedTabs })
-        : alphabetizedTabs;
+    return clusterGroupedTabs ? cluster(alphabetizedTabs) : alphabetizedTabs;
 }
 
 /**

@@ -10,7 +10,6 @@ import {
     sort as sortTabs,
 } from './sort';
 import {
-    group as groupTabs,
     isEnabled as isGroupingEnabled,
     render as renderGroups,
 } from './group';
@@ -75,24 +74,14 @@ export async function organize(
             clusterGroupedTabs,
             enableAlphabeticSorting,
         } = await getStore().getState();
-        const unsortedGroups = await groupTabs(filteredTabs);
-        const sortedTabs = await sortTabs({
-            groups: unsortedGroups,
-            tabs: filteredTabs,
-        });
+        const sortedTabs = await sortTabs(filteredTabs);
         // We currently allow clustering even
         // when grouping is disabled
         if (enableAlphabeticSorting || clusterGroupedTabs) {
             void renderTabs(sortedTabs);
         }
         if (await isGroupingEnabled()) {
-            // Important to recalculate groups so the object insertion
-            // order matches expected visual group order. We may depend on
-            // this order when iterating later to create groups and update
-            // properties like their color predictably.
-            const sortedGroups = await groupTabs(sortedTabs);
-            renderGroups({
-                groups: sortedGroups,
+            void renderGroups({
                 organizeType: type,
                 tabs: sortedTabs,
             });
