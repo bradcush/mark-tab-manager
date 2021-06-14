@@ -7,7 +7,7 @@ import {
     isCommonPrefix,
     isNewTab,
     parseValidDomainInfo,
-} from './domainHelpers';
+} from './domain';
 
 export const SYSTEM_GROUP_NAME = '#';
 

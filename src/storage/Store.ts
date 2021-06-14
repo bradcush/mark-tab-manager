@@ -34,8 +34,8 @@ export class Store implements MkStore {
      * appropriate values in memory for access
      */
     private async cacheStorage() {
-        logVerbose('cacheStorage');
         try {
+            logVerbose('cacheStorage');
             const { storage } = browser;
             const { settings } = await storage.sync.get('settings');
             logVerbose('cacheStorage', settings);
@@ -243,8 +243,8 @@ export class Store implements MkStore {
      * Store a value directly in persistent storage
      */
     public async setState(state: Partial<MkState>): Promise<void> {
-        logVerbose('setState', state);
         try {
+            logVerbose('setState', state);
             // Wait for the initial data load
             await this.loaded;
             // Best to set in memory state immediately instead of relying on
