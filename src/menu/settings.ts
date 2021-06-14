@@ -5,10 +5,8 @@ import { getStore } from 'src/storage/Store';
 import { makeMenu } from './action';
 import { MkMakeMenuItem } from './MkAction';
 import { organize } from 'src/tabs/organize';
-import {
-    isSupported as isTabGroupingSupported,
-    remove as removeGroups,
-} from 'src/tabs/group';
+import { isSupported as isTabGroupingSupported } from 'src/tabs/group';
+import { ungroup as ungroupTabs } from 'src/tabs/bar';
 
 /**
  * Create settings menu with all
@@ -114,7 +112,7 @@ export function toggle({ identifier, isChecked }: MkToggleParams): void {
     // Remove any existing groups when grouping is disabled
     const isAutomaticGrouping = identifier === 'enableAutomaticGrouping';
     if (isAutomaticGrouping && !isChecked) {
-        void removeGroups();
+        void ungroupTabs();
     }
     if (!isMenuItemValid(identifier)) {
         // Menu item id can be any but we assume a string for now
