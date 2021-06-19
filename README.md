@@ -4,7 +4,12 @@ Better bookmark and tab management
 
 ## Prerequisites
 
-This repository requires [Yarn](https://yarnpkg.com/) to be installed
+This repository requires [Yarn](https://yarnpkg.com/) to be installed and
+specifically relies on bleeding edge Yarn 3. `yarn set version from sources`
+has been used instead of `yarn set version berry` due to a needed fix around
+[BigIntPrototypeToString](https://github.com/yarnpkg/berry/issues/2232) with
+specific versions of Node.js when running Jest test coverage. This fix is only
+and will only be patched in version 3 which is yet to be released.
 
 ### Compatibility
 
