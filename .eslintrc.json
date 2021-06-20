@@ -13,21 +13,6 @@
         "plugin:prettier/recommended",
         "prettier/@typescript-eslint"
     ],
-    "overrides": [
-        {
-            "files": ["*.unit.ts"],
-            "extends": ["plugin:jest/recommended"],
-            "env": {
-                "jest": true
-            }
-        },
-        {
-            "files": ["**/meta/*"],
-            "env": {
-                "node": true
-            }
-        }
-    ],
     "rules": {
         "@typescript-eslint/ban-ts-comment": "warn",
         "@typescript-eslint/no-empty-function": "off",
@@ -50,6 +35,21 @@
             }
         ]
     },
+    "overrides": [
+        {
+            "files": ["*.unit.ts"],
+            "extends": ["plugin:jest/recommended"],
+            "env": {
+                "jest": true
+            }
+        },
+        {
+            "files": ["**/meta/**/*"],
+            "env": {
+                "node": true
+            }
+        }
+    ],
     "env": {
         "browser": true,
         "es6": true,

@@ -1,5 +1,8 @@
+# node_modules ignored by default
 coverage
 dist
+node_modules
+generated
 yarn-error.log
 # Recommended files to ignore when not using Zero-installs
 # https://next.yarnpkg.com/getting-started/qa#which-files-should-be-gitignored

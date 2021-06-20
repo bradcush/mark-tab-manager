@@ -2,14 +2,18 @@
 
 Better bookmark and tab management
 
+## Store listings
+
+Compatible with any browser powered by Chromium
+
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/mark-tab-manager/filgplhfalgafolkffphilkgckdgnona)
+- [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/honey/kipehcooiafbjodbhddcmhpcgfoafpjm)
+
 ## Prerequisites
 
-This repository requires [Yarn](https://yarnpkg.com/) to be installed and
-specifically relies on bleeding edge Yarn 3. `yarn set version from sources`
-has been used instead of `yarn set version berry` due to a needed fix around
-[BigIntPrototypeToString](https://github.com/yarnpkg/berry/issues/2232) with
-specific versions of Node.js when running Jest test coverage. This fix is only
-and will only be patched in version 3 which is yet to be released.
+This repository requires [Yarn 2](https://yarnpkg.com/) to be installed and
+for the time being relies on `nodeLinker: node-modules` using the traditional
+`node_modules` instead of Plug'n'Play due to issues with vim integration.
 
 ### Compatibility
 
