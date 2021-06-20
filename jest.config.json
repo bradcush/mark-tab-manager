@@ -2,7 +2,7 @@
     "verbose": true,
     "collectCoverageFrom": [
         "<rootDir>/**/*.ts",
-        "!<rootDir>/meta/**/*.ts",
+        "!<rootDir>/meta/*.ts",
         "!<rootDir>/**/mocks/**",
         "!<rootDir>/**/node_modules/**",
         "!<rootDir>/typings/**"
