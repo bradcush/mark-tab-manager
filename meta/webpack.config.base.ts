@@ -46,8 +46,9 @@ export const config: Configuration = {
                     to: 'index.html',
                 },
                 {
-                    // Copy "manifest.json" file from source
-                    from: path.resolve(__dirname, '../src/manifest.json'),
+                    // Copy manifest.json file from generated files
+                    // that are expected to be written previously
+                    from: path.resolve(__dirname, `../generated/manifest.json`),
                     to: 'manifest.json',
                 },
             ],

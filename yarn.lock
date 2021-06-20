@@ -2419,7 +2419,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^7.0.0":
+"commander@npm:^7.0.0, commander@npm:^7.2.0":
   version: 7.2.0
   resolution: "commander@npm:7.2.0"
   checksum: bdc0eca5e25cd24af8440163d3c9a996785bbac4b49a590365699cdc1ed08cefbac8f268153208ab2bc5dc3cb1d3fb573fd1590c681e36e371342186bd331a4c
@@ -5407,6 +5407,7 @@ fsevents@^2.1.2:
     "@typescript-eslint/eslint-plugin": ^3.4.0
     "@typescript-eslint/parser": ^3.4.0
     clean-webpack-plugin: ^4.0.0-alpha.0
+    commander: ^7.2.0
     copy-webpack-plugin: ^8.1.1
     eslint: ^7.3.1
     eslint-config-prettier: ^6.11.0
