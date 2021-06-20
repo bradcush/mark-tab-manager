@@ -2,6 +2,13 @@
 
 Better bookmark and tab management
 
+## Store listings
+
+Compatible with any browser powered by Chromium
+
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/mark-tab-manager/filgplhfalgafolkffphilkgckdgnona)
+- [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/honey/kipehcooiafbjodbhddcmhpcgfoafpjm)
+
 ## Prerequisites
 
 This repository requires [Yarn 2](https://yarnpkg.com/) to be installed and
