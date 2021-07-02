@@ -44,14 +44,13 @@ describe('generate', () => {
                     name: 'Mark tab manager',
                     offline_enabled: true,
                     permissions: [
-                        'bookmarks',
                         'contextMenus',
                         'management',
                         'storage',
-                        'tabs',
                         'tabGroups',
+                        'tabs',
                     ],
-                    version: '0.1.30',
+                    version: '0.1.31',
                 })
             );
         });
@@ -77,14 +76,13 @@ describe('generate', () => {
                     name: 'Mark tab manager',
                     offline_enabled: true,
                     permissions: [
-                        'bookmarks',
                         'contextMenus',
                         'management',
                         'storage',
-                        'tabs',
                         'tabGroups',
+                        'tabs',
                     ],
-                    version: '0.1.30',
+                    version: '0.1.31',
                     update_url:
                         'https://edge.microsoft.com/extensionwebstorebase/v1/crx',
                 })
@@ -129,14 +127,13 @@ describe('generate', () => {
                 name: 'Mark tab manager',
                 offline_enabled: true,
                 permissions: [
-                    'bookmarks',
                     'contextMenus',
                     'management',
                     'storage',
-                    'tabs',
                     'tabGroups',
+                    'tabs',
                 ],
-                version: '0.1.30',
+                version: '0.1.31',
             });
         });
     });
