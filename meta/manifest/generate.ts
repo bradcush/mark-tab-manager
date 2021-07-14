@@ -12,7 +12,7 @@ function writeContent(manifest: MkManifest) {
 
 /**
  * Create an extension manifest file
- * for a specific browser vendor
+ * for a specific browser engine
  * Exporting function for testing only
  */
 export function generate({ browser }: OptionValues): void {
@@ -20,10 +20,10 @@ export function generate({ browser }: OptionValues): void {
         throw new Error('Browser vendor not a string');
     }
     const normalizedBrowser = browser.toLocaleLowerCase();
-    if (normalizedBrowser !== 'chrome' && normalizedBrowser !== 'edge') {
+    if (normalizedBrowser !== 'chromium') {
         throw new Error('Browser vendor not supported');
     }
-    const manifest = makeManifest(normalizedBrowser);
+    const manifest = makeManifest();
     writeContent(manifest);
 }
 
@@ -31,7 +31,7 @@ export function generate({ browser }: OptionValues): void {
 // allow it to be imported for testing with coverage reporting
 if (require.main === module) {
     const program = new Command();
-    program.option('-b, --browser <browser>', 'Browser vendor, chrome or edge');
+    program.option('-b, --browser <browser>', 'Browser engine, chromium');
     program.parse(process.argv);
     const options = program.opts();
     generate(options);
