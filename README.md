@@ -22,6 +22,12 @@ extension meaning that for Chrome, it's only supported in Chrome 88 and above.
 Firefox, Edge Chromium, and other vendors currently plan to support this
 version but there is no stable release with support at this time.
 
+## Manifest files
+
+See the [MANIFEST.md](meta/manifest/MANIFEST.md) for information on
+manifest files in general, the overall manifest generation process, and
+associated generate script with examples.
+
 ## Building
 
 - Not minified with source maps: `yarn build:dev`

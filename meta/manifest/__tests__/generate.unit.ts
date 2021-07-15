@@ -23,8 +23,8 @@ describe('generate', () => {
     });
 
     describe('when manifest generation is run from function call', () => {
-        it('should write manifest for chrome', () => {
-            generate({ browser: 'chrome' });
+        it('should write manifest for chromium', () => {
+            generate({ browser: 'chromium' });
             expect(processStdoutWriteMock).toHaveBeenCalledTimes(1);
             expect(processStdoutWriteMock).toHaveBeenCalledWith(
                 stringifyToMatchStdout({
@@ -34,7 +34,7 @@ describe('generate', () => {
                     background: {
                         service_worker: 'background.js',
                     },
-                    description: 'The missing tab manager for Chrome',
+                    description: 'The missing browser tab manager',
                     icons: {
                         '128': 'icons/icon-mark-128.png',
                         '16': 'icons/icon-mark-16.png',
@@ -50,41 +50,7 @@ describe('generate', () => {
                         'tabGroups',
                         'tabs',
                     ],
-                    version: '0.1.31',
-                })
-            );
-        });
-
-        it('should write manifest for edge', () => {
-            generate({ browser: 'edge' });
-            expect(processStdoutWriteMock).toHaveBeenCalledTimes(1);
-            expect(processStdoutWriteMock).toHaveBeenCalledWith(
-                stringifyToMatchStdout({
-                    action: {
-                        default_title: 'Mark',
-                    },
-                    background: {
-                        service_worker: 'background.js',
-                    },
-                    description: 'The missing tab manager for Edge',
-                    icons: {
-                        '128': 'icons/icon-mark-128.png',
-                        '16': 'icons/icon-mark-16.png',
-                        '48': 'icons/icon-mark-48.png',
-                    },
-                    manifest_version: 3,
-                    name: 'Mark tab manager',
-                    offline_enabled: true,
-                    permissions: [
-                        'contextMenus',
-                        'management',
-                        'storage',
-                        'tabGroups',
-                        'tabs',
-                    ],
-                    version: '0.1.31',
-                    update_url:
-                        'https://edge.microsoft.com/extensionwebstorebase/v1/crx',
+                    version: '0.1.32',
                 })
             );
         });
@@ -105,7 +71,7 @@ describe('generate', () => {
     describe('when manifest generation is run as shell script', () => {
         it('should write any manifest to standard output', () => {
             const manifestBuffer = childProcess.execSync(
-                'ts-node meta/manifest/generate.ts --browser chrome'
+                'ts-node meta/manifest/generate.ts --browser chromium'
             );
             // JSON.parse type declarations specify any return value
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -117,7 +83,7 @@ describe('generate', () => {
                 background: {
                     service_worker: 'background.js',
                 },
-                description: 'The missing tab manager for Chrome',
+                description: 'The missing browser tab manager',
                 icons: {
                     '128': 'icons/icon-mark-128.png',
                     '16': 'icons/icon-mark-16.png',
@@ -133,7 +99,7 @@ describe('generate', () => {
                     'tabGroups',
                     'tabs',
                 ],
-                version: '0.1.31',
+                version: '0.1.32',
             });
         });
     });
