@@ -41,11 +41,6 @@ export const config: Configuration = {
                     to: 'icons',
                 },
                 {
-                    // Copy "index.html" file from source
-                    from: path.resolve(__dirname, '../src/index.html'),
-                    to: 'index.html',
-                },
-                {
                     // Copy manifest.json file from generated files
                     // that are expected to be written previously
                     from: path.resolve(__dirname, `../generated/manifest.json`),
