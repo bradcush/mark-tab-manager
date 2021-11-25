@@ -5,8 +5,14 @@ import {
     MkUpdateGroupTitleParams,
 } from './MkBar';
 import { logError, logVerbose } from 'src/logs/console';
-import { browser } from 'src/api/browser';
 import { getStore } from 'src/storage/Store';
+import { query as tabGroupsQuery } from 'src/api/browser/tabGroups/query';
+import { group as tabsGroup } from 'src/api/browser/tabs/group';
+import { query as tabsQuery } from 'src/api/browser/tabs/query';
+import { move as tabsMove } from 'src/api/browser/tabs/move';
+import { ungroup as tabsUngroup } from 'src/api/browser/tabs/ungroup';
+import { update as tabGroupsUpdate } from 'src/api/browser/tabGroups/update';
+import { getColor as getTabGroupsColor } from 'src/api/browser/tabGroups/constants/Color';
 
 /**
  * Get the color based on each index so that each index will
@@ -14,7 +20,7 @@ import { getStore } from 'src/storage/Store';
  */
 function getColorForGroup(index: number) {
     logVerbose('getColorForGroup', index);
-    const colorsByEnum = browser.tabGroups.Color;
+    const colorsByEnum = getTabGroupsColor();
     logVerbose('getColorForGroup', colorsByEnum);
     const colorKeys = Object.keys(colorsByEnum);
     const colors = colorKeys.map((colorKey) => colorKey.toLocaleLowerCase());
@@ -34,7 +40,7 @@ async function getGroupInfo({ id, title }: MkGetGroupInfoParams) {
         // Be careful of the title as query titles are patterns where
         // chars can have special meaning (eg. * is a universal selector)
         const queryInfo = { title, windowId: id };
-        const tabGroups = await browser.tabGroups.query(queryInfo);
+        const tabGroups = await tabGroupsQuery(queryInfo);
         logVerbose('getGroupInfo', tabGroups);
         return tabGroups[0];
     } catch (error) {
@@ -69,7 +75,7 @@ export async function group({
         });
         const createProperties = { windowId };
         const options = { createProperties, tabIds };
-        const groupId = await browser.tabs.group(options);
+        const groupId = await tabsGroup(options);
         const color = getColorForGroup(idx);
         // Rely on the previous state when we don't force
         const collapsed = (forceCollapse || prevGroup?.collapsed) ?? false;
@@ -90,7 +96,7 @@ export async function group({
  */
 async function queryAllTabIds() {
     try {
-        const tabs = await browser.tabs.query({});
+        const tabs = await tabsQuery({});
         const filterIds = (id: number | undefined): id is number =>
             typeof id !== 'undefined';
         return tabs.map((tab) => tab.id).filter(filterIds);
@@ -121,7 +127,7 @@ export function sort(tabs: MkSortTab[]): void {
                     : baseMoveProperties;
             // We expect calls to move to still run in parallel
             // but await simply to catch errors properly
-            await browser.tabs.move(identifier, moveProperties);
+            await tabsMove(identifier, moveProperties);
         } catch (error) {
             logError('render', error);
             throw error;
@@ -137,7 +143,7 @@ export async function ungroup(ids?: number[]): Promise<void> {
     try {
         logVerbose('remove', ids);
         const idsToUngroup = ids ? ids : await queryAllTabIds();
-        await browser.tabs.ungroup(idsToUngroup);
+        await tabsUngroup(idsToUngroup);
     } catch (error) {
         logError('remove', error);
         throw error;
@@ -156,7 +162,7 @@ async function updateGroupProperties({
     try {
         logVerbose('updateGroupProperties', color);
         const updateProperties = { collapsed, color, title };
-        await browser.tabGroups.update(groupId, updateProperties);
+        await tabGroupsUpdate(groupId, updateProperties);
     } catch (error) {
         logError('updateGroupProperties', error);
         throw error;

@@ -1,7 +1,5 @@
-import { MkBrowser } from 'src/api/MkBrowser';
-
 export function create(
-    createProperties: MkBrowser.contextMenus.CreateProperties
+    createProperties: chrome.contextMenus.CreateProperties
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         chrome.contextMenus.create(createProperties, () => {

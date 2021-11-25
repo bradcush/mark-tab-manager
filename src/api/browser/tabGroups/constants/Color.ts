@@ -1,4 +1,4 @@
-import { MkColor } from './MkColor';
+import { MkColor } from '../MkColor';
 
 const ColorMap = {
     BLUE: 'blue',
@@ -11,7 +11,7 @@ const ColorMap = {
     YELLOW: 'yellow',
 };
 
-export function makeColor(): MkColor {
+export function getColor(): MkColor {
     // tabGroups not yet in official typings
     /* eslint-disable-next-line */ /* @ts-expect-error */
     return chrome.tabGroups?.Color ?? ColorMap;

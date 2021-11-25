@@ -1,16 +1,23 @@
 import { setBadgeText } from '../setBadgeText';
-import { setBadgeTextMock } from '../mocks/setBadgeText';
 
 describe('action/setBadgeText', () => {
     const originalChrome = global.chrome;
+    const setBadgeTextMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = {
+        global.chrome = ({
             action: {
-                setBadgeText: setBadgeTextMock,
+                setBadgeText: setBadgeTextMock.mockImplementation(
+                    (
+                        _details: chrome.action.BadgeTextDetails,
+                        callback: () => void
+                    ) => {
+                        callback();
+                    }
+                ),
             },
             runtime: {},
-        } as typeof chrome;
+        } as unknown) as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

@@ -1,5 +1,4 @@
 import { MkSyncItems } from 'src/api/browser/storage/sync/MkSync';
-import { MkBrowser } from 'src/api/MkBrowser';
 
 const defaultItems = {
     clusterGroupedTabs: true,
@@ -12,7 +11,7 @@ const defaultItems = {
 
 export function makeSyncGet(
     items: MkSyncItems = defaultItems
-): MkBrowser.storage.sync.Get {
+): typeof chrome.storage.sync.get {
     return () => {
         const settings = JSON.stringify(items);
         return Promise.resolve({ settings });

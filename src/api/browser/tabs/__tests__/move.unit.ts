@@ -1,16 +1,24 @@
 import { move } from '../move';
-import { moveMock } from '../mocks/move';
 
 describe('tabs/move', () => {
     const originalChrome = global.chrome;
+    const moveMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = {
+        global.chrome = ({
             tabs: {
-                move: moveMock,
+                move: moveMock.mockImplementation(
+                    (
+                        _id: number,
+                        _moveProperties: chrome.tabs.MoveProperties,
+                        callback: () => void
+                    ) => {
+                        callback();
+                    }
+                ),
             },
             runtime: {},
-        } as typeof chrome;
+        } as unknown) as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

@@ -1,7 +1,6 @@
 import { MkMakeMenu } from './MkAction';
-import { browser } from 'src/api/browser';
 import { logError, logVerbose } from 'src/logs/console';
-import { MkBrowser } from 'src/api/MkBrowser';
+import { create as contextMenusCreate } from 'src/api/browser/contextMenus/create';
 
 /**
  * Drive creation of a single context action menu
@@ -44,11 +43,12 @@ export async function makeMenu({
  * menu item type
  */
 async function makeItem(
-    createProperties: MkBrowser.contextMenus.CreateProperties
+    // TODO: Use typings specific to action domain
+    createProperties: chrome.contextMenus.CreateProperties
 ) {
     try {
         logVerbose('makeItem');
-        await browser.contextMenus.create(createProperties);
+        await contextMenusCreate(createProperties);
     } catch (error) {
         logError('makeItem', error);
         throw error;

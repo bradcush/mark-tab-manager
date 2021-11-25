@@ -1,4 +1,3 @@
-import { MkBrowser } from 'src/api/MkBrowser';
 import { makeSortName } from 'src/helpers/sortName';
 import { makeGroupName } from 'src/helpers/groupName';
 import { logError, logVerbose } from 'src/logs/console';
@@ -8,8 +7,9 @@ import { sort as sortBar } from './bar';
 
 /**
  * Separate grouped tabs from orphans
+ * TODO: Use typings specific to sort domain
  */
-async function cluster(tabs: MkBrowser.tabs.Tab[]) {
+async function cluster(tabs: chrome.tabs.Tab[]) {
     try {
         logVerbose('cluster', tabs);
         const {
@@ -20,7 +20,8 @@ async function cluster(tabs: MkBrowser.tabs.Tab[]) {
         const categorizedTabs = await categorizeTabs(tabs);
         // Determine if the tab is alone and not
         // supposed to belong to any group
-        const isOrphan = (tab: MkBrowser.tabs.Tab) => {
+        // TODO: Use typings specific to sort domain
+        const isOrphan = (tab: chrome.tabs.Tab) => {
             const groupName = makeGroupName({ type: groupType, url: tab.url });
             // Specify the current window as the forced window
             const chosenWindowId = forceWindowConsolidation
@@ -41,8 +42,9 @@ async function cluster(tabs: MkBrowser.tabs.Tab[]) {
 
 /**
  * Sort tabs alphabetically with nuance
+ * TODO: Use typings specific to sort domain
  */
-async function alphabetize(unsortedTabs: MkBrowser.tabs.Tab[]) {
+async function alphabetize(unsortedTabs: chrome.tabs.Tab[]) {
     logVerbose('alphabetize', unsortedTabs);
     const { enableSubdomainFiltering } = await getStore().getState();
     return unsortedTabs.sort((a, b) => {
@@ -67,10 +69,12 @@ function compareNames(a: string, b: string) {
 
 /**
  * Remove tabs that are pinned from the list
+ * TODO: Use typings specific to sort domain
  */
-export function filter(tabs: MkBrowser.tabs.Tab[]): MkBrowser.tabs.Tab[] {
+export function filter(tabs: chrome.tabs.Tab[]): chrome.tabs.Tab[] {
     logVerbose('filter');
-    const isTabPinned = (tab: MkBrowser.tabs.Tab) => !!tab.pinned;
+    // TODO: Use typings specific to sort domain
+    const isTabPinned = (tab: chrome.tabs.Tab) => !!tab.pinned;
     const nonPinnedTabs = tabs.filter((tab) => !isTabPinned(tab));
     return nonPinnedTabs;
 }
@@ -78,8 +82,9 @@ export function filter(tabs: MkBrowser.tabs.Tab[]): MkBrowser.tabs.Tab[] {
 /**
  * Reorder browser tabs in the current
  * window according to tabs list
+ * TODO: Use typings specific to sort domain
  */
-export async function render(tabs: MkBrowser.tabs.Tab[]): Promise<void> {
+export async function render(tabs: chrome.tabs.Tab[]): Promise<void> {
     logVerbose('render', tabs);
     // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
     // "windowId" in our algorithm which the representative -2 breaks
@@ -100,10 +105,11 @@ export async function render(tabs: MkBrowser.tabs.Tab[]): Promise<void> {
 
 /**
  * Sort tabs based on settings
+ * TODO: Use typings specific to sort domain
  */
 export async function sort(
-    tabs: MkBrowser.tabs.Tab[]
-): Promise<MkBrowser.tabs.Tab[]> {
+    tabs: chrome.tabs.Tab[]
+): Promise<chrome.tabs.Tab[]> {
     try {
         logVerbose('sort', tabs);
         const {

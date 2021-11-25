@@ -1,11 +1,12 @@
 import { query } from '../query';
-import { queryMock } from '../mocks/query';
 import { MkColor } from '../MkColor';
+import { MkQueryInfo, MkTabGroup } from '../MkQuery';
 
 const { BLUE } = MkColor;
 
 describe('tabGroups/query', () => {
     const originalChrome = global.chrome;
+    const queryMock = jest.fn();
 
     beforeEach(() => {
         // Mocking requires any assertion for setting tabGroups
@@ -33,7 +34,20 @@ describe('tabGroups/query', () => {
     it('should resolve with matching groups for query match', async () => {
         // Setting tabGroups requires any
         // eslint-disable-next-line
-        (global.chrome as any).tabGroups.query = queryMock;
+        (global.chrome as any).tabGroups.query = queryMock.mockImplementation(
+            (
+                _queryInfo: MkQueryInfo,
+                callback: (groups: MkTabGroup[]) => void
+            ) => {
+                const group = {
+                    collapsed: false,
+                    color: BLUE,
+                    title: 'match',
+                    windowId: 1,
+                };
+                callback([group]);
+            }
+        );
         global.chrome.runtime.lastError = undefined;
         const queryInfo = { title: 'match' };
         const groups = await query(queryInfo);

@@ -1,4 +1,4 @@
-import { browser } from 'src/api/browser';
+import { setUninstallURL as runtimeSetUninstallURL } from 'src/api/browser/runtime/setUninstallURL';
 
 // Mark uninstall survey hosted using Google Forms
 const UNINSTALL_SURVERY_URL = 'https://forms.gle/wNhryQtn8bHNLT488';
@@ -8,5 +8,5 @@ const UNINSTALL_SURVERY_URL = 'https://forms.gle/wNhryQtn8bHNLT488';
  * redirected to when the extension is uninstalled
  */
 export function setUninstallUrl(): void {
-    void browser.runtime.setUninstallURL(UNINSTALL_SURVERY_URL);
+    void runtimeSetUninstallURL(UNINSTALL_SURVERY_URL);
 }
