@@ -1,16 +1,23 @@
 import { setBadgeBackgroundColor } from '../setBadgeBackgroundColor';
-import { setBadgeBackgroundColorMock } from '../mocks/setBadgeBackgroundColor';
 
 describe('action/setBadgeBackgroundColor', () => {
     const originalChrome = global.chrome;
+    const setBadgeBackgroundColorMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = {
+        global.chrome = ({
             action: {
-                setBadgeBackgroundColor: setBadgeBackgroundColorMock,
+                setBadgeBackgroundColor: setBadgeBackgroundColorMock.mockImplementation(
+                    (
+                        _details: chrome.action.BadgeBackgroundColorDetails,
+                        callback: () => void
+                    ) => {
+                        callback();
+                    }
+                ),
             },
             runtime: {},
-        } as typeof chrome;
+        } as unknown) as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

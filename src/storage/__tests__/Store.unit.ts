@@ -1,21 +1,17 @@
 import { Store } from '../Store';
 import { makeSyncGet } from '../mocks/storeBrowser';
 import { MkSyncItems } from 'src/api/browser/storage/sync/MkSync';
-import { browser } from 'src/api/browser';
+import { get as storageSyncGet } from 'src/api/browser/storage/sync/get';
+import { set as storageSyncSet } from 'src/api/browser/storage/sync/set';
 
 // Mock wrapped browser API implementation
-jest.mock('src/api/browser', () => ({
-    browser: {
-        storage: {
-            sync: {
-                get: jest.fn(),
-                set: jest.fn(),
-            },
-        },
-    },
-}));
+jest.mock('src/api/browser/storage/sync/get');
+jest.mock('src/api/browser/storage/sync/set');
 
 describe('Store', () => {
+    const storageSyncGetMock = storageSyncGet as jest.Mock;
+    const storageSyncSetMock = storageSyncSet as jest.Mock;
+
     afterEach(() => {
         jest.resetAllMocks();
     });
@@ -31,8 +27,7 @@ describe('Store', () => {
                 showGroupTabCount: false,
                 invalidSetting: true,
             });
-            const { get } = browser.storage.sync;
-            (get as jest.Mock).mockImplementation(syncGetMock);
+            storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
@@ -50,8 +45,7 @@ describe('Store', () => {
         it('should not cache non-persisted settings in memory', async () => {
             const nonPersistedSettings = { settings: undefined };
             const syncGetMock = () => Promise.resolve(nonPersistedSettings);
-            const { get } = browser.storage.sync;
-            (get as jest.Mock).mockImplementation(syncGetMock);
+            storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
@@ -69,8 +63,7 @@ describe('Store', () => {
         it('should not cache invalid typed settings in memory', async () => {
             const invalidTypedSettings = { settings: true };
             const syncGetMock = () => Promise.resolve(invalidTypedSettings);
-            const { get } = browser.storage.sync;
-            (get as jest.Mock).mockImplementation(syncGetMock);
+            storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
@@ -88,8 +81,7 @@ describe('Store', () => {
         it('should not cache invalid content in memory', async () => {
             const invalidContent = ('invalidContent' as unknown) as MkSyncItems;
             const syncGetMock = makeSyncGet(invalidContent);
-            const { get } = browser.storage.sync;
-            (get as jest.Mock).mockImplementation(syncGetMock);
+            storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
@@ -114,8 +106,7 @@ describe('Store', () => {
                 showGroupTabCount: false,
                 invalidSetting: true,
             });
-            const { get } = browser.storage.sync;
-            (get as jest.Mock).mockImplementation(syncGetMock);
+            storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
@@ -132,8 +123,7 @@ describe('Store', () => {
 
         it('should cache default state in memory without storage', async () => {
             const syncGetMock = makeSyncGet({});
-            const { get } = browser.storage.sync;
-            (get as jest.Mock).mockImplementation(syncGetMock);
+            storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
@@ -157,8 +147,7 @@ describe('Store', () => {
                 forceWindowConsolidation: false,
                 showGroupTabCount: true,
             });
-            const { get } = browser.storage.sync;
-            (get as jest.Mock).mockImplementation(syncGetMock);
+            storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();
@@ -177,8 +166,7 @@ describe('Store', () => {
     describe('when state is persisted to storage', () => {
         beforeEach(() => {
             const syncGetMock = makeSyncGet();
-            const { get } = browser.storage.sync;
-            (get as jest.Mock).mockImplementation(syncGetMock);
+            storageSyncGetMock.mockImplementation(syncGetMock);
         });
 
         it('should add new keys in storage and state', async () => {
@@ -196,7 +184,7 @@ describe('Store', () => {
             const newState = await storageService.getState();
             expect(newState).toStrictEqual(state);
             const storage = { settings: JSON.stringify(state) };
-            expect(browser.storage.sync.set).toBeCalledWith(storage);
+            expect(storageSyncSetMock).toBeCalledWith(storage);
         });
 
         it('should update existing keys in storage and state', async () => {
@@ -215,8 +203,7 @@ describe('Store', () => {
             const firstNewState = await storageService.getState();
             expect(firstNewState).toStrictEqual(firstState);
             const firstItems = { settings: JSON.stringify(firstState) };
-            const { set } = browser.storage.sync;
-            expect(set).toBeCalledWith(firstItems);
+            expect(storageSyncSetMock).toBeCalledWith(firstItems);
 
             const secondState = {
                 clusterGroupedTabs: true,
@@ -230,15 +217,14 @@ describe('Store', () => {
             const secondNewState = await storageService.getState();
             expect(secondNewState).toStrictEqual(secondState);
             const secondItems = { settings: JSON.stringify(secondState) };
-            expect(set).toBeCalledWith(secondItems);
+            expect(storageSyncSetMock).toBeCalledWith(secondItems);
         });
     });
 
     describe('when current state is asked for', () => {
         it('should return current state in memory', async () => {
             const syncGetMock = makeSyncGet();
-            const { get } = browser.storage.sync;
-            (get as jest.Mock).mockImplementation(syncGetMock);
+            storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
             await storageService.load();
             const state = await storageService.getState();

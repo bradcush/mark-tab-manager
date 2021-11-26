@@ -7,14 +7,14 @@ import { MemoryCache, setMemoryCache } from './storage/MemoryCache';
 import { setUninstallUrl as setUninstallSurveyUrl } from './survey/uninstall';
 import { logVerbose } from './logs/console';
 
-// When the service worker starts
-logVerbose('Service worker started');
-
 /**
  * Initialize the background process
  * and all top-level listeners
  */
 function initBackground() {
+    // When the service worker starts
+    logVerbose('Service worker started');
+
     // Load settings from storage into state
     const storeInstance = new Store();
     void storeInstance.load();

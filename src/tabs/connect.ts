@@ -1,8 +1,13 @@
-import { browser } from 'src/api/browser';
 import { isGroupChanged } from './organize';
 import { logVerbose } from 'src/logs/console';
 import { getMemoryCache } from 'src/storage/MemoryCache';
 import { MkOrganizeParams } from './MkOrganize';
+import { onInstalled as runtimeOnInstalled } from 'src/api/browser/runtime/onInstalled';
+import { onEnabled as managementOnEnabled } from 'src/api/browser/management/onEnabled';
+import { getId as getRuntimeId } from 'src/api/browser/runtime/constants/id';
+import { onClicked as actionOnClicked } from 'src/api/browser/action/onClicked';
+import { onUpdated as tabsOnUpdated } from 'src/api/browser/tabs/onUpdated';
+import { onRemoved as tabsOnRemoved } from 'src/api/browser/tabs/onRemoved';
 
 /**
  * Connect site organizer to
@@ -15,7 +20,7 @@ export function connect(
 
     // Organize tabs on install and update
     // TODO: Perfect candidate for business API creation
-    browser.runtime.onInstalled.addListener((details) => {
+    runtimeOnInstalled.addListener((details) => {
         logVerbose('browser.runtime.onInstalled', details);
         if (chrome.runtime.lastError) {
             throw chrome.runtime.lastError;
@@ -28,10 +33,10 @@ export function connect(
     });
 
     // Organize tabs when enabled but previously installed
-    browser.management.onEnabled.addListener((info) => {
+    managementOnEnabled.addListener((info) => {
         logVerbose('browser.management.onEnabled', info);
         // We only care about ourselves being enabled
-        const isEnabled = info.id === browser.runtime.id;
+        const isEnabled = info.id === getRuntimeId();
         if (!isEnabled) {
             return;
         }
@@ -39,7 +44,7 @@ export function connect(
     });
 
     // Handle when the extension icon is clicked
-    browser.action.onClicked.addListener(() => {
+    actionOnClicked.addListener(() => {
         logVerbose('browser.action.onClicked');
         if (chrome.runtime.lastError) {
             throw chrome.runtime.lastError;
@@ -48,7 +53,7 @@ export function connect(
     });
 
     // Handle tabs where a URL is updated
-    browser.tabs.onUpdated.addListener(
+    tabsOnUpdated.addListener(
         // Handlers can be async since we just care to fire and forget
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         async (tabId, changeInfo, tab) => {
@@ -82,7 +87,7 @@ export function connect(
     );
 
     // Handle removed tabs
-    browser.tabs.onRemoved.addListener((tabId) => {
+    tabsOnRemoved.addListener((tabId) => {
         logVerbose('browser.tabs.onRemoved', tabId);
         // Remove the current tab id from group tracking regardless
         // of if we are automatically sorting to stay updated

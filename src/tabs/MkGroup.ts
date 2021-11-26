@@ -1,4 +1,3 @@
-import { MkBrowser } from 'src/api/MkBrowser';
 import { MkOrganizerType } from './MkOrganize';
 import { MkTabIdsByGroup } from './MkCategorize';
 
@@ -14,5 +13,6 @@ export interface MkRenderGroupsByNameParams {
 
 export interface MkRender {
     organizeType: MkOrganizerType;
-    tabs: MkBrowser.tabs.Tab[];
+    // TODO: Use typings specific to group domain
+    tabs: chrome.tabs.Tab[];
 }

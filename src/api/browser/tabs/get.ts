@@ -1,6 +1,4 @@
-import { MkBrowser } from 'src/api/MkBrowser';
-
-export function get(id: number): Promise<MkBrowser.tabs.Tab> {
+export function get(id: number): Promise<chrome.tabs.Tab> {
     return new Promise((resolve, reject) => {
         chrome.tabs.get(id, (tab) => {
             if (chrome.runtime.lastError) {

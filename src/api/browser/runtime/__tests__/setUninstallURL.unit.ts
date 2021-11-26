@@ -1,15 +1,19 @@
 import { setUninstallURL } from '../setUninstallURL';
-import { setUninstallURLMock } from '../mocks/setUninstallURL';
 
 describe('runtime/setUninstallURL', () => {
     const originalChrome = global.chrome;
+    const setUninstallURLMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = {
+        global.chrome = ({
             runtime: {
-                setUninstallURL: setUninstallURLMock,
+                setUninstallURL: setUninstallURLMock.mockImplementation(
+                    (_url: string, callback: () => void) => {
+                        callback();
+                    }
+                ),
             },
-        } as typeof chrome;
+        } as unknown) as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

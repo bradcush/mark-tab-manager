@@ -1,7 +1,5 @@
 import { MkIsGroupChanged, MkOrganizeParams } from './MkOrganize';
-import { MkBrowser } from 'src/api/MkBrowser';
 import { makeGroupName } from 'src/helpers/groupName';
-import { browser } from 'src/api/browser';
 import { logError, logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
 import {
@@ -14,6 +12,7 @@ import {
     render as renderGroups,
 } from './group';
 import { getMemoryCache } from 'src/storage/MemoryCache';
+import { query as tabsQuery } from 'src/api/browser/tabs/query';
 
 /**
  * Has the group assignation for a tab changed based
@@ -33,8 +32,9 @@ export async function isGroupChanged({
 
 /**
  * Make list of cache information
+ * TODO: Use typings specific to organize domain
  */
-async function makeCacheItems(tabs: MkBrowser.tabs.Tab[]) {
+async function makeCacheItems(tabs: chrome.tabs.Tab[]) {
     logVerbose('makeCacheItems');
     const { enableSubdomainFiltering } = await getStore().getState();
     const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
@@ -56,7 +56,7 @@ export async function organize(
 ): Promise<void> {
     try {
         logVerbose('organize');
-        const unsortedTabs = await browser.tabs.query({});
+        const unsortedTabs = await tabsQuery({});
         // Filter to organize only the tabs want to
         const filteredTabs = filterTabs(unsortedTabs);
         // Clear the cache when forced so

@@ -5,7 +5,6 @@ import {
     MkRender,
     MkRenderGroupsByNameParams,
 } from './MkGroup';
-import { MkBrowser } from 'src/api/MkBrowser';
 import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
 import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
@@ -17,8 +16,9 @@ import { group as groupTabs, ungroup as ungroupTabs } from './bar';
 
 /**
  * Get all the active tabs across all windows
+ * TODO: Use typings specific to group domain
  */
-function getActiveTabIdsByWindow(tabs: MkBrowser.tabs.Tab[]) {
+function getActiveTabIdsByWindow(tabs: chrome.tabs.Tab[]) {
     logVerbose('getActiveTabIdsByWindow');
     const activeTabs = tabs.filter((tab) => tab.active);
     // Best to use domain specific typings here

@@ -6,3 +6,10 @@ export interface MkQueryInfo {
     title?: string;
     windowId?: number;
 }
+
+export interface MkTabGroup {
+    collapsed: boolean;
+    color: MkColor;
+    title: string;
+    windowId: number;
+}

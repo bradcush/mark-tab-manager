@@ -1,16 +1,23 @@
 import { create } from '../create';
-import { createMock } from '../mocks/create';
 
 describe('contextMenus/create', () => {
     const originalChrome = global.chrome;
+    const createMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = {
+        global.chrome = ({
             contextMenus: {
-                create: createMock,
+                create: createMock.mockImplementation(
+                    (
+                        _createProperties: chrome.contextMenus.CreateProperties,
+                        callback: () => void
+                    ) => {
+                        callback();
+                    }
+                ),
             },
             runtime: {},
-        } as typeof chrome;
+        } as unknown) as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

@@ -1,4 +1,4 @@
-import { makeColor } from '../Color';
+import { getColor } from '../Color';
 
 describe('tabGroups/Color', () => {
     const originalChrome = global.chrome;
@@ -18,7 +18,7 @@ describe('tabGroups/Color', () => {
         // Setting tabGroups requires any
         // eslint-disable-next-line
         (global.chrome as any).tabGroups = undefined;
-        expect(makeColor()).toMatchObject({
+        expect(getColor()).toMatchObject({
             BLUE: 'blue',
             CYAN: 'cyan',
             GREEN: 'green',
@@ -37,6 +37,6 @@ describe('tabGroups/Color', () => {
         // Setting tabGroups requires any
         // eslint-disable-next-line
         (global.chrome as any).tabGroups.Color = SystemColor;
-        expect(makeColor()).toMatchObject(SystemColor);
+        expect(getColor()).toMatchObject(SystemColor);
     });
 });

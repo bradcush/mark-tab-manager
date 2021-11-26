@@ -6,8 +6,9 @@ import {
     MkStateKey,
     MkStore,
 } from './MkStore';
-import { browser } from 'src/api/browser';
 import { logError, logVerbose } from 'src/logs/console';
+import { get as storageSyncGet } from 'src/api/browser/storage/sync/get';
+import { set as storageSyncSet } from 'src/api/browser/storage/sync/set';
 
 /**
  * Loading, caching, and setting storage
@@ -36,8 +37,7 @@ export class Store implements MkStore {
     private async cacheStorage() {
         try {
             logVerbose('cacheStorage');
-            const { storage } = browser;
-            const { settings } = await storage.sync.get('settings');
+            const { settings } = await storageSyncGet('settings');
             logVerbose('cacheStorage', settings);
             // If there is no storage we don't cache anything
             // from the outside and consider this step done
@@ -254,7 +254,7 @@ export class Store implements MkStore {
             const serializedState = JSON.stringify(internalState);
             logVerbose('setState', serializedState);
             const items = { settings: serializedState };
-            await browser.storage.sync.set(items);
+            await storageSyncSet(items);
         } catch (error) {
             logError('setState', error);
             throw error;

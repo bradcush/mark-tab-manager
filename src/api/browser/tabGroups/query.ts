@@ -1,9 +1,10 @@
-import { MkBrowser } from 'src/api/MkBrowser';
-import { MkQueryInfo } from './MkQuery';
+import { MkQueryInfo, MkTabGroup } from './MkQuery';
 
 export function query(
     queryInfo: MkQueryInfo
-): Promise<MkBrowser.tabGroups.TabGroup[]> {
+    // Using MkTabGroup since tabGroups
+    // are missing from official typings
+): Promise<MkTabGroup[]> {
     if (!isSupported()) {
         throw new Error('No tabGroups.query support');
     }

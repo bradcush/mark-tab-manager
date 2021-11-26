@@ -1,16 +1,27 @@
 import { query } from '../query';
-import { queryMock } from '../mocks/query';
 
 describe('tabs/query', () => {
     const originalChrome = global.chrome;
+    const queryMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = {
+        global.chrome = ({
             tabs: {
-                query: queryMock,
+                query: queryMock.mockImplementation(
+                    (
+                        _queryInfo: chrome.tabs.QueryInfo,
+                        callback: (tabs: chrome.tabs.Tab[]) => void
+                    ) => {
+                        const tab = {
+                            id: 1,
+                            windowId: 2,
+                        } as chrome.tabs.Tab;
+                        callback([tab]);
+                    }
+                ),
             },
             runtime: {},
-        } as typeof chrome;
+        } as unknown) as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

@@ -1,18 +1,23 @@
 import { set } from '../set';
-import { setMock } from '../mocks/set';
+import { MkSyncItems } from '../MkSync';
 
 describe('storage/set', () => {
     const originalChrome = global.chrome;
+    const setMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = {
+        global.chrome = ({
             storage: {
                 sync: {
-                    set: setMock,
+                    set: setMock.mockImplementation(
+                        (_items: MkSyncItems, callback: () => void) => {
+                            callback();
+                        }
+                    ),
                 },
             },
             runtime: {},
-        } as typeof chrome;
+        } as unknown) as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

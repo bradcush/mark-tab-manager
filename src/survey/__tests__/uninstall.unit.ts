@@ -1,20 +1,13 @@
 import { setUninstallUrl } from '../uninstall';
-import { browser } from 'src/api/browser';
+import { setUninstallURL as runtimeSetUninstallURL } from 'src/api/browser/runtime/setUninstallURL';
 
 // Mock wrapped browser API implementation
-jest.mock('src/api/browser', () => ({
-    browser: {
-        runtime: {
-            setUninstallURL: jest.fn(),
-        },
-    },
-}));
+jest.mock('src/api/browser/runtime/setUninstallURL');
 
 describe('setUninstallUrl', () => {
     it('should set uninstall survey URL', () => {
         const uninstallUrl = 'https://forms.gle/wNhryQtn8bHNLT488';
         setUninstallUrl();
-        const { setUninstallURL } = browser.runtime;
-        expect(setUninstallURL).toBeCalledWith(uninstallUrl);
+        expect(runtimeSetUninstallURL).toBeCalledWith(uninstallUrl);
     });
 });
