@@ -1,15 +1,24 @@
 import { group } from '../group';
-import { groupMock } from '../mocks/group';
+import { MkOptions } from '../MkGroup';
 
 describe('tabs/group', () => {
     const originalChrome = global.chrome;
+    const groupMock = jest.fn();
 
     beforeEach(() => {
         // Mocking requires any assertion for setting tabGroups
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (global.chrome as any) = {
             tabs: {
-                group: groupMock,
+                group: groupMock.mockImplementation(
+                    (
+                        _options: MkOptions,
+                        callback: (groupId: number) => void
+                    ) => {
+                        const groupId = 2;
+                        callback(groupId);
+                    }
+                ),
             },
             runtime: {},
         };

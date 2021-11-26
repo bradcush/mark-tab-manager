@@ -1,15 +1,19 @@
 import { ungroup } from '../ungroup';
-import { ungroupMock } from '../mocks/ungroup';
 
 describe('tabs/ungroup', () => {
     const originalChrome = global.chrome;
+    const ungroupMock = jest.fn();
 
     beforeEach(() => {
         // Mocking requires any assertion for setting tabGroups
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (global.chrome as any) = {
             tabs: {
-                ungroup: ungroupMock,
+                ungroup: ungroupMock.mockImplementation(
+                    (_tabIds: number[], callback: () => void) => {
+                        callback();
+                    }
+                ),
             },
             runtime: {},
         };
