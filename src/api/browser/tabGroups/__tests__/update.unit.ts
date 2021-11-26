@@ -1,15 +1,24 @@
 import { update } from '../update';
-import { updateMock } from '../mocks/update';
+import { MkUpdateProperties } from '../MkUpdate';
 
 describe('tabGroups/update', () => {
     const originalChrome = global.chrome;
+    const updateMock = jest.fn();
 
     beforeEach(() => {
         // Mocking requires any assertion for setting tabGroups
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (global.chrome as any) = {
             tabGroups: {
-                update: updateMock,
+                update: updateMock.mockImplementation(
+                    (
+                        _groupId: number,
+                        _updateProperties: MkUpdateProperties,
+                        callback: () => void
+                    ) => {
+                        callback();
+                    }
+                ),
             },
             runtime: {},
         };
