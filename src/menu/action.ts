@@ -1,4 +1,4 @@
-import { MkItemProperties, MkMakeMenu } from './MkAction';
+import { MkMakeMenu } from './MkAction';
 import { logError, logVerbose } from 'src/logs/console';
 import { create as contextMenusCreate } from 'src/api/browser/contextMenus/create';
 
@@ -14,15 +14,16 @@ export async function makeMenu({
     try {
         logVerbose('makeMenu');
         // Specific to the action context
+        // referring the extension icon
         const location = 'action';
-        await makeItem({
+        await contextMenusCreate({
             contexts: [location],
             id: label,
             title: heading,
             visible: true,
         });
         items.forEach(({ format, identifier, isChecked, title }) => {
-            void makeItem({
+            void contextMenusCreate({
                 checked: isChecked,
                 contexts: [location],
                 id: identifier,
@@ -32,20 +33,6 @@ export async function makeMenu({
                 visible: true,
             });
         });
-    } catch (error) {
-        logError('makeItem', error);
-        throw error;
-    }
-}
-
-/**
- * Create any general
- * menu item type
- */
-async function makeItem(createProperties: MkItemProperties) {
-    try {
-        logVerbose('makeItem');
-        await contextMenusCreate(createProperties);
     } catch (error) {
         logError('makeItem', error);
         throw error;
