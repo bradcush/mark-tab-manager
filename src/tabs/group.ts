@@ -2,6 +2,7 @@ import {
     MkActiveTabIdsByWindow,
     MkActiveTabIdsByWindowKey,
     MkActiveTabIdsByWindowValue,
+    MkMakeTitleParams,
     MkRender,
     MkRenderGroupsByNameParams,
 } from './MkGroup';
@@ -57,6 +58,20 @@ export function isSupported(): boolean {
 }
 
 /**
+ * Create the title string to be used
+ * for a give tab group name
+ */
+async function makeTitle({ groupName, ids }: MkMakeTitleParams) {
+    const { showGroupTabCount } = await getStore().getState();
+    // We need to get the state before resetting groups using the
+    // exact name. As a repercussion of this method, groups where the
+    // count has changed are automatically reopened. This shouldn't
+    // reopen groups that are collapsed as the user experience for a
+    // collapsed group prevents the user from removing a tab.
+    return showGroupTabCount ? `(${ids.length}) ${groupName}` : groupName;
+}
+
+/**
  * Set groups and non-groups using their tab id where
  * groups must contain at least two or more tabs
  */
@@ -79,7 +94,11 @@ function renderGroupsByName({
         const orphanGroups = group.filter((group) => !isRealGroup(group));
         // We treat real groups first so our index used to
         // determine the color isn't affected by orphan groups
-        [...realGroups, ...orphanGroups].forEach((windowGroup) => {
+        // We can use an async function because the order in which we
+        // create groups doesn't matter. Order is determined independently
+        // by the location of the first tab in the group.
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        [...realGroups, ...orphanGroups].forEach(async (windowGroup) => {
             const tabIds = tabIdsByGroup[name][windowGroup];
             // Ungroup existing collections of one tab
             if (tabIds.length < 2) {
@@ -101,10 +120,14 @@ function renderGroupsByName({
                         : true
                     : false;
             logVerbose('renderGroupsByName', activeTabId);
+            const title = await makeTitle({
+                groupName: name,
+                ids: tabIds,
+            });
             void groupTabs({
                 idx: groupIdx,
                 forceCollapse,
-                name,
+                title,
                 tabIds,
                 windowId,
             });

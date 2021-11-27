@@ -1,8 +1,8 @@
 export interface MkAddNewGroupParams {
     idx: number;
     forceCollapse: boolean;
-    name: string;
     tabIds: number[];
+    title: string;
     windowId: number;
 }
 
