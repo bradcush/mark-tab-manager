@@ -1,7 +1,5 @@
 import { connect as connectTabs } from './tabs/connect';
 import { connect as connectMenu } from './menu/connect';
-import { create as createMenu, toggle as toggleMenu } from './menu/settings';
-import { organize as organizeTabs } from './tabs/organize';
 import { setStore, Store } from './storage/Store';
 import { MemoryCache, setMemoryCache } from './storage/MemoryCache';
 import { setUninstallUrl as setUninstallSurveyUrl } from './survey/uninstall';
@@ -30,14 +28,11 @@ function initBackground() {
 
     // Connect tab related events that
     // drive tab organization
-    connectTabs(organizeTabs);
+    connectTabs();
 
     // Create menus that drive system
     // and connect user interaction
-    connectMenu({
-        create: createMenu,
-        toggle: toggleMenu,
-    });
+    connectMenu();
 }
 
 initBackground();

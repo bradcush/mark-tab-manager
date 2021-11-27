@@ -1,13 +1,13 @@
 import { logVerbose } from 'src/logs/console';
-import { MkConnectParams } from './MkConnect';
 import { onInstalled as runtimeOnInstalled } from 'src/api/browser/runtime/onInstalled';
 import { onClicked as contextMenusOnClicked } from 'src/api/browser/contextMenus/onClicked';
+import { create, toggle } from './settings';
 
 /**
  * Handle driven context menu
  * updates from the browser
  */
-export function connect({ create, toggle }: MkConnectParams): void {
+export function connect(): void {
     logVerbose('connect');
 
     // Only create menus when installed
