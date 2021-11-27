@@ -1,4 +1,8 @@
-import { MkIsGroupChanged, MkOrganizeParams } from './MkOrganize';
+import {
+    MkIsGroupChanged,
+    MkOrganizationTab,
+    MkOrganizeParams,
+} from './MkOrganize';
 import { makeGroupName } from 'src/helpers/groupName';
 import { logError, logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
@@ -32,9 +36,8 @@ export async function isGroupChanged({
 
 /**
  * Make list of cache information
- * TODO: Use typings specific to organize domain
  */
-async function makeCacheItems(tabs: chrome.tabs.Tab[]) {
+async function makeCacheItems(tabs: MkOrganizationTab[]) {
     logVerbose('makeCacheItems');
     const { enableSubdomainFiltering } = await getStore().getState();
     const groupType = enableSubdomainFiltering ? 'granular' : 'shared';

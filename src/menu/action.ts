@@ -1,4 +1,4 @@
-import { MkMakeMenu } from './MkAction';
+import { MkItemProperties, MkMakeMenu } from './MkAction';
 import { logError, logVerbose } from 'src/logs/console';
 import { create as contextMenusCreate } from 'src/api/browser/contextMenus/create';
 
@@ -42,10 +42,7 @@ export async function makeMenu({
  * Create any general
  * menu item type
  */
-async function makeItem(
-    // TODO: Use typings specific to action domain
-    createProperties: chrome.contextMenus.CreateProperties
-) {
+async function makeItem(createProperties: MkItemProperties) {
     try {
         logVerbose('makeItem');
         await contextMenusCreate(createProperties);

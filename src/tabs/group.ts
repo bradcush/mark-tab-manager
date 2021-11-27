@@ -13,12 +13,12 @@ import { logError, logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
 import { categorize as categorizeTabs } from './categorize';
 import { group as groupTabs, ungroup as ungroupTabs } from './bar';
+import { MkOrganizationTab } from './MkOrganize';
 
 /**
  * Get all the active tabs across all windows
- * TODO: Use typings specific to group domain
  */
-function getActiveTabIdsByWindow(tabs: chrome.tabs.Tab[]) {
+function getActiveTabIdsByWindow(tabs: MkOrganizationTab[]) {
     logVerbose('getActiveTabIdsByWindow');
     const activeTabs = tabs.filter((tab) => tab.active);
     // Best to use domain specific typings here

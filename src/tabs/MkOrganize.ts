@@ -3,11 +3,18 @@ export interface MkIsGroupChanged {
     id: number;
 }
 
+export interface MkOrganizationTab {
+    active: boolean;
+    id?: number;
+    pinned: boolean;
+    url?: string;
+    windowId: number;
+}
+
 export type MkOrganizerType = 'collapse' | 'default';
 
 export interface MkOrganizeParams {
     clean?: boolean;
-    // TODO: Use typings specific to group domain
-    tab?: chrome.tabs.Tab;
+    tab?: MkOrganizationTab;
     type?: MkOrganizerType;
 }

@@ -2,13 +2,13 @@ import { MkTabIdsByGroup } from './MkCategorize';
 import { makeGroupName } from 'src/helpers/groupName';
 import { getStore } from 'src/storage/Store';
 import { logVerbose } from 'src/logs/console';
+import { MkOrganizationTab } from './MkOrganize';
 
 /**
  * Categorize tabs by their group name and window id
  */
 export async function categorize(
-    // TODO: Use typings specific to categorize domain
-    tabs: chrome.tabs.Tab[]
+    tabs: MkOrganizationTab[]
 ): Promise<MkTabIdsByGroup> {
     logVerbose('group');
     const {
