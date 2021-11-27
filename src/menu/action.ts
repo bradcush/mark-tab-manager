@@ -14,15 +14,16 @@ export async function makeMenu({
     try {
         logVerbose('makeMenu');
         // Specific to the action context
+        // referring the extension icon
         const location = 'action';
-        await makeItem({
+        await contextMenusCreate({
             contexts: [location],
             id: label,
             title: heading,
             visible: true,
         });
         items.forEach(({ format, identifier, isChecked, title }) => {
-            void makeItem({
+            void contextMenusCreate({
                 checked: isChecked,
                 contexts: [location],
                 id: identifier,
@@ -32,23 +33,6 @@ export async function makeMenu({
                 visible: true,
             });
         });
-    } catch (error) {
-        logError('makeItem', error);
-        throw error;
-    }
-}
-
-/**
- * Create any general
- * menu item type
- */
-async function makeItem(
-    // TODO: Use typings specific to action domain
-    createProperties: chrome.contextMenus.CreateProperties
-) {
-    try {
-        logVerbose('makeItem');
-        await contextMenusCreate(createProperties);
     } catch (error) {
         logError('makeItem', error);
         throw error;

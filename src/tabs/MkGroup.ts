@@ -1,5 +1,10 @@
-import { MkOrganizerType } from './MkOrganize';
+import { MkOrganizationTab, MkOrganizerType } from './MkOrganize';
 import { MkTabIdsByGroup } from './MkCategorize';
+
+export interface MkMakeTitleParams {
+    groupName: string;
+    ids: number[];
+}
 
 export type MkActiveTabIdsByWindowKey = number;
 export type MkActiveTabIdsByWindowValue = number | undefined;
@@ -13,6 +18,5 @@ export interface MkRenderGroupsByNameParams {
 
 export interface MkRender {
     organizeType: MkOrganizerType;
-    // TODO: Use typings specific to group domain
-    tabs: chrome.tabs.Tab[];
+    tabs: MkOrganizationTab[];
 }

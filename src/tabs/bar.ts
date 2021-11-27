@@ -5,7 +5,6 @@ import {
     MkUpdateGroupTitleParams,
 } from './MkBar';
 import { logError, logVerbose } from 'src/logs/console';
-import { getStore } from 'src/storage/Store';
 import { query as tabGroupsQuery } from 'src/api/browser/tabGroups/query';
 import { group as tabsGroup } from 'src/api/browser/tabs/group';
 import { query as tabsQuery } from 'src/api/browser/tabs/query';
@@ -56,19 +55,12 @@ async function getGroupInfo({ id, title }: MkGetGroupInfoParams) {
 export async function group({
     idx,
     forceCollapse,
-    name,
     tabIds,
+    title,
     windowId,
 }: MkAddNewGroupParams): Promise<void> {
     try {
-        logVerbose('addNewGroup', name, windowId);
-        const { showGroupTabCount } = await getStore().getState();
-        // We need to get the state before resetting groups using the
-        // exact name. As a repercussion of this method, groups where the
-        // count has changed are automatically reopened. This shouldn't
-        // reopen groups that are collapsed as the user experience for a
-        // collapsed group prevents the user from removing a tab.
-        const title = showGroupTabCount ? `(${tabIds.length}) ${name}` : name;
+        logVerbose('addNewGroup', title, windowId);
         const prevGroup = await getGroupInfo({
             id: windowId,
             title,

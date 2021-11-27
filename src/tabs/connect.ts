@@ -1,7 +1,6 @@
-import { isGroupChanged } from './organize';
+import { isGroupChanged, organize } from './organize';
 import { logVerbose } from 'src/logs/console';
 import { getMemoryCache } from 'src/storage/MemoryCache';
-import { MkOrganizeParams } from './MkOrganize';
 import { onInstalled as runtimeOnInstalled } from 'src/api/browser/runtime/onInstalled';
 import { onEnabled as managementOnEnabled } from 'src/api/browser/management/onEnabled';
 import { getId as getRuntimeId } from 'src/api/browser/runtime/constants/id';
@@ -13,9 +12,7 @@ import { onRemoved as tabsOnRemoved } from 'src/api/browser/tabs/onRemoved';
  * Connect site organizer to
  * triggering browser events
  */
-export function connect(
-    organize: (params?: MkOrganizeParams) => Promise<void>
-): void {
+export function connect(): void {
     logVerbose('connect');
 
     // Organize tabs on install and update
