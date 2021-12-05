@@ -35,28 +35,23 @@ export class Store implements MkStore {
      * appropriate values in memory for access
      */
     private async cacheStorage() {
-        try {
-            logVerbose('cacheStorage');
-            const { settings } = await storageSyncGet('settings');
-            logVerbose('cacheStorage', settings);
-            // If there is no storage we don't cache anything
-            // from the outside and consider this step done
-            if (typeof settings === 'undefined') {
-                return;
-            }
-            // Invalid storage should be logged but
-            // continue assuming local defaults
-            if (typeof settings !== 'string') {
-                const invalidError = new Error('Invalid settings storage');
-                logError('cacheStorage', invalidError);
-                return;
-            }
-            const validState = this.parseValidState(settings);
-            this.setInternalState(validState);
-        } catch (error) {
-            logError('cacheStorage', error);
-            throw error;
+        logVerbose('cacheStorage');
+        const { settings } = await storageSyncGet('settings');
+        logVerbose('cacheStorage', settings);
+        // If there is no storage we don't cache anything
+        // from the outside and consider this step done
+        if (typeof settings === 'undefined') {
+            return;
         }
+        // Invalid storage should be logged but
+        // continue assuming local defaults
+        if (typeof settings !== 'string') {
+            const invalidError = new Error('Invalid settings storage');
+            logError('cacheStorage', invalidError);
+            return;
+        }
+        const validState = this.parseValidState(settings);
+        this.setInternalState(validState);
     }
 
     /**
@@ -188,6 +183,8 @@ export class Store implements MkStore {
             return parsedStateRaw;
         } catch (error) {
             // Errors during parsing start clean
+            // TODO: Unsure if this is a possbile
+            // case we actually need to handle
             logError('parseState', error);
             return {};
         }
@@ -243,22 +240,17 @@ export class Store implements MkStore {
      * Store a value directly in persistent storage
      */
     public async setState(state: Partial<MkState>): Promise<void> {
-        try {
-            logVerbose('setState', state);
-            // Wait for the initial data load
-            await this.loaded;
-            // Best to set in memory state immediately instead of relying on
-            // storage updated event so we can be sure our state is accurate
-            // at the right time when it may be accessed.
-            const internalState = this.setInternalState(state);
-            const serializedState = JSON.stringify(internalState);
-            logVerbose('setState', serializedState);
-            const items = { settings: serializedState };
-            await storageSyncSet(items);
-        } catch (error) {
-            logError('setState', error);
-            throw error;
-        }
+        logVerbose('setState', state);
+        // Wait for the initial data load
+        await this.loaded;
+        // Best to set in memory state immediately instead of relying on
+        // storage updated event so we can be sure our state is accurate
+        // at the right time when it may be accessed.
+        const internalState = this.setInternalState(state);
+        const serializedState = JSON.stringify(internalState);
+        logVerbose('setState', serializedState);
+        const items = { settings: serializedState };
+        await storageSyncSet(items);
     }
 }
 

@@ -10,7 +10,7 @@ import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGr
 import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
-import { logError, logVerbose } from 'src/logs/console';
+import { logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
 import { categorize as categorizeTabs } from './categorize';
 import { group as groupTabs, ungroup as ungroupTabs } from './bar';
@@ -139,17 +139,12 @@ function renderGroupsByName({
  * Group tabs in the browser
  */
 export async function render({ organizeType, tabs }: MkRender): Promise<void> {
-    try {
-        logVerbose('render');
-        const activeTabIdsByWindow = getActiveTabIdsByWindow(tabs);
-        const categorizedTabs = await categorizeTabs(tabs);
-        renderGroupsByName({
-            activeTabIdsByWindow,
-            tabIdsByGroup: categorizedTabs,
-            type: organizeType,
-        });
-    } catch (error) {
-        logError('render', error);
-        throw error;
-    }
+    logVerbose('render');
+    const activeTabIdsByWindow = getActiveTabIdsByWindow(tabs);
+    const categorizedTabs = await categorizeTabs(tabs);
+    renderGroupsByName({
+        activeTabIdsByWindow,
+        tabIdsByGroup: categorizedTabs,
+        type: organizeType,
+    });
 }

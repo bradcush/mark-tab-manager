@@ -1,5 +1,5 @@
 import { MkMakeMenu } from './MkAction';
-import { logError, logVerbose } from 'src/logs/console';
+import { logVerbose } from 'src/logs/console';
 import { create as contextMenusCreate } from 'src/api/browser/contextMenus/create';
 
 /**
@@ -11,30 +11,25 @@ export async function makeMenu({
     items,
     label,
 }: MkMakeMenu): Promise<void> {
-    try {
-        logVerbose('makeMenu');
-        // Specific to the action context
-        // referring the extension icon
-        const location = 'action';
-        await contextMenusCreate({
+    logVerbose('makeMenu');
+    // Specific to the action context
+    // referring the extension icon
+    const location = 'action';
+    await contextMenusCreate({
+        contexts: [location],
+        id: label,
+        title: heading,
+        visible: true,
+    });
+    items.forEach(({ format, identifier, isChecked, title }) => {
+        void contextMenusCreate({
+            checked: isChecked,
             contexts: [location],
-            id: label,
-            title: heading,
+            id: identifier,
+            parentId: label,
+            title: title,
+            type: format,
             visible: true,
         });
-        items.forEach(({ format, identifier, isChecked, title }) => {
-            void contextMenusCreate({
-                checked: isChecked,
-                contexts: [location],
-                id: identifier,
-                parentId: label,
-                title: title,
-                type: format,
-                visible: true,
-            });
-        });
-    } catch (error) {
-        logError('makeItem', error);
-        throw error;
-    }
+    });
 }

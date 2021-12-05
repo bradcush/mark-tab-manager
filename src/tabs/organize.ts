@@ -4,7 +4,7 @@ import {
     MkOrganizeParams,
 } from './MkOrganize';
 import { makeGroupName } from 'src/helpers/groupName';
-import { logError, logVerbose } from 'src/logs/console';
+import { logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
 import {
     filter as filterTabs,
@@ -57,40 +57,34 @@ export async function organize(
         type: 'default',
     }
 ): Promise<void> {
-    try {
-        logVerbose('organize');
-        const unsortedTabs = await tabsQuery({});
-        // Filter to organize only the tabs want to
-        const filteredTabs = filterTabs(unsortedTabs);
-        // Clear the cache when forced so
-        // we can rebuild when desired
-        if (clean) {
-            getMemoryCache().flush();
-        }
-        // Cache tabs regardless of settings as early as possible
-        // and cache a single updated tab or rebuild everything
-        const tabsToCache =
-            getMemoryCache().exists() && tab ? [tab] : filteredTabs;
-        const cacheItems = await makeCacheItems(tabsToCache);
-        getMemoryCache().set(cacheItems);
-        const {
-            clusterGroupedTabs,
-            enableAlphabeticSorting,
-        } = await getStore().getState();
-        const sortedTabs = await sortTabs(filteredTabs);
-        // We currently allow clustering even
-        // when grouping is disabled
-        if (enableAlphabeticSorting || clusterGroupedTabs) {
-            void renderTabs(sortedTabs);
-        }
-        if (await isGroupingEnabled()) {
-            void renderGroups({
-                organizeType: type,
-                tabs: sortedTabs,
-            });
-        }
-    } catch (error) {
-        logError('organize', error);
-        throw error;
+    logVerbose('organize');
+    const unsortedTabs = await tabsQuery({});
+    // Filter to organize only the tabs want to
+    const filteredTabs = filterTabs(unsortedTabs);
+    // Clear the cache when forced so
+    // we can rebuild when desired
+    if (clean) {
+        getMemoryCache().flush();
+    }
+    // Cache tabs regardless of settings as early as possible
+    // and cache a single updated tab or rebuild everything
+    const tabsToCache = getMemoryCache().exists() && tab ? [tab] : filteredTabs;
+    const cacheItems = await makeCacheItems(tabsToCache);
+    getMemoryCache().set(cacheItems);
+    const {
+        clusterGroupedTabs,
+        enableAlphabeticSorting,
+    } = await getStore().getState();
+    const sortedTabs = await sortTabs(filteredTabs);
+    // We currently allow clustering even
+    // when grouping is disabled
+    if (enableAlphabeticSorting || clusterGroupedTabs) {
+        void renderTabs(sortedTabs);
+    }
+    if (await isGroupingEnabled()) {
+        void renderGroups({
+            organizeType: type,
+            tabs: sortedTabs,
+        });
     }
 }
