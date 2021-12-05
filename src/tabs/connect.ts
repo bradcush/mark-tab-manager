@@ -32,6 +32,9 @@ export function connect(): void {
     // Organize tabs when enabled but previously installed
     managementOnEnabled.addListener((info) => {
         logVerbose('browser.management.onEnabled', info);
+        if (chrome.runtime.lastError) {
+            throw chrome.runtime.lastError;
+        }
         // We only care about ourselves being enabled
         const isEnabled = info.id === getRuntimeId();
         if (!isEnabled) {
