@@ -1,6 +1,6 @@
 import { makeSortName } from 'src/helpers/sortName';
 import { makeGroupName } from 'src/helpers/groupName';
-import { logError, logVerbose } from 'src/logs/console';
+import { logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
 import { categorize as categorizeTabs } from './categorize';
 import { sort as sortBar } from './bar';
@@ -10,33 +10,28 @@ import { MkOrganizationTab } from './MkOrganize';
  * Separate grouped tabs from orphans
  */
 async function cluster(tabs: MkOrganizationTab[]) {
-    try {
-        logVerbose('cluster', tabs);
-        const {
-            enableSubdomainFiltering,
-            forceWindowConsolidation,
-        } = await getStore().getState();
-        const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
-        const categorizedTabs = await categorizeTabs(tabs);
-        // Determine if the tab is alone and not
-        // supposed to belong to any group
-        const isOrphan = (tab: MkOrganizationTab) => {
-            const groupName = makeGroupName({ type: groupType, url: tab.url });
-            // Specify the current window as the forced window
-            const chosenWindowId = forceWindowConsolidation
-                ? tabs[0].windowId
-                : tab.windowId;
-            logVerbose('cluster', groupName, chosenWindowId);
-            return categorizedTabs[groupName][chosenWindowId].length < 2;
-        };
-        const groupedTabs = tabs.filter((tab) => !isOrphan(tab));
-        const orphanTabs = tabs.filter(isOrphan);
-        // Groups on the left and singles on the right
-        return [...groupedTabs, ...orphanTabs];
-    } catch (error) {
-        logError('cluster', error);
-        throw error;
-    }
+    logVerbose('cluster', tabs);
+    const {
+        enableSubdomainFiltering,
+        forceWindowConsolidation,
+    } = await getStore().getState();
+    const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
+    const categorizedTabs = await categorizeTabs(tabs);
+    // Determine if the tab is alone and not
+    // supposed to belong to any group
+    const isOrphan = (tab: MkOrganizationTab) => {
+        const groupName = makeGroupName({ type: groupType, url: tab.url });
+        // Specify the current window as the forced window
+        const chosenWindowId = forceWindowConsolidation
+            ? tabs[0].windowId
+            : tab.windowId;
+        logVerbose('cluster', groupName, chosenWindowId);
+        return categorizedTabs[groupName][chosenWindowId].length < 2;
+    };
+    const groupedTabs = tabs.filter((tab) => !isOrphan(tab));
+    const orphanTabs = tabs.filter(isOrphan);
+    // Groups on the left and singles on the right
+    return [...groupedTabs, ...orphanTabs];
 }
 
 /**
@@ -104,20 +99,13 @@ export async function render(tabs: MkOrganizationTab[]): Promise<void> {
 export async function sort(
     tabs: MkOrganizationTab[]
 ): Promise<MkOrganizationTab[]> {
-    try {
-        logVerbose('sort', tabs);
-        const {
-            enableAlphabeticSorting,
-            clusterGroupedTabs,
-        } = await getStore().getState();
-        const alphabetizedTabs = enableAlphabeticSorting
-            ? await alphabetize(tabs)
-            : tabs;
-        return clusterGroupedTabs
-            ? cluster(alphabetizedTabs)
-            : alphabetizedTabs;
-    } catch (error) {
-        logError('sort', error);
-        throw error;
-    }
+    logVerbose('sort', tabs);
+    const {
+        enableAlphabeticSorting,
+        clusterGroupedTabs,
+    } = await getStore().getState();
+    const alphabetizedTabs = enableAlphabeticSorting
+        ? await alphabetize(tabs)
+        : tabs;
+    return clusterGroupedTabs ? cluster(alphabetizedTabs) : alphabetizedTabs;
 }

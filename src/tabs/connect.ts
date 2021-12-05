@@ -32,6 +32,9 @@ export function connect(): void {
     // Organize tabs when enabled but previously installed
     managementOnEnabled.addListener((info) => {
         logVerbose('browser.management.onEnabled', info);
+        if (chrome.runtime.lastError) {
+            throw chrome.runtime.lastError;
+        }
         // We only care about ourselves being enabled
         const isEnabled = info.id === getRuntimeId();
         if (!isEnabled) {
@@ -54,6 +57,7 @@ export function connect(): void {
         // Handlers can be async since we just care to fire and forget
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         async (tabId, changeInfo, tab) => {
+            // TODO: Move busiess logic into organize domain
             logVerbose('browser.tabs.onUpdated', changeInfo);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
@@ -86,6 +90,9 @@ export function connect(): void {
     // Handle removed tabs
     tabsOnRemoved.addListener((tabId) => {
         logVerbose('browser.tabs.onRemoved', tabId);
+        if (chrome.runtime.lastError) {
+            throw chrome.runtime.lastError;
+        }
         // Remove the current tab id from group tracking regardless
         // of if we are automatically sorting to stay updated
         getMemoryCache().remove(tabId);

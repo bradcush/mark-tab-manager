@@ -4,7 +4,7 @@ import {
     MkSortTab,
     MkUpdateGroupTitleParams,
 } from './MkBar';
-import { logError, logVerbose } from 'src/logs/console';
+import { logVerbose } from 'src/logs/console';
 import { query as tabGroupsQuery } from 'src/api/browser/tabGroups/query';
 import { group as tabsGroup } from 'src/api/browser/tabs/group';
 import { query as tabsQuery } from 'src/api/browser/tabs/query';
@@ -34,18 +34,13 @@ function getColorForGroup(index: number) {
  * a given name for a specific window id
  */
 async function getGroupInfo({ id, title }: MkGetGroupInfoParams) {
-    try {
-        logVerbose('getGroupInfo', title);
-        // Be careful of the title as query titles are patterns where
-        // chars can have special meaning (eg. * is a universal selector)
-        const queryInfo = { title, windowId: id };
-        const tabGroups = await tabGroupsQuery(queryInfo);
-        logVerbose('getGroupInfo', tabGroups);
-        return tabGroups[0];
-    } catch (error) {
-        logError('getGroupInfo', error);
-        throw error;
-    }
+    logVerbose('getGroupInfo', title);
+    // Be careful of the title as query titles are patterns where
+    // chars can have special meaning (eg. * is a universal selector)
+    const queryInfo = { title, windowId: id };
+    const tabGroups = await tabGroupsQuery(queryInfo);
+    logVerbose('getGroupInfo', tabGroups);
+    return tabGroups[0];
 }
 
 /**
@@ -59,43 +54,33 @@ export async function group({
     title,
     windowId,
 }: MkAddNewGroupParams): Promise<void> {
-    try {
-        logVerbose('addNewGroup', title, windowId);
-        const prevGroup = await getGroupInfo({
-            id: windowId,
-            title,
-        });
-        const createProperties = { windowId };
-        const options = { createProperties, tabIds };
-        const groupId = await tabsGroup(options);
-        const color = getColorForGroup(idx);
-        // Rely on the previous state when we don't force
-        const collapsed = (forceCollapse || prevGroup?.collapsed) ?? false;
-        void updateGroupProperties({
-            collapsed,
-            color,
-            groupId,
-            title,
-        });
-    } catch (error) {
-        logError('addNewGroup', error);
-        throw error;
-    }
+    logVerbose('addNewGroup', title, windowId);
+    const prevGroup = await getGroupInfo({
+        id: windowId,
+        title,
+    });
+    const createProperties = { windowId };
+    const options = { createProperties, tabIds };
+    const groupId = await tabsGroup(options);
+    const color = getColorForGroup(idx);
+    // Rely on the previous state when we don't force
+    const collapsed = (forceCollapse || prevGroup?.collapsed) ?? false;
+    void updateGroupProperties({
+        collapsed,
+        color,
+        groupId,
+        title,
+    });
 }
 
 /**
  * Get a list of all valid tab ids
  */
 async function queryAllTabIds() {
-    try {
-        const tabs = await tabsQuery({});
-        const filterIds = (id: number | undefined): id is number =>
-            typeof id !== 'undefined';
-        return tabs.map((tab) => tab.id).filter(filterIds);
-    } catch (error) {
-        logError('remove', error);
-        throw error;
-    }
+    const tabs = await tabsQuery({});
+    const filterIds = (id: number | undefined): id is number =>
+        typeof id !== 'undefined';
+    return tabs.map((tab) => tab.id).filter(filterIds);
 }
 
 /**
@@ -105,25 +90,20 @@ export function sort(tabs: MkSortTab[]): void {
     // We only care about catching errors with await in this case
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     tabs.forEach(async ({ identifier, windowId }) => {
-        try {
-            logVerbose('sort', tabs);
-            if (!identifier) {
-                throw new Error('No identifier for sorted tab');
-            }
-            const baseMoveProperties = { index: -1 };
-            const staticWindowMoveProperties = { windowId };
-            // Current default uses the window for the current tab
-            const moveProperties =
-                typeof windowId !== 'undefined'
-                    ? { ...baseMoveProperties, ...staticWindowMoveProperties }
-                    : baseMoveProperties;
-            // We expect calls to move to still run in parallel
-            // but await simply to catch errors properly
-            await tabsMove(identifier, moveProperties);
-        } catch (error) {
-            logError('render', error);
-            throw error;
+        logVerbose('sort', tabs);
+        if (!identifier) {
+            throw new Error('No identifier for sorted tab');
         }
+        const baseMoveProperties = { index: -1 };
+        const staticWindowMoveProperties = { windowId };
+        // Current default uses the window for the current tab
+        const moveProperties =
+            typeof windowId !== 'undefined'
+                ? { ...baseMoveProperties, ...staticWindowMoveProperties }
+                : baseMoveProperties;
+        // We expect calls to move to still run in parallel
+        // but await simply to catch errors properly
+        await tabsMove(identifier, moveProperties);
     });
 }
 
@@ -132,14 +112,9 @@ export function sort(tabs: MkSortTab[]): void {
  * group and the group itself when empty
  */
 export async function ungroup(ids?: number[]): Promise<void> {
-    try {
-        logVerbose('remove', ids);
-        const idsToUngroup = ids ? ids : await queryAllTabIds();
-        await tabsUngroup(idsToUngroup);
-    } catch (error) {
-        logError('remove', error);
-        throw error;
-    }
+    logVerbose('remove', ids);
+    const idsToUngroup = ids ? ids : await queryAllTabIds();
+    await tabsUngroup(idsToUngroup);
 }
 
 /**
@@ -151,12 +126,7 @@ async function updateGroupProperties({
     groupId,
     title,
 }: MkUpdateGroupTitleParams) {
-    try {
-        logVerbose('updateGroupProperties', color);
-        const updateProperties = { collapsed, color, title };
-        await tabGroupsUpdate(groupId, updateProperties);
-    } catch (error) {
-        logError('updateGroupProperties', error);
-        throw error;
-    }
+    logVerbose('updateGroupProperties', color);
+    const updateProperties = { collapsed, color, title };
+    await tabGroupsUpdate(groupId, updateProperties);
 }
