@@ -7,6 +7,7 @@ import {
     MkRender,
     MkRenderGroupsByNameParams,
 } from './MkGroup';
+import { MkOrganizationTab } from './MkOrganize';
 import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
 import {
     isSupported as isTabGroupsQuerySupported,
@@ -14,11 +15,11 @@ import {
 } from 'src/api/browser/tabGroups/query';
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
+import { getColor as getTabGroupsColor } from 'src/api/browser/tabGroups/constants/Color';
 import { logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
 import { categorize as categorizeTabs } from './categorize';
 import { group as groupTabs, ungroup as ungroupTabs } from './bar';
-import { MkOrganizationTab } from './MkOrganize';
 
 /**
  * Get all the active tabs across all windows
@@ -36,6 +37,22 @@ function getActiveTabIdsByWindow(tabs: MkOrganizationTab[]) {
     );
     logVerbose('getActiveTabIdsByWindow', activeTabIdsByWindow);
     return activeTabIdsByWindow;
+}
+
+/**
+ * Get the color based on each index so that each index will
+ * retain the same color regardless of a group re-render
+ */
+function getColorForGroup(index: number) {
+    logVerbose('getColorForGroup', index);
+    const colorsByEnum = getTabGroupsColor();
+    logVerbose('getColorForGroup', colorsByEnum);
+    const colorKeys = Object.keys(colorsByEnum);
+    const colors = colorKeys.map((colorKey) => colorKey.toLocaleLowerCase());
+    const colorIdx = index % colorKeys.length;
+    const color = colors[colorIdx];
+    logVerbose('getColorForGroup', color);
+    return color;
 }
 
 /**
@@ -99,32 +116,27 @@ function renderGroupsByName({
     type,
 }: MkRenderGroupsByNameParams) {
     logVerbose('renderGroupsByName', tabIdsByGroup);
-    // Offset the index to ignore orphan groups
-    let groupIdxOffset = 0;
+    let orphanGroupCount = 0;
     const names = Object.keys(tabIdsByGroup);
     names.forEach((name, idx) => {
         logVerbose('renderGroupsByName', name);
-        // Groups are represented by the window id
         const group = Object.keys(tabIdsByGroup[name]);
-        const isRealGroup = (windowId: string) =>
-            tabIdsByGroup[name][windowId].length > 1;
-        const realGroups = group.filter(isRealGroup);
-        const orphanGroups = group.filter((group) => !isRealGroup(group));
-        // We treat real groups first so our index used to
-        // determine the color isn't affected by orphan groups
-        // We can use an async function because the order in which we
-        // create groups doesn't matter. Order is determined independently
-        // by the location of the first tab in the group.
+        // Order is determined by the browser based on the location of the
+        // first tab in the group so we can handle grouping in any order.
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        [...realGroups, ...orphanGroups].forEach(async (windowGroup) => {
+        group.forEach(async (windowGroup) => {
+            // Groups are represented by the window id
             const tabIds = tabIdsByGroup[name][windowGroup];
             // Ungroup existing collections of one tab
             if (tabIds.length < 2) {
                 void ungroupTabs(tabIds);
-                groupIdxOffset++;
+                orphanGroupCount++;
                 return;
             }
-            const groupIdx = idx - groupIdxOffset;
+            // Only real groups should be considered
+            // to have a sequential color order
+            const colorIndex = idx - orphanGroupCount;
+            const color = getColorForGroup(colorIndex);
             const windowId = Number(windowGroup);
             const activeTabId = activeTabIdsByWindow.get(windowId);
             // Does this group contain an active tab
@@ -137,7 +149,6 @@ function renderGroupsByName({
                 groupName: name,
                 ids: tabIds,
             });
-            logVerbose('renderGroupsByName', title);
             const prevGroup = await getGroupInfo({
                 id: windowId,
                 title,
@@ -149,9 +160,9 @@ function renderGroupsByName({
                       // previously closed as we may need to open a
                       // group to accommodate a newly created tab.
                       !prevGroup?.collapsed || isGroupActive;
-            logVerbose('addNewGroup', title, opened);
+            logVerbose('addNewGroup', color, title);
             void groupTabs({
-                idx: groupIdx,
+                color,
                 opened,
                 title,
                 tabIds,

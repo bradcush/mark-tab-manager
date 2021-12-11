@@ -9,30 +9,13 @@ import { query as tabsQuery } from 'src/api/browser/tabs/query';
 import { move as tabsMove } from 'src/api/browser/tabs/move';
 import { ungroup as tabsUngroup } from 'src/api/browser/tabs/ungroup';
 import { update as tabGroupsUpdate } from 'src/api/browser/tabGroups/update';
-import { getColor as getTabGroupsColor } from 'src/api/browser/tabGroups/constants/Color';
-
-/**
- * Get the color based on each index so that each index will
- * retain the same color regardless of a group re-render
- */
-function getColorForGroup(index: number) {
-    logVerbose('getColorForGroup', index);
-    const colorsByEnum = getTabGroupsColor();
-    logVerbose('getColorForGroup', colorsByEnum);
-    const colorKeys = Object.keys(colorsByEnum);
-    const colors = colorKeys.map((colorKey) => colorKey.toLocaleLowerCase());
-    const colorIdx = index % colorKeys.length;
-    const color = colors[colorIdx];
-    logVerbose('getColorForGroup', color);
-    return color;
-}
 
 /**
  * Add and update tab groups based on
  * a given set of display options
  */
 export async function group({
-    idx,
+    color,
     opened,
     tabIds,
     title,
@@ -42,7 +25,6 @@ export async function group({
     const createProperties = { windowId };
     const options = { createProperties, tabIds };
     const groupId = await tabsGroup(options);
-    const color = getColorForGroup(idx);
     void updateGroupProperties({
         collapsed: !opened,
         color,

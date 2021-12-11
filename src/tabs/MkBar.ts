@@ -1,5 +1,5 @@
 export interface MkAddNewGroupParams {
-    idx: number;
+    color: string;
     opened: boolean;
     tabIds: number[];
     title: string;
