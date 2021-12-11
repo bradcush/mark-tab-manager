@@ -1,6 +1,11 @@
 import { MkOrganizationTab, MkOrganizerType } from './MkOrganize';
 import { MkTabIdsByGroup } from './MkCategorize';
 
+export interface MkGetGroupInfoParams {
+    title: string;
+    id: number;
+}
+
 export interface MkMakeTitleParams {
     groupName: string;
     ids: number[];

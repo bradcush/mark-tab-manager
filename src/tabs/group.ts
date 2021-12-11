@@ -2,12 +2,16 @@ import {
     MkActiveTabIdsByWindow,
     MkActiveTabIdsByWindowKey,
     MkActiveTabIdsByWindowValue,
+    MkGetGroupInfoParams,
     MkMakeTitleParams,
     MkRender,
     MkRenderGroupsByNameParams,
 } from './MkGroup';
 import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
-import { isSupported as isTabGroupsQuerySupported } from 'src/api/browser/tabGroups/query';
+import {
+    isSupported as isTabGroupsQuerySupported,
+    query as tabGroupsQuery,
+} from 'src/api/browser/tabGroups/query';
 import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
 import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
 import { logVerbose } from 'src/logs/console';
@@ -32,6 +36,20 @@ function getActiveTabIdsByWindow(tabs: MkOrganizationTab[]) {
     );
     logVerbose('getActiveTabIdsByWindow', activeTabIdsByWindow);
     return activeTabIdsByWindow;
+}
+
+/**
+ * Get the current properties for a group with
+ * a given name for a specific window id
+ */
+async function getGroupInfo({ id, title }: MkGetGroupInfoParams) {
+    logVerbose('getGroupInfo', title);
+    // Be careful of the title as query titles are patterns where
+    // chars can have special meaning (eg. * is a universal selector)
+    const queryInfo = { title, windowId: id };
+    const tabGroups = await tabGroupsQuery(queryInfo);
+    logVerbose('getGroupInfo', tabGroups);
+    return tabGroups[0];
 }
 
 /**
@@ -108,25 +126,33 @@ function renderGroupsByName({
             }
             const groupIdx = idx - groupIdxOffset;
             const windowId = Number(windowGroup);
-            // Does this group contain an active tab
             const activeTabId = activeTabIdsByWindow.get(windowId);
-            // Collapse non-active groups
-            const forceCollapse =
-                type === 'collapse'
-                    ? // When the active tab for the window is
-                      // undefined it can't be in the group
-                      typeof activeTabId !== 'undefined'
-                        ? !tabIds.includes(activeTabId)
-                        : true
-                    : false;
-            logVerbose('renderGroupsByName', activeTabId);
+            // Does this group contain an active tab
+            const isGroupActive =
+                // When the active tab for the window is
+                // undefined it can't be in the group
+                typeof activeTabId !== 'undefined' &&
+                tabIds.includes(activeTabId);
             const title = await makeTitle({
                 groupName: name,
                 ids: tabIds,
             });
+            logVerbose('renderGroupsByName', title);
+            const prevGroup = await getGroupInfo({
+                id: windowId,
+                title,
+            });
+            const opened =
+                type === 'collapse'
+                    ? isGroupActive
+                    : // Keep existing groups as they were unless
+                      // previously closed as we may need to open a
+                      // group to accommodate a newly created tab.
+                      !prevGroup?.collapsed || isGroupActive;
+            logVerbose('addNewGroup', title, opened);
             void groupTabs({
                 idx: groupIdx,
-                forceCollapse,
+                opened,
                 title,
                 tabIds,
                 windowId,
