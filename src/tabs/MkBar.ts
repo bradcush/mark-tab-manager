@@ -1,14 +1,9 @@
 export interface MkAddNewGroupParams {
-    idx: number;
-    forceCollapse: boolean;
+    color: string;
+    opened: boolean;
     tabIds: number[];
     title: string;
     windowId: number;
-}
-
-export interface MkGetGroupInfoParams {
-    title: string;
-    id: number;
 }
 
 export interface MkSortTab {

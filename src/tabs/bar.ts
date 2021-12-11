@@ -1,72 +1,32 @@
 import {
     MkAddNewGroupParams,
-    MkGetGroupInfoParams,
     MkSortTab,
     MkUpdateGroupTitleParams,
 } from './MkBar';
 import { logVerbose } from 'src/logs/console';
-import { query as tabGroupsQuery } from 'src/api/browser/tabGroups/query';
 import { group as tabsGroup } from 'src/api/browser/tabs/group';
 import { query as tabsQuery } from 'src/api/browser/tabs/query';
 import { move as tabsMove } from 'src/api/browser/tabs/move';
 import { ungroup as tabsUngroup } from 'src/api/browser/tabs/ungroup';
 import { update as tabGroupsUpdate } from 'src/api/browser/tabGroups/update';
-import { getColor as getTabGroupsColor } from 'src/api/browser/tabGroups/constants/Color';
 
 /**
- * Get the color based on each index so that each index will
- * retain the same color regardless of a group re-render
- */
-function getColorForGroup(index: number) {
-    logVerbose('getColorForGroup', index);
-    const colorsByEnum = getTabGroupsColor();
-    logVerbose('getColorForGroup', colorsByEnum);
-    const colorKeys = Object.keys(colorsByEnum);
-    const colors = colorKeys.map((colorKey) => colorKey.toLocaleLowerCase());
-    const colorIdx = index % colorKeys.length;
-    const color = colors[colorIdx];
-    logVerbose('getColorForGroup', color);
-    return color;
-}
-
-/**
- * Get the current properties for a group with
- * a given name for a specific window id
- */
-async function getGroupInfo({ id, title }: MkGetGroupInfoParams) {
-    logVerbose('getGroupInfo', title);
-    // Be careful of the title as query titles are patterns where
-    // chars can have special meaning (eg. * is a universal selector)
-    const queryInfo = { title, windowId: id };
-    const tabGroups = await tabGroupsQuery(queryInfo);
-    logVerbose('getGroupInfo', tabGroups);
-    return tabGroups[0];
-}
-
-/**
- * Add new tab groups for a given name,
- * window id, and set of tab ids
+ * Add and update tab groups based on
+ * a given set of display options
  */
 export async function group({
-    idx,
-    forceCollapse,
+    color,
+    opened,
     tabIds,
     title,
     windowId,
 }: MkAddNewGroupParams): Promise<void> {
     logVerbose('addNewGroup', title, windowId);
-    const prevGroup = await getGroupInfo({
-        id: windowId,
-        title,
-    });
     const createProperties = { windowId };
     const options = { createProperties, tabIds };
     const groupId = await tabsGroup(options);
-    const color = getColorForGroup(idx);
-    // Rely on the previous state when we don't force
-    const collapsed = (forceCollapse || prevGroup?.collapsed) ?? false;
     void updateGroupProperties({
-        collapsed,
+        collapsed: !opened,
         color,
         groupId,
         title,
@@ -118,7 +78,7 @@ export async function ungroup(ids?: number[]): Promise<void> {
 }
 
 /**
- * Update an existing groups title
+ * Create or update a group
  */
 async function updateGroupProperties({
     collapsed,
