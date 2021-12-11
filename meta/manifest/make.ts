@@ -28,7 +28,7 @@ export function make(): MkManifest {
             'tabGroups',
             'tabs',
         ],
-        version: '0.1.35',
+        version: '0.1.36',
     };
     return manifest;
 }

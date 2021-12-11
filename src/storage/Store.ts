@@ -156,12 +156,15 @@ export class Store implements MkStore {
      */
     private migrateState({ keys, state }: MkMigrateState) {
         logVerbose('migrateState', keys);
-        const migratedState: Partial<MkState> = {};
         const legacyStateKeys = keys.filter(this.isLegacyKeyValid);
-        legacyStateKeys.forEach((legacyStateKey) => {
-            const migratedKey = this.getMigratedKey(legacyStateKey);
-            migratedState[migratedKey] = state[legacyStateKey];
-        });
+        const migratedState = legacyStateKeys.reduce<Partial<MkState>>(
+            (acc, legacyStateKey) => {
+                const migratedKey = this.getMigratedKey(legacyStateKey);
+                acc[migratedKey] = state[legacyStateKey];
+                return acc;
+            },
+            {}
+        );
         logVerbose('migrateState', migratedState);
         return migratedState;
     }
@@ -200,11 +203,14 @@ export class Store implements MkStore {
         const parsedState = this.parseState(state);
         const stateKeys = Object.keys(parsedState);
         // Migrate any keys where the name may have changed
-        const validParsedState: Partial<MkState> = {};
         const validStateKeys = stateKeys.filter(this.isKeyValid);
-        validStateKeys.forEach((validStateKey) => {
-            validParsedState[validStateKey] = parsedState[validStateKey];
-        });
+        const validParsedState = validStateKeys.reduce<Partial<MkState>>(
+            (acc, validStateKey) => {
+                acc[validStateKey] = parsedState[validStateKey];
+                return acc;
+            },
+            {}
+        );
         logVerbose('parseValidState', validParsedState);
         // Migrating any previously named values during parsing without
         // immediately persisting means we rely on the setting of state
