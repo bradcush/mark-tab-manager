@@ -23,13 +23,13 @@ function getActiveTabIdsByWindow(tabs: MkOrganizationTab[]) {
     logVerbose('getActiveTabIdsByWindow');
     const activeTabs = tabs.filter((tab) => tab.active);
     // Best to use domain specific typings here
-    const activeTabIdsByWindow: MkActiveTabIdsByWindow = new Map<
-        MkActiveTabIdsByWindowKey,
-        MkActiveTabIdsByWindowValue
-    >();
-    activeTabs.forEach(({ id, windowId }) => {
-        activeTabIdsByWindow.set(windowId, id);
-    });
+    const activeTabIdsByWindow = activeTabs.reduce<MkActiveTabIdsByWindow>(
+        (acc, { id, windowId }) => {
+            acc.set(windowId, id);
+            return acc;
+        },
+        new Map<MkActiveTabIdsByWindowKey, MkActiveTabIdsByWindowValue>()
+    );
     logVerbose('getActiveTabIdsByWindow', activeTabIdsByWindow);
     return activeTabIdsByWindow;
 }
