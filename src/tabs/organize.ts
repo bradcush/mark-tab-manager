@@ -84,6 +84,7 @@ export async function organize(
     if (await isGroupingEnabled()) {
         void renderGroups({
             organizeType: type,
+            newTab: tab,
             tabs: sortedTabs,
         });
     }
