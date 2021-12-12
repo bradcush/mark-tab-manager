@@ -40,7 +40,7 @@ describe('generate', () => {
                             description: 'Collapse inactive tab groups',
                         },
                     },
-                    description: 'The missing browser tab manager',
+                    description: 'The missing tab manager',
                     icons: {
                         '128': 'icons/icon-mark-128.png',
                         '16': 'icons/icon-mark-16.png',
@@ -96,7 +96,7 @@ describe('generate', () => {
                         description: 'Collapse inactive tab groups',
                     },
                 },
-                description: 'The missing browser tab manager',
+                description: 'The missing tab manager',
                 icons: {
                     '128': 'icons/icon-mark-128.png',
                     '16': 'icons/icon-mark-16.png',

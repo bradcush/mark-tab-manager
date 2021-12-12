@@ -18,7 +18,7 @@ export function make(): MkManifest {
                 description: 'Collapse inactive tab groups',
             },
         },
-        description: 'The missing browser tab manager',
+        description: 'The missing tab manager',
         icons: {
             '16': 'icons/icon-mark-16.png',
             '48': 'icons/icon-mark-48.png',
