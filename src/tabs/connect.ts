@@ -7,6 +7,7 @@ import { getId as getRuntimeId } from 'src/api/browser/runtime/constants/id';
 import { onClicked as actionOnClicked } from 'src/api/browser/action/onClicked';
 import { onUpdated as tabsOnUpdated } from 'src/api/browser/tabs/onUpdated';
 import { onRemoved as tabsOnRemoved } from 'src/api/browser/tabs/onRemoved';
+import { onCommand as commandsOnCommand } from 'src/api/browser/commands/onCommand';
 
 /**
  * Connect site organizer to
@@ -97,5 +98,13 @@ export function connect(): void {
         // of if we are automatically sorting to stay updated
         getMemoryCache().remove(tabId);
         void organize();
+    });
+
+    // Handle keyboard shortcuts defined in the manifest
+    commandsOnCommand.addListener((command) => {
+        logVerbose('commandsOnCommand', command);
+        if (command === 'collapse') {
+            void organize({ type: 'collapse' });
+        }
     });
 }

@@ -12,6 +12,12 @@ export function make(): MkManifest {
         background: {
             service_worker: 'background.js',
         },
+        commands: {
+            collapse: {
+                suggested_key: 'Ctrl+Shift+O',
+                description: 'Collapse inactive tab groups',
+            },
+        },
         description: 'The missing browser tab manager',
         icons: {
             '16': 'icons/icon-mark-16.png',
@@ -22,6 +28,7 @@ export function make(): MkManifest {
         name: 'Mark tab manager',
         offline_enabled: true,
         permissions: [
+            'commands',
             'contextMenus',
             'management',
             'storage',

@@ -34,6 +34,12 @@ describe('generate', () => {
                     background: {
                         service_worker: 'background.js',
                     },
+                    commands: {
+                        collapse: {
+                            suggested_key: 'Ctrl+Shift+O',
+                            description: 'Collapse inactive tab groups',
+                        },
+                    },
                     description: 'The missing browser tab manager',
                     icons: {
                         '128': 'icons/icon-mark-128.png',
@@ -44,6 +50,7 @@ describe('generate', () => {
                     name: 'Mark tab manager',
                     offline_enabled: true,
                     permissions: [
+                        'commands',
                         'contextMenus',
                         'management',
                         'storage',
@@ -83,6 +90,12 @@ describe('generate', () => {
                 background: {
                     service_worker: 'background.js',
                 },
+                commands: {
+                    collapse: {
+                        suggested_key: 'Ctrl+Shift+O',
+                        description: 'Collapse inactive tab groups',
+                    },
+                },
                 description: 'The missing browser tab manager',
                 icons: {
                     '128': 'icons/icon-mark-128.png',
@@ -93,6 +106,7 @@ describe('generate', () => {
                 name: 'Mark tab manager',
                 offline_enabled: true,
                 permissions: [
+                    'commands',
                     'contextMenus',
                     'management',
                     'storage',
