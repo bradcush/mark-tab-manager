@@ -1,9 +1,15 @@
 import { MkOrganizationTab, MkOrganizerType } from './MkOrganize';
 import { MkTabIdsByGroup } from './MkCategorize';
 
+export interface MkIsGroupToOpen {
+    activeTabId?: number;
+    groupIds: number[];
+    updatedTabId?: number;
+}
+
 export interface MkGetGroupInfoParams {
-    title: string;
     id: number;
+    name: string;
 }
 
 export interface MkMakeTitleParams {
@@ -19,9 +25,11 @@ export interface MkRenderGroupsByNameParams {
     activeTabIdsByWindow: MkActiveTabIdsByWindow;
     type: MkOrganizerType;
     tabIdsByGroup: MkTabIdsByGroup;
+    updatedTab?: MkOrganizationTab;
 }
 
 export interface MkRender {
     organizeType: MkOrganizerType;
+    newTab?: MkOrganizationTab;
     tabs: MkOrganizationTab[];
 }

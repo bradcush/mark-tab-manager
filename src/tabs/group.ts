@@ -3,6 +3,7 @@ import {
     MkActiveTabIdsByWindowKey,
     MkActiveTabIdsByWindowValue,
     MkGetGroupInfoParams,
+    MkIsGroupToOpen,
     MkMakeTitleParams,
     MkRender,
     MkRenderGroupsByNameParams,
@@ -59,11 +60,11 @@ function getColorForGroup(index: number) {
  * Get the current properties for a group with
  * a given name for a specific window id
  */
-async function getGroupInfo({ id, title }: MkGetGroupInfoParams) {
-    logVerbose('getGroupInfo', title);
+async function getGroupInfo({ id, name }: MkGetGroupInfoParams) {
+    logVerbose('getGroupInfo', name);
     // Be careful of the title as query titles are patterns where
     // chars can have special meaning (eg. * is a universal selector)
-    const queryInfo = { title, windowId: id };
+    const queryInfo = { title: name, windowId: id };
     const tabGroups = await tabGroupsQuery(queryInfo);
     logVerbose('getGroupInfo', tabGroups);
     return tabGroups[0];
@@ -77,6 +78,30 @@ export async function isEnabled(): Promise<boolean> {
     logVerbose('isEnabled');
     const { enableAutomaticGrouping } = await getStore().getState();
     return isSupported() && enableAutomaticGrouping;
+}
+
+/**
+ * Check if a group should be opened when a group contains an active
+ * tab or one has been created but not focused because a link was
+ * opened in a new tab and the opener retained focus.
+ */
+function isGroupToOpen({
+    activeTabId,
+    groupIds,
+    updatedTabId,
+}: MkIsGroupToOpen) {
+    // When the active tab for the window is
+    // undefined it can't be in the group
+    const isActiveTabInGroup =
+        typeof activeTabId !== 'undefined'
+            ? groupIds.includes(activeTabId)
+            : false;
+    if (isActiveTabInGroup) {
+        return isActiveTabInGroup;
+    }
+    return typeof updatedTabId !== 'undefined'
+        ? groupIds.includes(updatedTabId)
+        : false;
 }
 
 /**
@@ -114,6 +139,7 @@ function renderGroupsByName({
     activeTabIdsByWindow,
     tabIdsByGroup,
     type,
+    updatedTab,
 }: MkRenderGroupsByNameParams) {
     logVerbose('renderGroupsByName', tabIdsByGroup);
     let orphanGroupCount = 0;
@@ -138,28 +164,17 @@ function renderGroupsByName({
             const colorIndex = idx - orphanGroupCount;
             const color = getColorForGroup(colorIndex);
             const windowId = Number(windowGroup);
-            const activeTabId = activeTabIdsByWindow.get(windowId);
-            // Does this group contain an active tab
-            const isGroupActive =
-                // When the active tab for the window is
-                // undefined it can't be in the group
-                typeof activeTabId !== 'undefined' &&
-                tabIds.includes(activeTabId);
-            const title = await makeTitle({
-                groupName: name,
-                ids: tabIds,
+            const isActiveGroup = isGroupToOpen({
+                activeTabId: activeTabIdsByWindow.get(windowId),
+                groupIds: tabIds,
+                updatedTabId: updatedTab?.id,
             });
-            const prevGroup = await getGroupInfo({
-                id: windowId,
-                title,
-            });
-            const opened =
-                type === 'collapse'
-                    ? isGroupActive
-                    : // Keep existing groups as they were unless
-                      // previously closed as we may need to open a
-                      // group to accommodate a newly created tab.
-                      !prevGroup?.collapsed || isGroupActive;
+            const title = await makeTitle({ groupName: name, ids: tabIds });
+            const prevGroup = await getGroupInfo({ id: windowId, name: title });
+            // Keep existing groups as they were unless previously closed as
+            // we may need to open a group to handle a newly created tab
+            const isMarkedOpen = !prevGroup?.collapsed || isActiveGroup;
+            const opened = type === 'collapse' ? isActiveGroup : isMarkedOpen;
             logVerbose('addNewGroup', color, title);
             void groupTabs({
                 color,
@@ -175,7 +190,11 @@ function renderGroupsByName({
 /**
  * Group tabs in the browser
  */
-export async function render({ organizeType, tabs }: MkRender): Promise<void> {
+export async function render({
+    organizeType,
+    newTab,
+    tabs,
+}: MkRender): Promise<void> {
     logVerbose('render');
     const activeTabIdsByWindow = getActiveTabIdsByWindow(tabs);
     const categorizedTabs = await categorizeTabs(tabs);
@@ -183,5 +202,6 @@ export async function render({ organizeType, tabs }: MkRender): Promise<void> {
         activeTabIdsByWindow,
         tabIdsByGroup: categorizedTabs,
         type: organizeType,
+        updatedTab: newTab,
     });
 }
