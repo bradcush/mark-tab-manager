@@ -7,6 +7,7 @@ import { getId as getRuntimeId } from 'src/api/browser/runtime/constants/id';
 import { onClicked as actionOnClicked } from 'src/api/browser/action/onClicked';
 import { onUpdated as tabsOnUpdated } from 'src/api/browser/tabs/onUpdated';
 import { onRemoved as tabsOnRemoved } from 'src/api/browser/tabs/onRemoved';
+import { onCommand as commandsOnCommand } from 'src/api/browser/commands/onCommand';
 
 /**
  * Connect site organizer to
@@ -18,7 +19,7 @@ export function connect(): void {
     // Organize tabs on install and update
     // TODO: Perfect candidate for business API creation
     runtimeOnInstalled.addListener((details) => {
-        logVerbose('browser.runtime.onInstalled', details);
+        logVerbose('runtimeOnInstalled', details);
         if (chrome.runtime.lastError) {
             throw chrome.runtime.lastError;
         }
@@ -31,7 +32,7 @@ export function connect(): void {
 
     // Organize tabs when enabled but previously installed
     managementOnEnabled.addListener((info) => {
-        logVerbose('browser.management.onEnabled', info);
+        logVerbose('managementOnEnabled', info);
         if (chrome.runtime.lastError) {
             throw chrome.runtime.lastError;
         }
@@ -45,7 +46,7 @@ export function connect(): void {
 
     // Handle when the extension icon is clicked
     actionOnClicked.addListener(() => {
-        logVerbose('browser.action.onClicked');
+        logVerbose('actionOnClicked');
         if (chrome.runtime.lastError) {
             throw chrome.runtime.lastError;
         }
@@ -58,7 +59,7 @@ export function connect(): void {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         async (tabId, changeInfo, tab) => {
             // TODO: Move busiess logic into organize domain
-            logVerbose('browser.tabs.onUpdated', changeInfo);
+            logVerbose('tabsOnUpdated', changeInfo);
             if (chrome.runtime.lastError) {
                 throw chrome.runtime.lastError;
             }
@@ -89,7 +90,7 @@ export function connect(): void {
 
     // Handle removed tabs
     tabsOnRemoved.addListener((tabId) => {
-        logVerbose('browser.tabs.onRemoved', tabId);
+        logVerbose('tabsOnRemoved', tabId);
         if (chrome.runtime.lastError) {
             throw chrome.runtime.lastError;
         }
@@ -97,5 +98,13 @@ export function connect(): void {
         // of if we are automatically sorting to stay updated
         getMemoryCache().remove(tabId);
         void organize();
+    });
+
+    // Handle keyboard shortcuts defined in the manifest
+    commandsOnCommand.addListener((command) => {
+        logVerbose('commandsOnCommand', command);
+        if (command === 'collapse') {
+            void organize({ type: 'collapse' });
+        }
     });
 }

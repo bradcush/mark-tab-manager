@@ -12,7 +12,7 @@ export function connect(): void {
 
     // Only create menus when installed
     runtimeOnInstalled.addListener((details) => {
-        logVerbose('browser.runtime.onInstalled', details);
+        logVerbose('runtimeOnInstalled', details);
         if (chrome.runtime.lastError) {
             throw chrome.runtime.lastError;
         }
@@ -25,7 +25,7 @@ export function connect(): void {
 
     // Handle clicks on any context menu item
     contextMenusOnClicked.addListener(({ checked, menuItemId }) => {
-        logVerbose('browser.contextMenus.onClicked', menuItemId);
+        logVerbose('contextMenusOnClicked', menuItemId);
         if (chrome.runtime.lastError) {
             throw chrome.runtime.lastError;
         }

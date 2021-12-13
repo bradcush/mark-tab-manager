@@ -34,7 +34,13 @@ describe('generate', () => {
                     background: {
                         service_worker: 'background.js',
                     },
-                    description: 'The missing browser tab manager',
+                    commands: {
+                        collapse: {
+                            suggested_key: 'Ctrl+Shift+O',
+                            description: 'Collapse inactive tab groups',
+                        },
+                    },
+                    description: 'The missing tab manager',
                     icons: {
                         '128': 'icons/icon-mark-128.png',
                         '16': 'icons/icon-mark-16.png',
@@ -44,13 +50,14 @@ describe('generate', () => {
                     name: 'Mark tab manager',
                     offline_enabled: true,
                     permissions: [
+                        'commands',
                         'contextMenus',
                         'management',
                         'storage',
                         'tabGroups',
                         'tabs',
                     ],
-                    version: '0.1.36',
+                    version: '0.1.37',
                 })
             );
         });
@@ -83,7 +90,13 @@ describe('generate', () => {
                 background: {
                     service_worker: 'background.js',
                 },
-                description: 'The missing browser tab manager',
+                commands: {
+                    collapse: {
+                        suggested_key: 'Ctrl+Shift+O',
+                        description: 'Collapse inactive tab groups',
+                    },
+                },
+                description: 'The missing tab manager',
                 icons: {
                     '128': 'icons/icon-mark-128.png',
                     '16': 'icons/icon-mark-16.png',
@@ -93,13 +106,14 @@ describe('generate', () => {
                 name: 'Mark tab manager',
                 offline_enabled: true,
                 permissions: [
+                    'commands',
                     'contextMenus',
                     'management',
                     'storage',
                     'tabGroups',
                     'tabs',
                 ],
-                version: '0.1.36',
+                version: '0.1.37',
             });
         });
     });
