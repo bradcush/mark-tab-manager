@@ -4,7 +4,15 @@ function addListener(
         tab?: chrome.tabs.Tab
     ) => void
 ): void {
-    chrome.contextMenus.onClicked.addListener(callback);
+    chrome.contextMenus.onClicked.addListener((info, tab) => {
+        if (chrome.runtime.lastError) {
+            const message =
+                chrome.runtime.lastError.message ??
+                'Unknown chrome.runtime.lastError';
+            throw new Error(message);
+        }
+        callback(info, tab);
+    });
 }
 
 export const onClicked = {
