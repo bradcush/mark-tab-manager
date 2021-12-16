@@ -13,9 +13,6 @@ export function connect(): void {
     // Only create menus when installed
     runtimeOnInstalled.addListener((details) => {
         logVerbose('runtimeOnInstalled', details);
-        if (chrome.runtime.lastError) {
-            throw chrome.runtime.lastError;
-        }
         // We have no shared dependencies
         if (details.reason === 'shared_module_update') {
             return;
@@ -26,9 +23,6 @@ export function connect(): void {
     // Handle clicks on any context menu item
     contextMenusOnClicked.addListener(({ checked, menuItemId }) => {
         logVerbose('contextMenusOnClicked', menuItemId);
-        if (chrome.runtime.lastError) {
-            throw chrome.runtime.lastError;
-        }
         toggle({
             identifier: menuItemId,
             isChecked: checked,

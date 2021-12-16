@@ -20,9 +20,6 @@ export function connect(): void {
     // TODO: Perfect candidate for business API creation
     runtimeOnInstalled.addListener((details) => {
         logVerbose('runtimeOnInstalled', details);
-        if (chrome.runtime.lastError) {
-            throw chrome.runtime.lastError;
-        }
         // We have no shared dependencies
         if (details.reason === 'shared_module_update') {
             return;
@@ -33,9 +30,6 @@ export function connect(): void {
     // Organize tabs when enabled but previously installed
     managementOnEnabled.addListener((info) => {
         logVerbose('managementOnEnabled', info);
-        if (chrome.runtime.lastError) {
-            throw chrome.runtime.lastError;
-        }
         // We only care about ourselves being enabled
         const isEnabled = info.id === getRuntimeId();
         if (!isEnabled) {
@@ -47,9 +41,6 @@ export function connect(): void {
     // Handle when the extension icon is clicked
     actionOnClicked.addListener(() => {
         logVerbose('actionOnClicked');
-        if (chrome.runtime.lastError) {
-            throw chrome.runtime.lastError;
-        }
         void organize({ type: 'collapse' });
     });
 
@@ -60,9 +51,6 @@ export function connect(): void {
         async (tabId, changeInfo, tab) => {
             // TODO: Move busiess logic into organize domain
             logVerbose('tabsOnUpdated', changeInfo);
-            if (chrome.runtime.lastError) {
-                throw chrome.runtime.lastError;
-            }
             const { status, url } = changeInfo;
             // Prevent triggering of updates when we aren't loading
             // so we can treat tabs as early as possible
@@ -91,9 +79,6 @@ export function connect(): void {
     // Handle removed tabs
     tabsOnRemoved.addListener((tabId) => {
         logVerbose('tabsOnRemoved', tabId);
-        if (chrome.runtime.lastError) {
-            throw chrome.runtime.lastError;
-        }
         // Remove the current tab id from group tracking regardless
         // of if we are automatically sorting to stay updated
         getMemoryCache().remove(tabId);
