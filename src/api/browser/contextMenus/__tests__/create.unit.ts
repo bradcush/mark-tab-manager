@@ -41,8 +41,6 @@ describe('contextMenus/create', () => {
             id: 'menuItem',
             title: 'menuItem',
         };
-        await expect(create(createProperties)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(create(createProperties)).rejects.toBe('error');
     });
 });

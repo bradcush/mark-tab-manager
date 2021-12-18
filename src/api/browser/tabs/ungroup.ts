@@ -7,7 +7,10 @@ export function ungroup(tabIds: number[]): Promise<void> {
         /* eslint-disable-next-line */ /* @ts-expect-error */
         chrome.tabs.ungroup(tabIds, () => {
             if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
+                const message =
+                    chrome.runtime.lastError.message ??
+                    'Unknown chrome.runtime.lastError';
+                reject(message);
             }
             resolve();
         });

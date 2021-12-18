@@ -39,8 +39,6 @@ describe('tabs/get', () => {
             message: 'error',
         };
         const tabId = 1;
-        await expect(get(tabId)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(get(tabId)).rejects.toBe('error');
     });
 });

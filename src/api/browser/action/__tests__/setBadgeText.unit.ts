@@ -35,8 +35,6 @@ describe('action/setBadgeText', () => {
             message: 'error',
         };
         const details = { text: 'text' };
-        await expect(setBadgeText(details)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(setBadgeText(details)).rejects.toBe('error');
     });
 });

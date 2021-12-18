@@ -68,8 +68,6 @@ describe('tabGroups/query', () => {
             message: 'error',
         };
         const queryInfo = { title: 'title' };
-        await expect(query(queryInfo)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(query(queryInfo)).rejects.toBe('error');
     });
 });

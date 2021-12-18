@@ -39,8 +39,6 @@ describe('storage/set', () => {
         const items = {
             settings: 'settings',
         };
-        await expect(set(items)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(set(items)).rejects.toBe('error');
     });
 });

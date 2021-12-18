@@ -53,8 +53,6 @@ describe('tabGroups/update', () => {
         };
         const groupId = 1;
         const updateProperties = { title: 'title' };
-        await expect(update(groupId, updateProperties)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(update(groupId, updateProperties)).rejects.toBe('error');
     });
 });

@@ -4,7 +4,10 @@ export function query(
     return new Promise<chrome.tabs.Tab[]>((resolve, reject) => {
         chrome.tabs.query(queryInfo, (tabs) => {
             if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
+                const message =
+                    chrome.runtime.lastError.message ??
+                    'Unknown chrome.runtime.lastError';
+                reject(message);
             }
             resolve(tabs);
         });

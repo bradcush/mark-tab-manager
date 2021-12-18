@@ -9,7 +9,10 @@ export function group(options: MkOptions): Promise<number> {
         /* eslint-disable-next-line */ /* @ts-expect-error */
         chrome.tabs.group(options, (groupId) => {
             if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
+                const message =
+                    chrome.runtime.lastError.message ??
+                    'Unknown chrome.runtime.lastError';
+                reject(message);
             }
             resolve(groupId);
         });

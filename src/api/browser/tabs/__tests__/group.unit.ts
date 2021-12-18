@@ -50,8 +50,6 @@ describe('tabs/group', () => {
             message: 'error',
         };
         const options = { tabIds: [1] };
-        await expect(group(options)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(group(options)).rejects.toBe('error');
     });
 });
