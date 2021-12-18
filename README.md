@@ -18,9 +18,10 @@ for the time being relies on `nodeLinker: node-modules` using the traditional
 ### Compatibility
 
 `mark` is built as a [Manifest Version 3](https://developer.chrome.com/docs/extensions/mv3/intro/)
-extension meaning that for Chrome, it's only supported in Chrome 88 and above.
-Firefox, Edge Chromium, and other vendors currently plan to support this
-version but there is no stable release with support at this time.
+extension meaning that for Chrome, it's only supported in Chrome 89 and above.
+Edge Chromium is also supported in versions using the same Chromium version
+shipped in Chrome 89. Firefox and other vendors currently plan to support this
+manifest version but there is no stable release with support at this time.
 
 ## Manifest files
 
