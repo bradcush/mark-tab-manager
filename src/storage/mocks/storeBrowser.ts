@@ -7,6 +7,7 @@ const defaultItems = {
     enableSubdomainFiltering: false,
     forceWindowConsolidation: false,
     showGroupTabCount: true,
+    suspendCollapsedGroups: false,
 };
 
 export function makeSyncGet(

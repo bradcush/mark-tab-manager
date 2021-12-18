@@ -22,6 +22,7 @@ export async function create(): Promise<void> {
         enableSubdomainFiltering,
         forceWindowConsolidation,
         showGroupTabCount,
+        suspendCollapsedGroups,
     } = await getStore().getState();
 
     const menuItems: MkMakeMenuItem[] = [];
@@ -64,6 +65,12 @@ export async function create(): Promise<void> {
     });
     menuItems.push({
         format: 'checkbox',
+        identifier: 'suspendCollapsedGroups',
+        isChecked: suspendCollapsedGroups,
+        title: 'Suspend collapsed groups',
+    });
+    menuItems.push({
+        format: 'checkbox',
         identifier: 'forceWindowConsolidation',
         isChecked: forceWindowConsolidation,
         title: 'Force window consolidation',
@@ -92,6 +99,7 @@ function isMenuItemValid(id: unknown): id is MkStateKey {
         'enableSubdomainFiltering',
         'forceWindowConsolidation',
         'showGroupTabCount',
+        'suspendCollapsedGroups',
     ];
     return settings.includes(id);
 }

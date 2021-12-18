@@ -26,6 +26,7 @@ export interface MkState {
     enableSubdomainFiltering: boolean;
     forceWindowConsolidation: boolean;
     showGroupTabCount: boolean;
+    suspendCollapsedGroups: boolean;
 }
 
 export type MkStateKey = keyof MkState;
