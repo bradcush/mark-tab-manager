@@ -10,7 +10,10 @@ import {
 } from './MkGroup';
 import { MkOrganizationTab } from './MkOrganize';
 import { query as tabGroupsQuery } from 'src/api/browser/tabGroups/query';
-import { getColor as getTabGroupsColor } from 'src/api/browser/tabGroups/constants/Color';
+import {
+    getColor as getTabGroupsColor,
+    isColorValid as isTabGroupsColorValid,
+} from 'src/api/browser/tabGroups/constants/Color';
 import { isSupported as isTabGroupingSupported } from 'src/api/browser/tabGroups/isSupported';
 import { logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
@@ -48,7 +51,8 @@ function getColorForGroup(index: number) {
     const colorIdx = index % colorKeys.length;
     const color = colors[colorIdx];
     logVerbose('getColorForGroup', color);
-    return color;
+    const defaultColor = 'grey';
+    return isTabGroupsColorValid(color) ? color : defaultColor;
 }
 
 /**

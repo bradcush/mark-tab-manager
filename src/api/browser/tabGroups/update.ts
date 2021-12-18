@@ -1,15 +1,15 @@
-import { MkUpdateProperties } from './MkUpdate';
+export function isSupported(): boolean {
+    return !!chrome.tabGroups?.update;
+}
 
 export function update(
     groupId: number,
-    updateProperties: MkUpdateProperties
+    updateProperties: chrome.tabGroups.UpdateProperties
 ): Promise<void> {
     if (!isSupported()) {
         throw new Error('No tabGroups.update support');
     }
     return new Promise((resolve, reject) => {
-        // tabGroups not yet in official typings
-        /* eslint-disable-next-line */ /* @ts-expect-error */
         chrome.tabGroups.update(groupId, updateProperties, () => {
             if (chrome.runtime.lastError) {
                 const message =
@@ -20,10 +20,4 @@ export function update(
             resolve();
         });
     });
-}
-
-export function isSupported(): boolean {
-    // tabGroups not yet in official typings
-    /* eslint-disable-next-line */ /* @ts-expect-error */
-    return !!chrome.tabGroups?.update;
 }

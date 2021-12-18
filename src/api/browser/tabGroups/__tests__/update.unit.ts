@@ -1,5 +1,4 @@
 import { update } from '../update';
-import { MkUpdateProperties } from '../MkUpdate';
 
 describe('tabGroups/update', () => {
     const originalChrome = global.chrome;
@@ -13,7 +12,7 @@ describe('tabGroups/update', () => {
                 update: updateMock.mockImplementation(
                     (
                         _groupId: number,
-                        _updateProperties: MkUpdateProperties,
+                        _updateProperties: chrome.tabGroups.UpdateProperties,
                         callback: () => void
                     ) => {
                         callback();
