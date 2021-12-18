@@ -1,4 +1,5 @@
-import { MkQueryInfo, MkTabGroup } from './MkQuery';
+import { MkQueryInfo } from './MkQuery';
+import { MkTabGroup } from './MkGroup';
 
 export function query(
     queryInfo: MkQueryInfo

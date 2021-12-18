@@ -1,6 +1,7 @@
 import { query } from '../query';
 import { MkColor } from '../MkColor';
-import { MkQueryInfo, MkTabGroup } from '../MkQuery';
+import { MkQueryInfo } from '../MkQuery';
+import { MkTabGroup } from '../MkGroup';
 
 const { BLUE } = MkColor;
 
@@ -42,6 +43,7 @@ describe('tabGroups/query', () => {
                 const group = {
                     collapsed: false,
                     color: BLUE,
+                    id: 2,
                     title: 'match',
                     windowId: 1,
                 };
@@ -55,6 +57,7 @@ describe('tabGroups/query', () => {
         expect(groups[0]).toMatchObject({
             collapsed: false,
             color: BLUE,
+            id: 2,
             title: 'match',
             windowId: 1,
         });
