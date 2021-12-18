@@ -5,7 +5,7 @@ import { getStore } from 'src/storage/Store';
 import { makeMenu } from './action';
 import { MkMakeMenuItem } from './MkAction';
 import { organize } from 'src/tabs/organize';
-import { isSupported as isTabGroupingSupported } from 'src/tabs/group';
+import { isSupported as isTabGroupingSupported } from 'src/api/browser/tabGroups/isSupported';
 import { ungroup as ungroupTabs } from 'src/tabs/bar';
 
 /**
