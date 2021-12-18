@@ -38,6 +38,14 @@ export function connect(): void {
         void organize({ type: 'collapse' });
     });
 
+    // Handle keyboard shortcuts defined in the manifest
+    commandsOnCommand.addListener((command) => {
+        logVerbose('commandsOnCommand', command);
+        if (command === 'collapse') {
+            void organize({ type: 'collapse' });
+        }
+    });
+
     // Handle when the extension icon is clicked
     actionOnClicked.addListener(() => {
         logVerbose('actionOnClicked');
@@ -85,11 +93,4 @@ export function connect(): void {
         void organize();
     });
 
-    // Handle keyboard shortcuts defined in the manifest
-    commandsOnCommand.addListener((command) => {
-        logVerbose('commandsOnCommand', command);
-        if (command === 'collapse') {
-            void organize({ type: 'collapse' });
-        }
-    });
 }
