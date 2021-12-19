@@ -37,10 +37,9 @@ export function createMenu(): void {
  */
 export function handleItemClick(identifier: unknown): void {
     logVerbose('handleItemClick', identifier);
+    // We only want to handle resources
     if (!isMenuItemValid(identifier)) {
-        // Menu item id can be any but we assume a string for now
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        throw new Error(`Invalid resources key: ${identifier}`);
+        return;
     }
     // Valid resources get opened
     openLink(identifier);

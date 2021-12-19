@@ -110,6 +110,10 @@ function isMenuItemValid(id: unknown): id is MkStateKey {
  */
 export function toggle({ identifier, isChecked }: MkToggleParams): void {
     logVerbose('toggle', identifier);
+    // We only want to handle settings
+    if (!isMenuItemValid(identifier)) {
+        return;
+    }
     // Menu item id can be any as described by official typings
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     // Various settings changes require reorganization
@@ -121,11 +125,6 @@ export function toggle({ identifier, isChecked }: MkToggleParams): void {
     const isAutomaticGrouping = identifier === 'enableAutomaticGrouping';
     if (isAutomaticGrouping && !isChecked) {
         void ungroupTabs();
-    }
-    if (!isMenuItemValid(identifier)) {
-        // Menu item id can be any but we assume a string for now
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        throw new Error(`Invalid settings key: ${identifier}`);
     }
     // Rely on the menu item to automatically update itself
     // identifier is expected to be mapped to settings keys
