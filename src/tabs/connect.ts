@@ -20,7 +20,8 @@ import { discardGroup } from './memory';
 export function connect(): void {
     logVerbose('connect');
 
-    // Organize tabs on install and update
+    // Only create menus when the extension is installed
+    // and updated or the browser itself is updated
     // TODO: Perfect candidate for business API creation
     runtimeOnInstalled.addListener((details) => {
         logVerbose('runtimeOnInstalled', details);
