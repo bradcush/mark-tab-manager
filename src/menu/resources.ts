@@ -11,6 +11,7 @@ import { MkDropdownItem } from 'src/api/business/contextMenus/MkCreateDropdown';
 const linksByResource = {
     welcome: 'https://docs.google.com/document/d/1m6rxYRJcf8ZzgcSKy94nkO6C4msh6h49lFRi4tHupBg/edit?usp=sharing',
     releaseNotes: 'https://docs.google.com/document/d/1l-W6RTAIdAhlzh-iWi5-w-pYUTfiHGQLAsuSoeb_B8I/edit?usp=sharing',
+    understanding: 'https://docs.google.com/document/d/1ardYo-JrEBRszD_MXrFjtS-TBdZsWM86_MgXk6J5zJM/edit?usp=sharing',
 };
 
 /**
@@ -24,6 +25,11 @@ export function createMenu(): void {
         format: 'normal',
         identifier: 'welcome',
         title: 'Welcome to Mark',
+    });
+    menuItems.push({
+        format: 'normal',
+        identifier: 'understanding',
+        title: 'Understanding Mark',
     });
     menuItems.push({
         format: 'normal',
