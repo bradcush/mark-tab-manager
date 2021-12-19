@@ -1,6 +1,6 @@
 export interface MkMakeMenuItem {
     identifier: string;
-    isChecked: boolean;
+    isChecked?: boolean;
     format: chrome.contextMenus.ContextItemType;
     title: string;
 }

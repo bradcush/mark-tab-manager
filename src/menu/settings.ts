@@ -12,7 +12,7 @@ import { ungroup as ungroupTabs } from 'src/tabs/bar';
  * Create settings menu with all
  * supported configurations
  */
-export async function create(): Promise<void> {
+export async function createMenu(): Promise<void> {
     logVerbose('create');
 
     const {
