@@ -4,6 +4,7 @@ import { onClicked as contextMenusOnClicked } from 'src/api/browser/contextMenus
 import {
     createMenu as createResourcesMenu,
     handleItemClick as handleResourcesItemClick,
+    openLink as openResourcesLink,
 } from './resources';
 import { createMenu as createSettingsMenu, toggle } from './settings';
 
@@ -14,7 +15,8 @@ import { createMenu as createSettingsMenu, toggle } from './settings';
 export function connect(): void {
     logVerbose('connect');
 
-    // Only create menus when installed
+    // Only create menus when the extension is installed
+    // and updated or the browser itself is updated
     runtimeOnInstalled.addListener((details) => {
         logVerbose('runtimeOnInstalled', details);
         // We have no shared dependencies
@@ -23,6 +25,17 @@ export function connect(): void {
         }
         void createResourcesMenu();
         void createSettingsMenu();
+    });
+
+    // Only open the welcome onboarding when installed
+    runtimeOnInstalled.addListener((details) => {
+        logVerbose('runtimeOnInstalled', details);
+        // We have no shared dependencies
+        if (details.reason !== 'install') {
+            return;
+        }
+        // Open welcome onboarding
+        openResourcesLink('welcome');
     });
 
     // Handle clicks on any context menu item

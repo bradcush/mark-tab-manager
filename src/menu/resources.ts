@@ -42,10 +42,8 @@ export function handleItemClick(identifier: unknown): void {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Invalid resources key: ${identifier}`);
     }
-    const url = linksByResource[identifier];
-    const createProperties = { url };
-    // Open the URL in a new tab
-    void tabsCreate(createProperties);
+    // Valid resources get opened
+    openLink(identifier);
 }
 
 /**
@@ -58,4 +56,13 @@ function isMenuItemValid(id: unknown): id is MkResource {
     }
     const resources = Object.keys(linksByResource);
     return resources.includes(id);
+}
+
+/**
+ * Open resource link in a new tab
+ */
+export function openLink(resource: MkResource): void {
+    const url = linksByResource[resource];
+    const createProperties = { url };
+    void tabsCreate(createProperties);
 }
