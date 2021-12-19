@@ -13,8 +13,7 @@ import { ungroup as ungroupTabs } from 'src/tabs/bar';
  * supported configurations
  */
 export async function createMenu(): Promise<void> {
-    logVerbose('create');
-
+    logVerbose('createMenu');
     const {
         clusterGroupedTabs,
         enableAutomaticGrouping,
@@ -28,7 +27,7 @@ export async function createMenu(): Promise<void> {
     const menuItems: MkMakeMenuItem[] = [];
     // Create the browser action context menu
     // for toggling automatic sorting
-    logVerbose('create', enableAlphabeticSorting);
+    logVerbose('createMenu', enableAlphabeticSorting);
     menuItems.push({
         format: 'checkbox',
         identifier: 'enableAlphabeticSorting',
