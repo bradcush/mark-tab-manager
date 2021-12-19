@@ -1,4 +1,6 @@
+import { MkStateKey } from 'src/storage/MkStore';
+
 export interface MkToggleParams {
-    identifier: unknown;
+    identifier: MkStateKey;
     isChecked?: boolean;
 }

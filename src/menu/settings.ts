@@ -2,11 +2,11 @@ import { MkToggleParams } from './MkSettings';
 import { MkStateKey } from 'src/storage/MkStore';
 import { logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
-import { makeMenu } from './action';
-import { MkMakeMenuItem } from './MkAction';
 import { organize } from 'src/tabs/organize';
 import { isSupported as isTabGroupingSupported } from 'src/api/browser/tabGroups/isSupported';
 import { ungroup as ungroupTabs } from 'src/tabs/bar';
+import { MkDropdownItem } from 'src/api/business/contextMenus/MkCreateDropdown';
+import { createDropdown } from 'src/api/business/contextMenus/createDropdown';
 
 /**
  * Create settings menu with all
@@ -23,8 +23,7 @@ export async function createMenu(): Promise<void> {
         showGroupTabCount,
         suspendCollapsedGroups,
     } = await getStore().getState();
-
-    const menuItems: MkMakeMenuItem[] = [];
+    const menuItems: MkDropdownItem[] = [];
     // Create the browser action context menu
     // for toggling automatic sorting
     logVerbose('createMenu', enableAlphabeticSorting);
@@ -74,11 +73,13 @@ export async function createMenu(): Promise<void> {
         isChecked: forceWindowConsolidation,
         title: 'Force window consolidation',
     });
-
-    void makeMenu({
+    void createDropdown({
         heading: 'Settings',
-        items: menuItems,
+        children: menuItems,
         label: 'settings',
+        // Specific to the action context
+        // referring the extension icon
+        location: 'action',
     });
 }
 
@@ -86,11 +87,10 @@ export async function createMenu(): Promise<void> {
  * Test and type guard menu items to make sure
  * their id is what we expect mapped in state
  */
-function isMenuItemValid(id: unknown): id is MkStateKey {
+export function isMenuItemValid(id: unknown): id is MkStateKey {
     if (typeof id !== 'string') {
         return false;
     }
-    // TODO: Maybe this should come from the store
     const settings = [
         'clusterGroupedTabs',
         'enableAutomaticGrouping',
@@ -107,12 +107,11 @@ function isMenuItemValid(id: unknown): id is MkStateKey {
  * Handle auto sort context menu setting clicks
  * by updating a temporary internal state only
  */
-export function toggle({ identifier, isChecked }: MkToggleParams): void {
-    logVerbose('toggle', identifier);
-    // We only want to handle settings
-    if (!isMenuItemValid(identifier)) {
-        return;
-    }
+export function handleItemClick({
+    identifier,
+    isChecked,
+}: MkToggleParams): void {
+    logVerbose('handleItemClick', identifier);
     // Menu item id can be any as described by official typings
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     // Various settings changes require reorganization
@@ -127,7 +126,7 @@ export function toggle({ identifier, isChecked }: MkToggleParams): void {
     }
     // Rely on the menu item to automatically update itself
     // identifier is expected to be mapped to settings keys
-    logVerbose('toggle', identifier);
+    logVerbose('handleItemClick', identifier);
     const data = { [identifier]: isChecked };
     void getStore().setState(data);
 }

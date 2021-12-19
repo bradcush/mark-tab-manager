@@ -4,9 +4,14 @@ import { onClicked as contextMenusOnClicked } from 'src/api/browser/contextMenus
 import {
     createMenu as createResourcesMenu,
     handleItemClick as handleResourcesItemClick,
+    isMenuItemValid as isResourcesMenuItem,
     openLink as openResourcesLink,
 } from './resources';
-import { createMenu as createSettingsMenu, toggle } from './settings';
+import {
+    createMenu as createSettingsMenu,
+    handleItemClick as handleSettingsItemClick,
+    isMenuItemValid as isSettingsMenuItem,
+} from './settings';
 
 /**
  * Handle driven context menu
@@ -41,12 +46,16 @@ export function connect(): void {
     // Handle clicks on any context menu item
     contextMenusOnClicked.addListener(({ checked, menuItemId }) => {
         logVerbose('contextMenusOnClicked', menuItemId);
-        // Allowing individual item click handlers to decide
-        // whether or not they should actually take action
-        handleResourcesItemClick(menuItemId);
-        toggle({
-            identifier: menuItemId,
-            isChecked: checked,
-        });
+        // We only want to handle settings
+        if (isSettingsMenuItem(menuItemId)) {
+            handleSettingsItemClick({
+                identifier: menuItemId,
+                isChecked: checked,
+            });
+        }
+        // We only want to handle resources
+        if (isResourcesMenuItem(menuItemId)) {
+            handleResourcesItemClick(menuItemId);
+        }
     });
 }

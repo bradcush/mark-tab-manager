@@ -1,8 +1,8 @@
 import { logVerbose } from 'src/logs/console';
-import { makeMenu } from './action';
 import { create as tabsCreate } from 'src/api/browser/tabs/create';
-import { MkMakeMenuItem } from './MkAction';
 import { MkResource } from './MkResources';
+import { createDropdown } from 'src/api/business/contextMenus/createDropdown';
+import { MkDropdownItem } from 'src/api/business/contextMenus/MkCreateDropdown';
 
 // External link locations mapped
 // by resource identifier
@@ -18,16 +18,19 @@ const linksByResource = {
  */
 export function createMenu(): void {
     logVerbose('createMenu');
-    const menuItems: MkMakeMenuItem[] = [];
+    const menuItems: MkDropdownItem[] = [];
     menuItems.push({
         format: 'normal',
         identifier: 'welcome',
         title: 'Welcome to Mark',
     });
-    void makeMenu({
+    void createDropdown({
         heading: 'Resources',
-        items: menuItems,
+        children: menuItems,
         label: 'resources',
+        // Specific to the action context
+        // referring the extension icon
+        location: 'action',
     });
 }
 
@@ -35,12 +38,8 @@ export function createMenu(): void {
  * Handle resources context menu clicks
  * by redirecting to resource locations
  */
-export function handleItemClick(identifier: unknown): void {
+export function handleItemClick(identifier: MkResource): void {
     logVerbose('handleItemClick', identifier);
-    // We only want to handle resources
-    if (!isMenuItemValid(identifier)) {
-        return;
-    }
     // Valid resources get opened
     openLink(identifier);
 }
@@ -49,7 +48,7 @@ export function handleItemClick(identifier: unknown): void {
  * Test and type guard menu items to make sure
  * their id is what we expect mapped in state
  */
-function isMenuItemValid(id: unknown): id is MkResource {
+export function isMenuItemValid(id: unknown): id is MkResource {
     if (typeof id !== 'string') {
         return false;
     }
