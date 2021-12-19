@@ -45,8 +45,6 @@ describe('tabs/ungroup', () => {
             message: 'error',
         };
         const tabIds = [1];
-        await expect(ungroup(tabIds)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(ungroup(tabIds)).rejects.toBe('error');
     });
 });

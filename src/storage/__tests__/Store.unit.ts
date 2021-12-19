@@ -25,6 +25,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 showGroupTabCount: false,
+                suspendCollapsedGroups: true,
                 invalidSetting: true,
             });
             storageSyncGetMock.mockImplementation(syncGetMock);
@@ -38,6 +39,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 showGroupTabCount: false,
+                suspendCollapsedGroups: true,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -56,6 +58,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
                 showGroupTabCount: true,
+                suspendCollapsedGroups: false,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -74,6 +77,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
                 showGroupTabCount: true,
+                suspendCollapsedGroups: false,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -92,6 +96,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
                 showGroupTabCount: true,
+                suspendCollapsedGroups: false,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -104,6 +109,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 showGroupTabCount: false,
+                suspendCollapsedGroups: true,
                 invalidSetting: true,
             });
             storageSyncGetMock.mockImplementation(syncGetMock);
@@ -117,6 +123,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 showGroupTabCount: false,
+                suspendCollapsedGroups: true,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -134,6 +141,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
                 showGroupTabCount: true,
+                suspendCollapsedGroups: false,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -146,6 +154,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
                 showGroupTabCount: true,
+                suspendCollapsedGroups: false,
             });
             storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
@@ -158,6 +167,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
                 showGroupTabCount: true,
+                suspendCollapsedGroups: false,
             };
             expect(state).toStrictEqual(expectedState);
         });
@@ -179,6 +189,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 showGroupTabCount: false,
+                suspendCollapsedGroups: true,
             };
             await storageService.setState(state);
             const newState = await storageService.getState();
@@ -198,6 +209,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: true,
                 forceWindowConsolidation: true,
                 showGroupTabCount: false,
+                suspendCollapsedGroups: true,
             };
             await storageService.setState(firstState);
             const firstNewState = await storageService.getState();
@@ -212,6 +224,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
                 showGroupTabCount: true,
+                suspendCollapsedGroups: false,
             };
             await storageService.setState(secondState);
             const secondNewState = await storageService.getState();
@@ -235,6 +248,7 @@ describe('Store', () => {
                 enableSubdomainFiltering: false,
                 forceWindowConsolidation: false,
                 showGroupTabCount: true,
+                suspendCollapsedGroups: false,
             };
             expect(state).toStrictEqual(expectedState);
         });

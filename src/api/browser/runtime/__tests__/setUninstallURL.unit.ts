@@ -31,8 +31,6 @@ describe('runtime/setUninstallURL', () => {
             message: 'error',
         };
         const uninstallUrl = 'https://uninstall.survey';
-        await expect(setUninstallURL(uninstallUrl)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(setUninstallURL(uninstallUrl)).rejects.toBe('error');
     });
 });

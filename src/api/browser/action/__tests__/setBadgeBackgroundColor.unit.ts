@@ -35,8 +35,6 @@ describe('action/setBadgeBackgroundColor', () => {
             message: 'error',
         };
         const details = { color: '#000' };
-        await expect(setBadgeBackgroundColor(details)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(setBadgeBackgroundColor(details)).rejects.toBe('error');
     });
 });

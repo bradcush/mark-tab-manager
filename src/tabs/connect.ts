@@ -8,6 +8,10 @@ import { onClicked as actionOnClicked } from 'src/api/browser/action/onClicked';
 import { onUpdated as tabsOnUpdated } from 'src/api/browser/tabs/onUpdated';
 import { onRemoved as tabsOnRemoved } from 'src/api/browser/tabs/onRemoved';
 import { onCommand as commandsOnCommand } from 'src/api/browser/commands/onCommand';
+import { onUpdated as tabGroupsOnUpdated } from 'src/api/browser/tabGroups/onUpdated';
+import { isSupported as isTabGroupingSupported } from 'src/api/browser/tabGroups/isSupported';
+import { getStore } from 'src/storage/Store';
+import { discardGroup } from './memory';
 
 /**
  * Connect site organizer to
@@ -36,6 +40,14 @@ export function connect(): void {
             return;
         }
         void organize({ type: 'collapse' });
+    });
+
+    // Handle keyboard shortcuts defined in the manifest
+    commandsOnCommand.addListener((command) => {
+        logVerbose('commandsOnCommand', command);
+        if (command === 'collapse') {
+            void organize({ type: 'collapse' });
+        }
     });
 
     // Handle when the extension icon is clicked
@@ -85,11 +97,23 @@ export function connect(): void {
         void organize();
     });
 
-    // Handle keyboard shortcuts defined in the manifest
-    commandsOnCommand.addListener((command) => {
-        logVerbose('commandsOnCommand', command);
-        if (command === 'collapse') {
-            void organize({ type: 'collapse' });
-        }
-    });
+    // Handling groups is reliant on APIs available
+    if (isTabGroupingSupported()) {
+        // Handle group updates for discarding inactive tabs
+        // Handlers can be async since we just care to fire and forget
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        tabGroupsOnUpdated.addListener(async ({ collapsed, id }) => {
+            logVerbose('tabGroupsOnUpdated', id);
+            // TODO: Perfect candidate for business API creation
+            const { suspendCollapsedGroups } = await getStore().getState();
+            const isEnabled = navigator.onLine && suspendCollapsedGroups;
+            // Only suspend when enabled and collapsed
+            if (!isEnabled || !collapsed) {
+                return;
+            }
+            // Free memory for all tabs in
+            // the group to be discarded
+            void discardGroup(id);
+        });
+    }
 }

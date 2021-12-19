@@ -1,6 +1,5 @@
 import { query } from '../query';
 import { MkColor } from '../MkColor';
-import { MkQueryInfo, MkTabGroup } from '../MkQuery';
 
 const { BLUE } = MkColor;
 
@@ -36,12 +35,13 @@ describe('tabGroups/query', () => {
         // eslint-disable-next-line
         (global.chrome as any).tabGroups.query = queryMock.mockImplementation(
             (
-                _queryInfo: MkQueryInfo,
-                callback: (groups: MkTabGroup[]) => void
+                _queryInfo: chrome.tabGroups.QueryInfo,
+                callback: (groups: chrome.tabGroups.TabGroup[]) => void
             ) => {
                 const group = {
                     collapsed: false,
                     color: BLUE,
+                    id: 2,
                     title: 'match',
                     windowId: 1,
                 };
@@ -55,6 +55,7 @@ describe('tabGroups/query', () => {
         expect(groups[0]).toMatchObject({
             collapsed: false,
             color: BLUE,
+            id: 2,
             title: 'match',
             windowId: 1,
         });
@@ -68,8 +69,6 @@ describe('tabGroups/query', () => {
             message: 'error',
         };
         const queryInfo = { title: 'title' };
-        await expect(query(queryInfo)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(query(queryInfo)).rejects.toBe('error');
     });
 });

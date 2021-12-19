@@ -1,5 +1,4 @@
 import { group } from '../group';
-import { MkOptions } from '../MkGroup';
 
 describe('tabs/group', () => {
     const originalChrome = global.chrome;
@@ -12,7 +11,7 @@ describe('tabs/group', () => {
             tabs: {
                 group: groupMock.mockImplementation(
                     (
-                        _options: MkOptions,
+                        _options: chrome.tabs.GroupOptions,
                         callback: (groupId: number) => void
                     ) => {
                         const groupId = 2;
@@ -50,8 +49,6 @@ describe('tabs/group', () => {
             message: 'error',
         };
         const options = { tabIds: [1] };
-        await expect(group(options)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(group(options)).rejects.toBe('error');
     });
 });

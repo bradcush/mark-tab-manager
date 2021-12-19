@@ -1,5 +1,5 @@
 export interface MkAddNewGroupParams {
-    color: string;
+    color: chrome.tabGroups.ColorEnum;
     opened: boolean;
     tabIds: number[];
     title: string;
@@ -13,7 +13,7 @@ export interface MkSortTab {
 
 export interface MkUpdateGroupTitleParams {
     collapsed: boolean;
-    color: string;
+    color: chrome.tabGroups.ColorEnum;
     groupId: number;
     title: string;
 }

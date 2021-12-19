@@ -962,13 +962,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.133":
-  version: 0.0.133
-  resolution: "@types/chrome@npm:0.0.133"
+"@types/chrome@npm:^0.0.171":
+  version: 0.0.171
+  resolution: "@types/chrome@npm:0.0.171"
   dependencies:
     "@types/filesystem": "*"
     "@types/har-format": "*"
-  checksum: f4ea13de2c09514b67af8454dc5cec897e4c8ffaecf894ba4e871f5e3fb6c1c40faffd8ebb059d08e57961f1b218cb4a6dbc1fe44989378a4c6600dde59e8e9b
+  checksum: 11b2b61f353a488d28f177518d08424f18f619b0b38d002ad2953739cbec3e5853d112d2435d6633f646661a725021539999ac43d68fb75ef74209d53a00911e
   languageName: node
   linkType: hard
 
@@ -1016,18 +1016,18 @@ __metadata:
   linkType: hard
 
 "@types/filesystem@npm:*":
-  version: 0.0.29
-  resolution: "@types/filesystem@npm:0.0.29"
+  version: 0.0.32
+  resolution: "@types/filesystem@npm:0.0.32"
   dependencies:
     "@types/filewriter": "*"
-  checksum: 890a5fbf33194bcf5e1bbb9ce39a1c538e264d2b665e7adc6ea5040b90166377523e75f9ea46503c3c06206115cf6ec3241fd4a29caf76a1d882fdab1bb92adb
+  checksum: 1b7eac8247c0ca965b67e90fba0213a78acef689428649bb8ad08e215a5f48adca80b929a7f1eefe20a195bb03af395eec3a2e5549bcef0b2d8c363f60a45108
   languageName: node
   linkType: hard
 
 "@types/filewriter@npm:*":
-  version: 0.0.28
-  resolution: "@types/filewriter@npm:0.0.28"
-  checksum: 6346ce6ccb9755609dfa85ae706a7578fb516d7ca6895c3d8879a348464e87f849fa1edbf423b6ff2f205a0c29029aef7bd3cf8b27a9185395114d59050d83f9
+  version: 0.0.29
+  resolution: "@types/filewriter@npm:0.0.29"
+  checksum: 7a178fb74d3973d422005420d1b05c9054189edbdc34511803a3090221e466b7732e4e1eff8188be59dd4bd59c566d4411efe83c0cfd66293e7b1cc7a8385975
   languageName: node
   linkType: hard
 
@@ -1051,9 +1051,9 @@ __metadata:
   linkType: hard
 
 "@types/har-format@npm:*":
-  version: 1.2.5
-  resolution: "@types/har-format@npm:1.2.5"
-  checksum: 1dbaa1d7cddb2fa0ddf533e8ae7f20bca2116738274a1a1e9fe2863b6c26e668b59ac4dfdfb45450d5c374de689721647ca891aa342e239049f69d5de3604cd9
+  version: 1.2.8
+  resolution: "@types/har-format@npm:1.2.8"
+  checksum: aaa33e189423a94a9a58dd3a5b835ce89058134fb0bf66080ec98b442fc8214c84fef3d94c225f080351ca9de09a943bf584a48c4c4ce1abf28b35579c0defb2
   languageName: node
   linkType: hard
 
@@ -5398,7 +5398,7 @@ fsevents@^2.1.2:
   dependencies:
     "@commitlint/cli": ^12.0.1
     "@commitlint/config-conventional": ^12.0.1
-    "@types/chrome": ^0.0.133
+    "@types/chrome": ^0.0.171
     "@types/copy-webpack-plugin": 6.4.0
     "@types/jest": ^26.0.15
     "@types/node": ^14.0.14

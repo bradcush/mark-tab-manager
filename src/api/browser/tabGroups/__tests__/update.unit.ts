@@ -1,5 +1,4 @@
 import { update } from '../update';
-import { MkUpdateProperties } from '../MkUpdate';
 
 describe('tabGroups/update', () => {
     const originalChrome = global.chrome;
@@ -13,7 +12,7 @@ describe('tabGroups/update', () => {
                 update: updateMock.mockImplementation(
                     (
                         _groupId: number,
-                        _updateProperties: MkUpdateProperties,
+                        _updateProperties: chrome.tabGroups.UpdateProperties,
                         callback: () => void
                     ) => {
                         callback();
@@ -53,8 +52,6 @@ describe('tabGroups/update', () => {
         };
         const groupId = 1;
         const updateProperties = { title: 'title' };
-        await expect(update(groupId, updateProperties)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(update(groupId, updateProperties)).rejects.toBe('error');
     });
 });

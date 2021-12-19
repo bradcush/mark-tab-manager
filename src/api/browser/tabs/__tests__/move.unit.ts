@@ -38,8 +38,6 @@ describe('tabs/move', () => {
         };
         const tabId = 1;
         const moveProperties = { index: -1 };
-        await expect(move(tabId, moveProperties)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(move(tabId, moveProperties)).rejects.toBe('error');
     });
 });

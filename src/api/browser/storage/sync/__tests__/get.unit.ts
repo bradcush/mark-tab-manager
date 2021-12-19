@@ -43,8 +43,6 @@ describe('storage/get', () => {
             message: 'error',
         };
         const key = 'settings';
-        await expect(get(key)).rejects.toMatchObject({
-            message: 'error',
-        });
+        await expect(get(key)).rejects.toBe('error');
     });
 });

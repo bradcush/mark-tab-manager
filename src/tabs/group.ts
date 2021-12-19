@@ -9,14 +9,12 @@ import {
     MkRenderGroupsByNameParams,
 } from './MkGroup';
 import { MkOrganizationTab } from './MkOrganize';
-import { isSupported as isTabGroupsUpdateSupported } from 'src/api/browser/tabGroups/update';
+import { query as tabGroupsQuery } from 'src/api/browser/tabGroups/query';
 import {
-    isSupported as isTabGroupsQuerySupported,
-    query as tabGroupsQuery,
-} from 'src/api/browser/tabGroups/query';
-import { isSupported as isTabsGroupSupported } from 'src/api/browser/tabs/group';
-import { isSupported as isTabsUngroupSupported } from 'src/api/browser/tabs/ungroup';
-import { getColor as getTabGroupsColor } from 'src/api/browser/tabGroups/constants/Color';
+    getColor as getTabGroupsColor,
+    isColorValid as isTabGroupsColorValid,
+} from 'src/api/browser/tabGroups/constants/Color';
+import { isSupported as isTabGroupingSupported } from 'src/api/browser/tabGroups/isSupported';
 import { logVerbose } from 'src/logs/console';
 import { getStore } from 'src/storage/Store';
 import { categorize as categorizeTabs } from './categorize';
@@ -53,7 +51,8 @@ function getColorForGroup(index: number) {
     const colorIdx = index % colorKeys.length;
     const color = colors[colorIdx];
     logVerbose('getColorForGroup', color);
-    return color;
+    const defaultColor = 'grey';
+    return isTabGroupsColorValid(color) ? color : defaultColor;
 }
 
 /**
@@ -77,7 +76,7 @@ async function getGroupInfo({ id, name }: MkGetGroupInfoParams) {
 export async function isEnabled(): Promise<boolean> {
     logVerbose('isEnabled');
     const { enableAutomaticGrouping } = await getStore().getState();
-    return isSupported() && enableAutomaticGrouping;
+    return isTabGroupingSupported() && enableAutomaticGrouping;
 }
 
 /**
@@ -102,19 +101,6 @@ function isGroupToOpen({
     return typeof updatedTabId !== 'undefined'
         ? groupIds.includes(updatedTabId)
         : false;
-}
-
-/**
- * Check if all used tab grouping APIs are supported
- */
-export function isSupported(): boolean {
-    logVerbose('isSupported');
-    return (
-        isTabGroupsUpdateSupported() &&
-        isTabGroupsQuerySupported() &&
-        isTabsGroupSupported() &&
-        isTabsUngroupSupported()
-    );
 }
 
 /**

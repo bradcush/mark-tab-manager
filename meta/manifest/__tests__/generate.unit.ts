@@ -57,7 +57,7 @@ describe('generate', () => {
                         'tabGroups',
                         'tabs',
                     ],
-                    version: '0.1.38',
+                    version: '0.1.39',
                 })
             );
         });
@@ -113,7 +113,7 @@ describe('generate', () => {
                     'tabGroups',
                     'tabs',
                 ],
-                version: '0.1.38',
+                version: '0.1.39',
             });
         });
     });
