@@ -8,6 +8,6 @@ describe('setUninstallUrl', () => {
     it('should set uninstall survey URL', () => {
         const uninstallUrl = 'https://forms.gle/wNhryQtn8bHNLT488';
         setUninstallUrl();
-        expect(runtimeSetUninstallURL).toBeCalledWith(uninstallUrl);
+        expect(runtimeSetUninstallURL).toHaveBeenCalledWith(uninstallUrl);
     });
 });

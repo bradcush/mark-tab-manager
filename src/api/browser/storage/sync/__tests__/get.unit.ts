@@ -6,7 +6,7 @@ describe('storage/get', () => {
     const getMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = ({
+        global.chrome = {
             storage: {
                 sync: {
                     get: getMock.mockImplementation(
@@ -23,7 +23,7 @@ describe('storage/get', () => {
                 },
             },
             runtime: {},
-        } as unknown) as typeof chrome;
+        } as unknown as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

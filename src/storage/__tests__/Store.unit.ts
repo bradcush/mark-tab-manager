@@ -83,7 +83,7 @@ describe('Store', () => {
         });
 
         it('should not cache invalid content in memory', async () => {
-            const invalidContent = ('invalidContent' as unknown) as MkSyncItems;
+            const invalidContent = 'invalidContent' as unknown as MkSyncItems;
             const syncGetMock = makeSyncGet(invalidContent);
             storageSyncGetMock.mockImplementation(syncGetMock);
             const storageService = new Store();
@@ -195,7 +195,7 @@ describe('Store', () => {
             const newState = await storageService.getState();
             expect(newState).toStrictEqual(state);
             const storage = { settings: JSON.stringify(state) };
-            expect(storageSyncSetMock).toBeCalledWith(storage);
+            expect(storageSyncSetMock).toHaveBeenCalledWith(storage);
         });
 
         it('should update existing keys in storage and state', async () => {
@@ -215,7 +215,7 @@ describe('Store', () => {
             const firstNewState = await storageService.getState();
             expect(firstNewState).toStrictEqual(firstState);
             const firstItems = { settings: JSON.stringify(firstState) };
-            expect(storageSyncSetMock).toBeCalledWith(firstItems);
+            expect(storageSyncSetMock).toHaveBeenCalledWith(firstItems);
 
             const secondState = {
                 clusterGroupedTabs: true,
@@ -230,7 +230,7 @@ describe('Store', () => {
             const secondNewState = await storageService.getState();
             expect(secondNewState).toStrictEqual(secondState);
             const secondItems = { settings: JSON.stringify(secondState) };
-            expect(storageSyncSetMock).toBeCalledWith(secondItems);
+            expect(storageSyncSetMock).toHaveBeenCalledWith(secondItems);
         });
     });
 

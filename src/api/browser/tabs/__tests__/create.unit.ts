@@ -5,7 +5,7 @@ describe('tabs/create', () => {
     const createMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = ({
+        global.chrome = {
             tabs: {
                 create: createMock.mockImplementation(
                     (
@@ -20,7 +20,7 @@ describe('tabs/create', () => {
                 ),
             },
             runtime: {},
-        } as unknown) as typeof chrome;
+        } as unknown as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

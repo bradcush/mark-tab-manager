@@ -13,12 +13,25 @@
     "transform": {
         "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "/__tests__/.*\\.(unit)\\.(js|ts)$",
-    "moduleFileExtensions": ["ts", "js", "json", "node"],
+    "testRegex": "/__tests__/.*\\.(unit)\\.(ts)$",
+    "moduleFileExtensions": [
+        "ts",
+        "js",
+        "json",
+        "node"
+    ],
     "moduleNameMapper": {
         "^src(.*)$": "<rootDir>/src$1"
     },
-    "coverageReporters": ["html", "json"],
-    "moduleDirectories": ["node_modules", "<rootDir>/"],
-    "modulePathIgnorePatterns": ["<rootDir>[/\\\\](dist|node_modules)[/\\\\]"]
+    "coverageReporters": [
+        "html",
+        "json"
+    ],
+    "moduleDirectories": [
+        "node_modules",
+        "<rootDir>/"
+    ],
+    "modulePathIgnorePatterns": [
+        "<rootDir>[/\\\\](dist|node_modules)[/\\\\]"
+    ]
 }

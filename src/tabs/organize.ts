@@ -71,10 +71,8 @@ export async function organize(
     const tabsToCache = getMemoryCache().exists() && tab ? [tab] : filteredTabs;
     const cacheItems = await makeCacheItems(tabsToCache);
     getMemoryCache().set(cacheItems);
-    const {
-        clusterGroupedTabs,
-        enableAlphabeticSorting,
-    } = await getStore().getState();
+    const { clusterGroupedTabs, enableAlphabeticSorting } =
+        await getStore().getState();
     const sortedTabs = await sortTabs(filteredTabs);
     // We currently allow clustering even
     // when grouping is disabled

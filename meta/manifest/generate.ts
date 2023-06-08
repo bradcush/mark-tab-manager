@@ -29,7 +29,7 @@ export function generate({ browser }: OptionValues): void {
 
 // We only intend to run the generate script from the command-line but
 // allow it to be imported for testing with coverage reporting
-if (require.main === module) {
+if (typeof module === 'undefined') {
     const program = new Command();
     program.option('-b, --browser <browser>', 'Browser engine, chromium');
     program.parse(process.argv);

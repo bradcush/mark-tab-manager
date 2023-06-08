@@ -7,11 +7,5 @@ mapping to the `package.json` properties directly.
 
 ## `devDependecies`
 
-- `@types/copy-webpack-plugin`: Currently locked at `6.4.0` due to breaking
-  changes with return types specified in `6.4.1`. Webpack is expecting
-  `WebpackPluginInstance` but receives `webpack.WebpackPluginInstance`.
-- `terser-webpack-plugin`: Should be included as part of Webpack v5 out of the
-  box but Webpack fails with `Cannot find module` error when building unless
-  the dependency is installed separately. It's expected that there would be a
-  top-level node module exposed but it seems there is only an internal
-  `terser-webpack-plugin` dependency for Webpack itself.
+- `typescript`: Currently locked at `5.0.4` due to restriction specified by
+  `@typescript-eslint/typescript-estree` that version must be below `5.1.0`

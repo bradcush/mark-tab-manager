@@ -5,7 +5,7 @@ describe('tabs/query', () => {
     const queryMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = ({
+        global.chrome = {
             tabs: {
                 query: queryMock.mockImplementation(
                     (
@@ -21,7 +21,7 @@ describe('tabs/query', () => {
                 ),
             },
             runtime: {},
-        } as unknown) as typeof chrome;
+        } as unknown as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

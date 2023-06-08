@@ -11,10 +11,8 @@ import { MkOrganizationTab } from './MkOrganize';
  */
 async function cluster(tabs: MkOrganizationTab[]) {
     logVerbose('cluster', tabs);
-    const {
-        enableSubdomainFiltering,
-        forceWindowConsolidation,
-    } = await getStore().getState();
+    const { enableSubdomainFiltering, forceWindowConsolidation } =
+        await getStore().getState();
     const groupType = enableSubdomainFiltering ? 'granular' : 'shared';
     const categorizedTabs = await categorizeTabs(tabs);
     // Determine if the tab is alone and not
@@ -100,10 +98,8 @@ export async function sort(
     tabs: MkOrganizationTab[]
 ): Promise<MkOrganizationTab[]> {
     logVerbose('sort', tabs);
-    const {
-        enableAlphabeticSorting,
-        clusterGroupedTabs,
-    } = await getStore().getState();
+    const { enableAlphabeticSorting, clusterGroupedTabs } =
+        await getStore().getState();
     const alphabetizedTabs = enableAlphabeticSorting
         ? await alphabetize(tabs)
         : tabs;
