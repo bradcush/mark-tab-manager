@@ -5,7 +5,7 @@ describe('tabs/move', () => {
     const moveMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = ({
+        global.chrome = {
             tabs: {
                 move: moveMock.mockImplementation(
                     (
@@ -18,7 +18,7 @@ describe('tabs/move', () => {
                 ),
             },
             runtime: {},
-        } as unknown) as typeof chrome;
+        } as unknown as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

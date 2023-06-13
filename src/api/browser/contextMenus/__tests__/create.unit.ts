@@ -5,7 +5,7 @@ describe('contextMenus/create', () => {
     const createMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = ({
+        global.chrome = {
             contextMenus: {
                 create: createMock.mockImplementation(
                     (
@@ -17,7 +17,7 @@ describe('contextMenus/create', () => {
                 ),
             },
             runtime: {},
-        } as unknown) as typeof chrome;
+        } as unknown as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

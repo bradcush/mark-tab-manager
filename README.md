@@ -11,9 +11,8 @@ Compatible with any browser powered by Chromium
 
 ## Prerequisites
 
-This repository requires [Yarn 2](https://yarnpkg.com/) to be installed and
-for the time being relies on `nodeLinker: node-modules` using the traditional
-`node_modules` instead of Plug'n'Play due to issues with vim integration.
+This repository requires [Bun](https://bun.sh/) to be installed which is a
+drop-in replacement for any JavaScriptr bundler, transpiler, and runtime.
 
 ### Compatibility
 
@@ -31,8 +30,8 @@ associated generate script with examples.
 
 ## Building
 
-- Not minified with source maps: `yarn build:dev`
-- Minified without source maps: `yarn build:prod`
+- Not minified with source maps: `bun build:dev`
+- Minified without source maps: `bun build:prod`
 
 ## Testing
 
@@ -41,8 +40,8 @@ both a commit push and pull request. They are required for any pull request to
 be merged into the `main` branch. Integration testing has been setup but there
 is currently no need for any at the moment.
 
-- Unit testing: `yarn test:unit`
-- Unit testing w/ coverage: `yarn test:unit:coverage`
+- Unit testing: `bun test:unit`
+- Unit testing w/ coverage: `bun test:unit:coverage`
 
 ## Linting
 
@@ -51,8 +50,8 @@ both a commit push and pull request. They are also run locally before
 committing using a pre-commit hook. There must be no errors for any pull
 request to be merged into the main branch.
 
-- Linting: `yarn lint`
-- Lint auto-fix: `yarn lint:fix`
+- Linting: `bun lint`
+- Lint auto-fix: `bun lint:fix`
 
 ## Running
 

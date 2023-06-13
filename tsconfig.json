@@ -1,25 +1,27 @@
 {
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
-        "baseUrl": "./",
+        "baseUrl": ".",
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "importHelpers": true,
-        "module": "commonjs",
-        "moduleResolution": "node",
+        "lib": [
+            "dom",
+            "esnext"
+        ],
+        "module": "esnext",
+        "moduleResolution": "nodenext",
         "noImplicitReturns": true,
         "preserveConstEnums": true,
         "removeComments": true,
+        "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
-        "target": "ES2017",
+        "target": "esnext",
         "types": [
+            "bun-types",
             "chrome",
-            "copy-webpack-plugin",
-            "jest",
-            "node",
-            "terser-webpack-plugin",
-            "webpack"
+            "jest"
         ]
     }
 }

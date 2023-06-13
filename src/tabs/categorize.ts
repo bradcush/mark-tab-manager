@@ -11,10 +11,8 @@ export async function categorize(
     tabs: MkOrganizationTab[]
 ): Promise<MkTabIdsByGroup> {
     logVerbose('group');
-    const {
-        enableSubdomainFiltering,
-        forceWindowConsolidation,
-    } = await getStore().getState();
+    const { enableSubdomainFiltering, forceWindowConsolidation } =
+        await getStore().getState();
     // Not using "chrome.windows.WINDOW_ID_CURRENT" as we rely on real
     // "windowId" in our algorithm which the representative -2 breaks
     const staticWindowId = tabs[0].windowId;

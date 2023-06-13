@@ -5,7 +5,7 @@ describe('action/setBadgeText', () => {
     const setBadgeTextMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = ({
+        global.chrome = {
             action: {
                 setBadgeText: setBadgeTextMock.mockImplementation(
                     (
@@ -17,7 +17,7 @@ describe('action/setBadgeText', () => {
                 ),
             },
             runtime: {},
-        } as unknown) as typeof chrome;
+        } as unknown as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;

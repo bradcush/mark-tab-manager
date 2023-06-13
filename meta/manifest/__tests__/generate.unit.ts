@@ -1,4 +1,4 @@
-import * as childProcess from 'child_process';
+import childProcess from 'child_process';
 import { MkManifest } from '../MkGenerate';
 import { generate } from '../generate';
 
@@ -57,7 +57,7 @@ describe('generate', () => {
                         'tabGroups',
                         'tabs',
                     ],
-                    version: '0.1.40',
+                    version: '0.1.41',
                 })
             );
         });
@@ -78,7 +78,7 @@ describe('generate', () => {
     describe('when manifest generation is run as shell script', () => {
         it('should write any manifest to standard output', () => {
             const manifestBuffer = childProcess.execSync(
-                'ts-node meta/manifest/generate.ts --browser chromium'
+                'bun meta/manifest/generate.ts --browser chromium'
             );
             // JSON.parse type declarations specify any return value
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -113,7 +113,7 @@ describe('generate', () => {
                     'tabGroups',
                     'tabs',
                 ],
-                version: '0.1.40',
+                version: '0.1.41',
             });
         });
     });

@@ -5,7 +5,7 @@ describe('tabs/discard', () => {
     const discardMock = jest.fn();
 
     beforeEach(() => {
-        global.chrome = ({
+        global.chrome = {
             tabs: {
                 discard: discardMock.mockImplementation(
                     (
@@ -20,7 +20,7 @@ describe('tabs/discard', () => {
                 ),
             },
             runtime: {},
-        } as unknown) as typeof chrome;
+        } as unknown as typeof chrome;
     });
     afterEach(() => {
         global.chrome = originalChrome;
