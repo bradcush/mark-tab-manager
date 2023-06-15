@@ -1,12 +1,12 @@
 import childProcess from 'child_process';
-import { MkManifest } from '../MkGenerate';
+import { Manifest } from '../generate-types';
 import { generate } from '../generate';
 
 const processStdoutWriteMock = jest.fn();
 
 // Helper function used to assert stringified stdout using
 // the same params as specified during generation
-const stringifyToMatchStdout = (manifest: MkManifest) =>
+const stringifyToMatchStdout = (manifest: Manifest) =>
     JSON.stringify(manifest, null, 2);
 
 describe('generate', () => {
@@ -57,7 +57,7 @@ describe('generate', () => {
                         'tabGroups',
                         'tabs',
                     ],
-                    version: '0.1.41',
+                    version: '0.1.42',
                 })
             );
         });
@@ -113,7 +113,7 @@ describe('generate', () => {
                     'tabGroups',
                     'tabs',
                 ],
-                version: '0.1.41',
+                version: '0.1.42',
             });
         });
     });

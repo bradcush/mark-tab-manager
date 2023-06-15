@@ -5,7 +5,8 @@ tracked and considered when making changes to the `package.json` file such as
 with build scripts or package updates. This document is organized by section
 mapping to the `package.json` properties directly.
 
-## `devDependecies`
+## Development dependencies
 
-- `typescript`: Currently locked at `5.0.4` due to restriction specified by
-  `@typescript-eslint/typescript-estree` that version must be below `5.1.0`
+- `typescript`: Currently locked at version `5.0.4` due to a restriction
+  specified by `@typescript-eslint/typescript-estree` that the version of
+  TypeScript must be below `5.1.0`.
