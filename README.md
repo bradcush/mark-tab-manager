@@ -73,3 +73,7 @@ Then click the pin icon next to the extension labeled "Mark tab manager".
 ## Dependency information
 
 See the [PACKAGE.md](PACKAGE.md) for `package.json` information
+
+## License
+
+[Mark Apache License 2.0](LICENSE)
