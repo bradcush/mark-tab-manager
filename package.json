@@ -1,18 +1,18 @@
 {
   "name": "mark",
-  "version": "0.1.41",
+  "version": "0.1.42",
   "description": "Automated tab management",
   "repository": "https://github.com/bradcush/mark.git",
   "author": "Bradley Cushing <bradleycushing@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "build:dev": "bun meta:build && bun meta/build.dev.ts && bun meta:copy",
-    "build:prod": "bun meta:build && bun meta/build.prod.ts && bun meta:copy",
+    "build:dev": "bun meta:build && bun meta/dev.build.ts && bun meta:copy",
+    "build:prod": "bun meta:build && bun meta/prod.build.ts && bun meta:copy",
     "lint": "eslint --ext .ts,.json .",
     "lint:fix": "bun lint --fix",
     "meta:build": "rm -rf dist && bun meta:manifest",
-    "meta:copy": "cp generated/* dist && mkdir -p dist/icons && cp src/icons/* dist/icons",
+    "meta:copy": "mkdir -p dist/icons && cp generated/* dist && cp src/icons/* dist/icons",
     "meta:manifest": "rm -rf generated && mkdir generated && bun meta/manifest/generate.ts --browser chromium > generated/manifest.json",
     "test:unit": "jest --config=./jest.config.json",
     "test:unit:coverage": "bun test:unit --coverage"

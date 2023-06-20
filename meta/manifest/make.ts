@@ -1,11 +1,11 @@
-import { MkManifest } from './MkGenerate';
+import { Manifest } from './generate-types';
 
 /**
  * Returns a manifest object
  * adapted to the browser
  */
-export function make(): MkManifest {
-    const manifest: Partial<MkManifest> = {
+export function make(): Manifest {
+    const manifest: Partial<Manifest> = {
         action: {
             default_title: 'Mark',
         },
@@ -35,7 +35,7 @@ export function make(): MkManifest {
             'tabGroups',
             'tabs',
         ],
-        version: '0.1.41',
+        version: '0.1.42',
     };
     return manifest;
 }

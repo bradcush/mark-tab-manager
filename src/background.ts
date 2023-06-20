@@ -1,38 +1,42 @@
-import { connect as connectTabs } from './tabs/connect';
-import { connect as connectMenu } from './menu/connect';
-import { setStore, Store } from './storage/Store';
-import { MemoryCache, setMemoryCache } from './storage/MemoryCache';
-import { setUninstallUrl as setUninstallSurveyUrl } from './survey/uninstall';
 import { logVerbose } from './logs/console';
+import { setupMemoryManagement } from './memory/setup-memory-management';
+import { setupOnboarding } from './onboarding/setup-onboarding';
+import { setupResourcesMenu } from './resources/setup-resources-menu';
+import { setupSettingsMenu } from './settings/setup-settings-menu';
+import { setupShortcuts } from './shortcuts/setup-shortcuts';
+import { MemoryCache } from './storage/memory-cache';
+import { setMemoryCache } from './storage/memory-cache-instance';
+import { PersistedStore } from './storage/persisted-store';
+import { setPersistedStore } from './storage/persisted-store-instance';
+import { setUninstallSurvey } from './survey/uninstall';
+import { setupTabsManagement } from './tabs/setup-tabs-management';
 
 /**
  * Initialize the background process
  * and all top-level listeners
  */
-function initBackground() {
-    // When the service worker starts
+function initialize() {
     logVerbose('Service worker started');
 
-    // Load settings from storage into state
-    const storeInstance = new Store();
+    // Load settings from storage
+    const storeInstance = new PersistedStore();
     void storeInstance.load();
-    // Set instance for direct use
-    setStore(storeInstance);
+    // Set instance for direct use without
+    // need for dependency injection
+    setPersistedStore(storeInstance);
 
-    // Set the survey to be opened
-    setUninstallSurveyUrl();
-
-    // Set memoryCache instance for direct use
+    // Set instance for direct use without
+    // need for dependency injection
     const memoryCache = new MemoryCache();
     setMemoryCache(memoryCache);
 
-    // Connect tab related events that
-    // drive tab organization
-    connectTabs();
-
-    // Create menus that drive system
-    // and connect user interaction
-    connectMenu();
+    setupTabsManagement();
+    setupMemoryManagement();
+    setupResourcesMenu();
+    setupSettingsMenu();
+    setupShortcuts();
+    setupOnboarding();
+    setUninstallSurvey();
 }
 
-initBackground();
+initialize();

@@ -12,6 +12,11 @@
         "module": "esnext",
         "moduleResolution": "nodenext",
         "noImplicitReturns": true,
+        "paths": {
+            "src/*": [
+                "src/*"
+            ]
+        },
         "preserveConstEnums": true,
         "removeComments": true,
         "skipLibCheck": true,

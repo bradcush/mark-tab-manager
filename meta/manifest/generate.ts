@@ -1,11 +1,11 @@
 import { Command, OptionValues } from 'commander';
 import { make as makeManifest } from './make';
-import { MkManifest } from './MkGenerate';
+import { Manifest } from './generate-types';
 
 /**
  * Write manifest contents to standard output
  */
-function writeContent(manifest: MkManifest) {
+function writeContent(manifest: Manifest) {
     const manifestContent = JSON.stringify(manifest, null, 2);
     process.stdout.write(manifestContent);
 }

@@ -1,6 +1,6 @@
-# mark
+# Mark tab manager
 
-Better bookmark and tab management
+The missing tab manager
 
 ## Store listings
 
@@ -12,15 +12,17 @@ Compatible with any browser powered by Chromium
 ## Prerequisites
 
 This repository requires [Bun](https://bun.sh/) to be installed which is a
-drop-in replacement for any JavaScriptr bundler, transpiler, and runtime.
+drop-in replacement for any JavaScript bundler, transpiler, and runtime.
+Dependencies can be installed using `bun install` before building from source.
 
 ### Compatibility
 
-`mark` is built as a [Manifest Version 3](https://developer.chrome.com/docs/extensions/mv3/intro/)
-extension meaning that for Chrome, it's only supported in Chrome 89 and above.
-Edge Chromium is also supported in versions using the same Chromium version
-shipped in Chrome 89. Firefox and other vendors currently plan to support this
-manifest version but there is no stable release with support at this time.
+Mark is built as a [Manifest Version 3](https://developer.chrome.com/docs/extensions/mv3/intro/)
+browser extension meaning that for Chrome, it's only supported in Chrome 89 and
+above. Edge Chromium is also supported in versions using the same Chromium
+version shipped in Chrome 89. This includes most versions of any Chromium based
+browser that also support a native grouping user interface. Firefox and Safari
+both support Manifest Version 3 but do not support native tab groups.
 
 ## Manifest files
 
@@ -58,12 +60,16 @@ request to be merged into the main branch.
 After having built the extension locally, using Chrome greater than version 88,
 navigate to the `chrome://extensions` page and make sure "Developer mode" is
 enabled in the top right of the window. Then clicking the button in the top
-left of the window labeled `Load unpacked`, select the folder in the root of
+left of the window labeled "Load unpacked", select the folder in the root of
 this project named `dist`. If your extension is not automatically activated you
-can click the toggle for the extension labeled `mark`.
+can click the toggle for the extension labeled "Mark tab manager".
 
 ### Onboarding
 
 For additional functionality and control you can pin the extension to your
 toolbar by clicking on the puzzle icon in the top right of your Chrome toolbar.
-Then click the pin icon next to the extension labeled `mark` to pin it.
+Then click the pin icon next to the extension labeled "Mark tab manager".
+
+## Dependency information
+
+See the [PACKAGE.md](PACKAGE.md) for `package.json` information
