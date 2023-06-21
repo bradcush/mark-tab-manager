@@ -1,8 +1,8 @@
 {
-  "name": "mark",
+  "name": "Mark tab manager",
   "version": "0.1.42",
   "description": "Automated tab management",
-  "repository": "https://github.com/bradcush/mark.git",
+  "repository": "https://github.com/bradcush/mark-tab-manager.git",
   "author": "Bradley Cushing <bradleycushing@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
