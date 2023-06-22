@@ -1,4 +1,5 @@
 # node_modules ignored by default
+.DS_Store
 coverage
 dist
 node_modules
