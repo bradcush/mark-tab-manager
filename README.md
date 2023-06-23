@@ -1,5 +1,11 @@
 # Mark tab manager
 
+![version](https://img.shields.io/github/package-json/v/bradcush/mark-tab-manager)
+![test](https://img.shields.io/github/actions/workflow/status/bradcush/mark-tab-manager/test.yml?branch=main&label=test)
+![lint](https://img.shields.io/github/actions/workflow/status/bradcush/mark-tab-manager/lint.yml?branch=main&label=lint)
+![users](https://img.shields.io/chrome-web-store/users/filgplhfalgafolkffphilkgckdgnona)
+![license](https://img.shields.io/github/license/bradcush/mark-tab-manager)
+
 The missing tab manager
 
 ## Store listings
