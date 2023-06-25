@@ -15,7 +15,8 @@
     "meta:copy": "mkdir -p dist/icons && cp generated/* dist && cp src/icons/* dist/icons",
     "meta:manifest": "rm -rf generated && mkdir generated && bun meta/manifest/generate.ts --browser chromium > generated/manifest.json",
     "test:unit": "jest --config=./jest.config.json",
-    "test:unit:coverage": "bun test:unit --coverage"
+    "test:unit:coverage": "bun test:unit --coverage",
+    "zip:source": "git archive --format zip --output source.zip HEAD"
   },
   "commitlint": {
     "extends": [
