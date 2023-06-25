@@ -4,7 +4,7 @@
   "description": "Automated tab management",
   "repository": "https://github.com/bradcush/mark-tab-manager.git",
   "author": "Bradley Cushing <bradleycushing@gmail.com>",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "private": true,
   "scripts": {
     "build:dev": "bun meta:build && bun meta/dev.build.ts && bun meta:copy",
