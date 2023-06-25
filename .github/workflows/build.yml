@@ -1,11 +1,11 @@
-name: test
+name: build
 on:
   pull_request:
     branches: [main]
   push:
     branches: [main]
 jobs:
-  unit:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,4 +13,8 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - run: bun test:unit
+      - run: bun build:prod
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist

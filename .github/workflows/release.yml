@@ -1,0 +1,23 @@
+name: release
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bun build:prod
+      - run: bun zip:source
+      - run: apt install zip
+      - run: zip -r dist.zip dist
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            source.zip
+            dist.zip
