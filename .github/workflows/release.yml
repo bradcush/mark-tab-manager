@@ -14,7 +14,7 @@ jobs:
       - run: bun install
       - run: bun build:prod
       - run: bun zip:source
-      - run: apt install zip
+      - run: sudo apt-get install zip
       - run: zip -r dist.zip dist
       - uses: softprops/action-gh-release@v1
         with:
