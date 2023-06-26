@@ -80,6 +80,17 @@ Then click the pin icon next to the extension labeled "Mark tab manager".
 
 See the [PACKAGE.md](PACKAGE.md) for `package.json` information
 
+## Releasing
+
+Creating a [release version](https://github.com/bradcush/mark-tab-manager/releases)
+is done by pushing a tag on the `main` branch representing that specific
+version following the accepted format. (eg. `v0.1.43`) Only explicit
+collaborators have been given the necessary permission to push these tags.
+
+*Note: Versions in the `package.json` and extension manifest file should be
+incremented manually and merged in a pull request prior to releasing in order
+to match the subsequent release tag.*
+
 ## License
 
 [Mark Apache License 2.0](LICENSE)
