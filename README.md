@@ -7,7 +7,7 @@
 ![users](https://img.shields.io/chrome-web-store/users/filgplhfalgafolkffphilkgckdgnona)
 ![license](https://img.shields.io/github/license/bradcush/mark-tab-manager)
 
-The missing tab manager
+Automatically group tabs by domain
 
 ## Store listings
 

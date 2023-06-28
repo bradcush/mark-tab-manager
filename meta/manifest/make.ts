@@ -18,7 +18,7 @@ export function make(): Manifest {
                 description: 'Collapse inactive tab groups',
             },
         },
-        description: 'The missing tab manager',
+        description: 'Automatically group tabs by domain',
         icons: {
             '16': 'icons/icon-mark-16.png',
             '48': 'icons/icon-mark-48.png',
@@ -35,7 +35,7 @@ export function make(): Manifest {
             'tabGroups',
             'tabs',
         ],
-        version: '0.1.43',
+        version: '0.1.44',
     };
     return manifest;
 }

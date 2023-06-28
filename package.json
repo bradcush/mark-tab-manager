@@ -1,7 +1,7 @@
 {
   "name": "Mark tab manager",
-  "version": "0.1.43",
-  "description": "Automated tab management",
+  "version": "0.1.44",
+  "description": "Automatically group tabs by domain",
   "repository": "https://github.com/bradcush/mark-tab-manager.git",
   "author": "Bradley Cushing <bradleycushing@gmail.com>",
   "license": "Apache-2.0",
