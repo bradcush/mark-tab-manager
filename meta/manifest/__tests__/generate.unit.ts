@@ -40,7 +40,7 @@ describe('generate', () => {
                             description: 'Collapse inactive tab groups',
                         },
                     },
-                    description: 'The missing tab manager',
+                    description: 'Automatically group tabs by domain',
                     icons: {
                         '128': 'icons/icon-mark-128.png',
                         '16': 'icons/icon-mark-16.png',
@@ -57,7 +57,7 @@ describe('generate', () => {
                         'tabGroups',
                         'tabs',
                     ],
-                    version: '0.1.43',
+                    version: '0.1.44',
                 })
             );
         });
@@ -96,7 +96,7 @@ describe('generate', () => {
                         description: 'Collapse inactive tab groups',
                     },
                 },
-                description: 'The missing tab manager',
+                description: 'Automatically group tabs by domain',
                 icons: {
                     '128': 'icons/icon-mark-128.png',
                     '16': 'icons/icon-mark-16.png',
@@ -113,7 +113,7 @@ describe('generate', () => {
                     'tabGroups',
                     'tabs',
                 ],
-                version: '0.1.43',
+                version: '0.1.44',
             });
         });
     });
