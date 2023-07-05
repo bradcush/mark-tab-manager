@@ -1,13 +1,13 @@
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { tabsMove } from '../move';
 
 describe('tabsMove', () => {
     const originalChrome = global.chrome;
-    const moveMock = jest.fn();
 
     beforeEach(() => {
         global.chrome = {
             tabs: {
-                move: moveMock.mockImplementation(
+                move: mock(
                     (
                         _id: number,
                         _moveProperties: chrome.tabs.MoveProperties,
@@ -25,7 +25,7 @@ describe('tabsMove', () => {
         global.chrome = originalChrome;
     });
 
-    it('should resolve after moving a given tab', async () => {
+    test('should resolve after moving a given tab', async () => {
         global.chrome.runtime.lastError = undefined;
         const tabId = 1;
         const moveProperties = { index: -1 };
@@ -33,12 +33,12 @@ describe('tabsMove', () => {
         expect(resolution).toBeUndefined();
     });
 
-    it('should reject with error if one exists', async () => {
+    test('should reject with error if one exists', () => {
         global.chrome.runtime.lastError = {
             message: 'error',
         };
         const tabId = 1;
         const moveProperties = { index: -1 };
-        await expect(tabsMove(tabId, moveProperties)).rejects.toBe('error');
+        expect(tabsMove(tabId, moveProperties)).rejects.toBe('error');
     });
 });

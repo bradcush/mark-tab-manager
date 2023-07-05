@@ -1,19 +1,17 @@
-import { tabsDiscard } from '../discard';
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
+import { tabsGet } from '../get';
 
-describe('tabsDiscard', () => {
+describe('tabsGet', () => {
     const originalChrome = global.chrome;
-    const discardMock = jest.fn();
 
     beforeEach(() => {
         global.chrome = {
             tabs: {
-                discard: discardMock.mockImplementation(
-                    (
-                        _tabId: number,
-                        callback: (tab: chrome.tabs.Tab) => void
-                    ) => {
+                get: mock(
+                    (_id: number, callback: (tab: chrome.tabs.Tab) => void) => {
                         const tab = {
                             id: 1,
+                            windowId: 2,
                         } as chrome.tabs.Tab;
                         callback(tab);
                     }
@@ -27,18 +25,21 @@ describe('tabsDiscard', () => {
         global.chrome = originalChrome;
     });
 
-    it('should resolve with tab discarded if successful', async () => {
+    test('should resolve with tab for given tab id', async () => {
         global.chrome.runtime.lastError = undefined;
         const tabId = 1;
-        const tab = await tabsDiscard(tabId);
-        expect(tab).toMatchObject({ id: 1 });
+        const tab = await tabsGet(tabId);
+        expect(tab).toMatchObject({
+            id: 1,
+            windowId: 2,
+        });
     });
 
-    it('should reject with error if one exists', async () => {
+    test('should reject with error if one exists', () => {
         global.chrome.runtime.lastError = {
             message: 'error',
         };
         const tabId = 1;
-        await expect(tabsDiscard(tabId)).rejects.toBe('error');
+        expect(tabsGet(tabId)).rejects.toBe('error');
     });
 });

@@ -1,6 +1,4 @@
-import { SyncItems } from './sync-types';
-
-export function storageSyncSet(items: SyncItems): Promise<void> {
+export function storageSyncSet(items: Record<string, unknown>): Promise<void> {
     return new Promise<void>((resolve, reject) => {
         chrome.storage.sync.set(items, () => {
             if (chrome.runtime.lastError) {

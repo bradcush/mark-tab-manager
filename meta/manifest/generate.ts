@@ -1,4 +1,4 @@
-import { Command, OptionValues } from 'commander';
+import { OptionValues } from 'commander';
 import { make as makeManifest } from './make';
 import { Manifest } from './generate-types';
 
@@ -13,7 +13,6 @@ function writeContent(manifest: Manifest) {
 /**
  * Create an extension manifest file
  * for a specific browser engine
- * Exporting function for testing only
  */
 export function generate({ browser }: OptionValues): void {
     if (typeof browser !== 'string') {
@@ -25,14 +24,4 @@ export function generate({ browser }: OptionValues): void {
     }
     const manifest = makeManifest();
     writeContent(manifest);
-}
-
-// We only intend to run the generate script from the command-line but
-// allow it to be imported for testing with coverage reporting
-if (typeof module === 'undefined') {
-    const program = new Command();
-    program.option('-b, --browser <browser>', 'Browser engine, chromium');
-    program.parse(process.argv);
-    const options = program.opts();
-    generate(options);
 }

@@ -1,13 +1,13 @@
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { contextMenusCreate } from '../create';
 
 describe('contextMenusCreate', () => {
     const originalChrome = global.chrome;
-    const createMock = jest.fn();
 
     beforeEach(() => {
         global.chrome = {
             contextMenus: {
-                create: createMock.mockImplementation(
+                create: mock(
                     (
                         _createProperties: chrome.contextMenus.CreateProperties,
                         callback: () => void
@@ -24,7 +24,7 @@ describe('contextMenusCreate', () => {
         global.chrome = originalChrome;
     });
 
-    it('should resolve after menu item is created', async () => {
+    test('should resolve after menu item is created', async () => {
         global.chrome.runtime.lastError = undefined;
         const createProperties = {
             id: 'menuItem',
@@ -34,7 +34,7 @@ describe('contextMenusCreate', () => {
         expect(resolution).toBeUndefined();
     });
 
-    it('should reject with error if one exists', async () => {
+    test('should reject with error if one exists', () => {
         global.chrome.runtime.lastError = {
             message: 'error',
         };
@@ -42,8 +42,6 @@ describe('contextMenusCreate', () => {
             id: 'menuItem',
             title: 'menuItem',
         };
-        await expect(contextMenusCreate(createProperties)).rejects.toBe(
-            'error'
-        );
+        expect(contextMenusCreate(createProperties)).rejects.toBe('error');
     });
 });

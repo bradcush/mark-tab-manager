@@ -1,14 +1,15 @@
+import { describe, expect, test } from 'bun:test';
 import { MemoryCache } from '../memory-cache';
 
 describe('MemoryCache', () => {
     describe('when checking if anything exists in the cache', () => {
-        it('should indicate when no items exist', () => {
+        test('should indicate when no items exist', () => {
             const memoryCache = new MemoryCache();
             const isCacheFilled = memoryCache.exists();
             expect(isCacheFilled).toBe(false);
         });
 
-        it('should indicate when any number of items exist', () => {
+        test('should indicate when any number of items exist', () => {
             const memoryCache = new MemoryCache();
             const keyName = 123;
             const groupName = 'group';
@@ -20,7 +21,7 @@ describe('MemoryCache', () => {
     });
 
     describe('when an item is retrieved from the cache', () => {
-        it('should retrieve the item if present', () => {
+        test('should retrieve the item if present', () => {
             const memoryCache = new MemoryCache();
             const keyName = 123;
             const groupName = 'group';
@@ -30,7 +31,7 @@ describe('MemoryCache', () => {
             expect(value).toBe(groupName);
         });
 
-        it('should retrieve nothing if the item is not present', () => {
+        test('should retrieve nothing if the item is not present', () => {
             const memoryCache = new MemoryCache();
             const value = memoryCache.get(123);
             expect(value).toBeUndefined();
@@ -38,7 +39,7 @@ describe('MemoryCache', () => {
     });
 
     describe('when an item is removed from the cache', () => {
-        it('should remove the item if present', () => {
+        test('should remove the item if present', () => {
             const memoryCache = new MemoryCache();
             const keyName = 123;
             const groupName = 'group';
@@ -53,7 +54,7 @@ describe('MemoryCache', () => {
     });
 
     describe('when an item is added to the cache', () => {
-        it('should add the item if not already present', () => {
+        test('should add the item if not already present', () => {
             const memoryCache = new MemoryCache();
             const keyName = 123;
             const groupName = 'group';
@@ -63,7 +64,7 @@ describe('MemoryCache', () => {
             expect(value).toBe(groupName);
         });
 
-        it('should replace the item if already present', () => {
+        test('should replace the item if already present', () => {
             const memoryCache = new MemoryCache();
             const keyName = 123;
             const firstGroupName = 'group';
@@ -91,7 +92,7 @@ describe('MemoryCache', () => {
             expect(secondValueAgain).toBe(secondGroupName);
         });
 
-        it('should not add the item if cache contains the same number', () => {
+        test('should not add the item if cache contains the same number', () => {
             const memoryCache = new MemoryCache();
             const firstKeyName = 123;
             const groupName = 'group';
@@ -112,7 +113,7 @@ describe('MemoryCache', () => {
             expect(secondValue).toBeUndefined();
         });
 
-        it('should throw if the item key or value is not set', () => {
+        test('should throw if the item key or value is not set', () => {
             const memoryCache = new MemoryCache();
             const firstKeyName = undefined;
             const firstGroupName = 'group';

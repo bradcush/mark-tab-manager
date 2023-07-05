@@ -25,8 +25,7 @@
         "target": "esnext",
         "types": [
             "bun-types",
-            "chrome",
-            "jest"
+            "chrome"
         ]
     }
 }

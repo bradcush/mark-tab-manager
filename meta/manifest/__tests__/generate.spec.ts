@@ -1,15 +1,17 @@
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import childProcess from 'child_process';
 import { Manifest } from '../generate-types';
 import { generate } from '../generate';
 
-const processStdoutWriteMock = jest.fn();
-
-// Helper function used to assert stringified stdout using
-// the same params as specified during generation
-const stringifyToMatchStdout = (manifest: Manifest) =>
-    JSON.stringify(manifest, null, 2);
-
 describe('generate', () => {
+    // Returned value shouldn't matter here
+    const processStdoutWriteMock = mock(() => true);
+
+    // Helper function used to assert stringified stdout using
+    // the same params as specified during generation
+    const stringifyToMatchStdout = (manifest: Manifest) =>
+        JSON.stringify(manifest, null, 2);
+
     // Referencing unbound method for original reassignment
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalProcessStdoutWrite = process.stdout.write;
@@ -17,16 +19,17 @@ describe('generate', () => {
     beforeEach(() => {
         process.stdout.write = processStdoutWriteMock;
     });
+
     afterEach(() => {
         process.stdout.write = originalProcessStdoutWrite;
-        jest.resetAllMocks();
+        processStdoutWriteMock.mockReset();
     });
 
     describe('when manifest generation is run from function call', () => {
-        it('should write manifest for chromium', () => {
+        test('should write manifest for chromium', () => {
             generate({ browser: 'chromium' });
-            expect(processStdoutWriteMock).toHaveBeenCalledTimes(1);
-            expect(processStdoutWriteMock).toHaveBeenCalledWith(
+            const [result] = processStdoutWriteMock.mock.calls;
+            expect(result).toEqual([
                 stringifyToMatchStdout({
                     action: {
                         default_title: 'Mark',
@@ -58,17 +61,17 @@ describe('generate', () => {
                         'tabs',
                     ],
                     version: '0.1.44',
-                })
-            );
+                }),
+            ]);
         });
 
-        it('should throw when browser input is invalid', () => {
+        test('should throw when browser input is invalid', () => {
             expect(() => {
                 generate({ browser: true });
             }).toThrow('Browser vendor not a string');
         });
 
-        it('should throw when browser vendor is unsupported', () => {
+        test('should throw when browser vendor is unsupported', () => {
             expect(() => {
                 generate({ browser: 'unsupported' });
             }).toThrow('Browser vendor not supported');
@@ -76,9 +79,9 @@ describe('generate', () => {
     });
 
     describe('when manifest generation is run as shell script', () => {
-        it('should write any manifest to standard output', () => {
+        test('should write any manifest to standard output', () => {
             const manifestBuffer = childProcess.execSync(
-                'bun meta/manifest/generate.ts --browser chromium'
+                'bun meta/manifest/run.ts --browser chromium'
             );
             // JSON.parse type declarations specify any return value
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

@@ -1,13 +1,13 @@
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { tabsQuery } from '../query';
 
 describe('tabsQuery', () => {
     const originalChrome = global.chrome;
-    const queryMock = jest.fn();
 
     beforeEach(() => {
         global.chrome = {
             tabs: {
-                query: queryMock.mockImplementation(
+                query: mock(
                     (
                         _queryInfo: chrome.tabs.QueryInfo,
                         callback: (tabs: chrome.tabs.Tab[]) => void
@@ -28,7 +28,7 @@ describe('tabsQuery', () => {
         global.chrome = originalChrome;
     });
 
-    it('should resolve with tabs for query match', async () => {
+    test('should resolve with tabs for query match', async () => {
         global.chrome.runtime.lastError = undefined;
         const queryInfo = { title: 'title' };
         const tabs = await tabsQuery(queryInfo);
@@ -38,11 +38,11 @@ describe('tabsQuery', () => {
         });
     });
 
-    it('should reject with error if one exists', async () => {
+    test('should reject with error if one exists', () => {
         global.chrome.runtime.lastError = {
             message: 'error',
         };
         const queryInfo = { title: 'title' };
-        await expect(tabsQuery(queryInfo)).rejects.toBe('error');
+        expect(tabsQuery(queryInfo)).rejects.toBe('error');
     });
 });

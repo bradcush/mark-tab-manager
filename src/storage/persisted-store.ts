@@ -7,14 +7,17 @@ import {
     StateKey,
 } from './persisted-store-types';
 import { Store } from './store-types';
-import { storageSyncGet } from 'src/infra/browser/storage/sync/get';
-import { storageSyncSet } from 'src/infra/browser/storage/sync/set';
+import { StorageSyncGet } from 'src/ports/storage-sync-get';
+import { StorageSyncSet } from 'src/ports/storage-sync-set';
 
 /**
  * Loading, caching, and setting storage
  */
 export class PersistedStore implements Store<State> {
-    public constructor() {
+    public constructor(
+        private storageSyncGet: StorageSyncGet,
+        private storageSyncSet: StorageSyncSet
+    ) {
         logVerbose('constructor');
 
         // Promise to resolve when state is loaded
@@ -36,7 +39,7 @@ export class PersistedStore implements Store<State> {
      */
     private async cacheStorage() {
         logVerbose('cacheStorage');
-        const { settings } = await storageSyncGet('settings');
+        const { settings } = await this.storageSyncGet('settings');
         logVerbose('cacheStorage', settings);
         // If there is no storage we don't cache anything
         // from the outside and consider this step done
@@ -257,6 +260,6 @@ export class PersistedStore implements Store<State> {
         const serializedState = JSON.stringify(internalState);
         logVerbose('setState', serializedState);
         const items = { settings: serializedState };
-        await storageSyncSet(items);
+        await this.storageSyncSet(items);
     }
 }

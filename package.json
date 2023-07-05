@@ -9,13 +9,11 @@
   "scripts": {
     "build:dev": "bun meta:clean && bun meta:manifest && bun meta/dev.build.ts && bun meta:copy",
     "build:prod": "bun meta:clean && bun meta:manifest && bun meta/prod.build.ts && bun meta:copy",
-    "lint": "eslint --ext .ts,.json .",
-    "lint:fix": "bun lint --fix",
+    "lint": "tsc --noEmit && eslint --ext .ts,.json .",
     "meta:clean": "rm -rf dist && rm -rf generated && mkdir generated",
     "meta:copy": "cp generated/* dist && mkdir -p dist/icons && cp src/icons/* dist/icons",
-    "meta:manifest": "bun meta/manifest/generate.ts --browser chromium > generated/manifest.json",
-    "test:unit": "jest --config=./jest.config.json",
-    "test:unit:coverage": "bun test:unit --coverage"
+    "meta:manifest": "bun meta/manifest/run.ts --browser chromium > generated/manifest.json",
+    "test:unit": "bun test --preload ./test.config.ts"
   },
   "commitlint": {
     "extends": [
@@ -36,22 +34,16 @@
     "@commitlint/cli": "^12.0.1",
     "@commitlint/config-conventional": "^12.0.1",
     "@types/chrome": "^0.0.171",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^14.0.14",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
-    "bun-types": "^0.6.11",
+    "bun-types": "^0.6.13",
     "commander": "^7.2.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^4.3.8",
-    "jest": "^29.5.0",
-    "jest-junit-reporter": "^1.1.0",
     "prettier": "^2.8.8",
-    "ts-jest": "^29.1.0",
     "ts-loader": "^7.0.5",
     "typescript": "5.0.4"
   }

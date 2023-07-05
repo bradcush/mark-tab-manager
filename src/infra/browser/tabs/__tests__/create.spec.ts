@@ -1,13 +1,13 @@
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { tabsCreate } from '../create';
 
 describe('tabsCreate', () => {
     const originalChrome = global.chrome;
-    const createMock = jest.fn();
 
     beforeEach(() => {
         global.chrome = {
             tabs: {
-                create: createMock.mockImplementation(
+                create: mock(
                     (
                         _createProerties: chrome.tabs.CreateProperties,
                         callback: (tab: chrome.tabs.Tab) => void
@@ -27,18 +27,18 @@ describe('tabsCreate', () => {
         global.chrome = originalChrome;
     });
 
-    it('should resolve after creating a new tab', async () => {
+    test('should resolve after creating a new tab', async () => {
         global.chrome.runtime.lastError = undefined;
         const createProperties = { url: 'https://example.com' };
         const resolution = await tabsCreate(createProperties);
         expect(resolution).toMatchObject({ id: 1 });
     });
 
-    it('should reject with error if one exists', async () => {
+    test('should reject with error if one exists', () => {
         global.chrome.runtime.lastError = {
             message: 'error',
         };
         const createProperties = { url: 'https://example.com' };
-        await expect(tabsCreate(createProperties)).rejects.toBe('error');
+        expect(tabsCreate(createProperties)).rejects.toBe('error');
     });
 });
