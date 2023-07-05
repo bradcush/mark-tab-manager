@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { Color } from '../constants/colors';
 import { tabGroupsQuery } from '../query';
 
@@ -5,7 +6,6 @@ const { BLUE } = Color;
 
 describe('tabGroupsQuery', () => {
     const originalChrome = global.chrome;
-    const queryMock = jest.fn();
 
     beforeEach(() => {
         // Mocking requires any assertion for setting tabGroups
@@ -20,7 +20,7 @@ describe('tabGroupsQuery', () => {
         global.chrome = originalChrome;
     });
 
-    it('should throw when query is lacking support', () => {
+    test('should throw when query is lacking support', () => {
         // Setting tabGroups requires any
         // eslint-disable-next-line
         (global.chrome as any).tabGroups = undefined;
@@ -31,10 +31,10 @@ describe('tabGroupsQuery', () => {
         }).toThrow('No tabGroups.query support');
     });
 
-    it('should resolve with matching groups for query match', async () => {
+    test('should resolve with matching groups for query match', async () => {
         // Setting tabGroups requires any
         // eslint-disable-next-line
-        (global.chrome as any).tabGroups.query = queryMock.mockImplementation(
+        (global.chrome as any).tabGroups.query = mock(
             (
                 _queryInfo: chrome.tabGroups.QueryInfo,
                 callback: (groups: chrome.tabGroups.TabGroup[]) => void
@@ -62,14 +62,21 @@ describe('tabGroupsQuery', () => {
         });
     });
 
-    it('should reject with error if one exists', async () => {
+    test('should reject with error if one exists', () => {
         // Setting tabGroups requires any
         // eslint-disable-next-line
-        (global.chrome as any).tabGroups.query = queryMock;
+        (global.chrome as any).tabGroups.query = mock(
+            (
+                _queryInfo: chrome.tabGroups.QueryInfo,
+                callback: (groups: chrome.tabGroups.TabGroup[]) => void
+            ) => {
+                callback([]);
+            }
+        );
         global.chrome.runtime.lastError = {
             message: 'error',
         };
         const queryInfo = { title: 'title' };
-        await expect(tabGroupsQuery(queryInfo)).rejects.toBe('error');
+        expect(tabGroupsQuery(queryInfo)).rejects.toBe('error');
     });
 });

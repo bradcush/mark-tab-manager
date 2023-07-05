@@ -1,18 +1,17 @@
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { storageSyncGet } from '../get';
-import { SyncGetKeys, SyncItems } from '../sync-types';
 
 describe('storageSyncGet', () => {
     const originalChrome = global.chrome;
-    const getMock = jest.fn();
 
     beforeEach(() => {
         global.chrome = {
             storage: {
                 sync: {
-                    get: getMock.mockImplementation(
+                    get: mock(
                         (
-                            _keys: SyncGetKeys,
-                            callback: (items: SyncItems) => void
+                            _keys: string | Record<string, unknown>,
+                            callback: (items: Record<string, unknown>) => void
                         ) => {
                             const items = {
                                 settings: 'settings',
@@ -30,7 +29,7 @@ describe('storageSyncGet', () => {
         global.chrome = originalChrome;
     });
 
-    it('should resolve with items for given key', async () => {
+    test('should resolve with items for given key', async () => {
         global.chrome.runtime.lastError = undefined;
         const key = 'settings';
         const items = await storageSyncGet(key);
@@ -39,11 +38,11 @@ describe('storageSyncGet', () => {
         });
     });
 
-    it('should reject with error if one exists', async () => {
+    test('should reject with error if one exists', () => {
         global.chrome.runtime.lastError = {
             message: 'error',
         };
         const key = 'settings';
-        await expect(storageSyncGet(key)).rejects.toBe('error');
+        expect(storageSyncGet(key)).rejects.toBe('error');
     });
 });

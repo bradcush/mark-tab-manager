@@ -1,19 +1,17 @@
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { tabsUngroup } from '../ungroup';
 
 describe('tabsUngroup', () => {
     const originalChrome = global.chrome;
-    const ungroupMock = jest.fn();
 
     beforeEach(() => {
         // Mocking requires any assertion for setting tabGroups
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (global.chrome as any) = {
             tabs: {
-                ungroup: ungroupMock.mockImplementation(
-                    (_tabIds: number[], callback: () => void) => {
-                        callback();
-                    }
-                ),
+                ungroup: mock((_tabIds: number[], callback: () => void) => {
+                    callback();
+                }),
             },
             runtime: {},
         };
@@ -23,7 +21,7 @@ describe('tabsUngroup', () => {
         global.chrome = originalChrome;
     });
 
-    it('should throw when ungroup is lacking support', () => {
+    test('should throw when ungroup is lacking support', () => {
         // Setting tabGroups requires any
         // eslint-disable-next-line
         (global.chrome as any).tabs.ungroup = undefined;
@@ -34,18 +32,18 @@ describe('tabsUngroup', () => {
         }).toThrow('No tabs.ungroup support');
     });
 
-    it('should resolve after tab ids are ungrouped', async () => {
+    test('should resolve after tab ids are ungrouped', async () => {
         global.chrome.runtime.lastError = undefined;
         const tabIds = [1];
         const resolution = await tabsUngroup(tabIds);
         expect(resolution).toBeUndefined();
     });
 
-    it('should reject with error if one exists', async () => {
+    test('should reject with error if one exists', () => {
         global.chrome.runtime.lastError = {
             message: 'error',
         };
         const tabIds = [1];
-        await expect(tabsUngroup(tabIds)).rejects.toBe('error');
+        expect(tabsUngroup(tabIds)).rejects.toBe('error');
     });
 });

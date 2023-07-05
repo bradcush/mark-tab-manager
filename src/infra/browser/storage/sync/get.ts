@@ -1,7 +1,7 @@
-import { SyncGetKeys, SyncItems } from './sync-types';
-
-export function storageSyncGet(keys: SyncGetKeys): Promise<SyncItems> {
-    return new Promise<SyncItems>((resolve, reject) => {
+export function storageSyncGet(
+    keys: string | Record<string, unknown>
+): Promise<Record<string, unknown>> {
+    return new Promise<Record<string, unknown>>((resolve, reject) => {
         chrome.storage.sync.get(keys, (items) => {
             if (chrome.runtime.lastError) {
                 const message =

@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { getTabGroupsColor } from '../colors';
 
 describe('tabGroupsColors', () => {
@@ -10,11 +11,12 @@ describe('tabGroupsColors', () => {
             tabGroups: {},
         };
     });
+
     afterEach(() => {
         global.chrome = originalChrome;
     });
 
-    it('should use default colors if lacking support', () => {
+    test('should use default colors if lacking support', () => {
         // Setting tabGroups requires any
         // eslint-disable-next-line
         (global.chrome as any).tabGroups = undefined;
@@ -30,7 +32,7 @@ describe('tabGroupsColors', () => {
         });
     });
 
-    it('should use system specified colors when supported', () => {
+    test('should use system specified colors when supported', () => {
         const SystemColor = {
             ORIGINAL: 'original',
         };

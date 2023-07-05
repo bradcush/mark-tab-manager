@@ -49,18 +49,16 @@ both a commit push and pull request. They are required for any pull request to
 be merged into the `main` branch. Integration testing has been setup but there
 is currently no need for any at the moment.
 
-- Unit testing: `bun test:unit`
-- Unit testing w/ coverage: `bun test:unit:coverage`
+Unit testing: `bun test:unit`
 
 ## Linting
 
-Linting using `eslint` is also automatically run as part of the GitHub CI for
-both a commit push and pull request. They are also run locally before
-committing using a pre-commit hook. There must be no errors for any pull
+Linting using `tsc` and `eslint` is also automatically run as part of the
+GitHub CI for both a commit push and pull request. It is also run locally
+before committing using a pre-commit hook. There must be no errors for any pull
 request to be merged into the main branch.
 
-- Linting: `bun lint`
-- Lint auto-fix: `bun lint:fix`
+Linting: `bun lint`
 
 ## Running
 

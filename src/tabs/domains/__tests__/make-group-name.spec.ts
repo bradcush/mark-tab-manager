@@ -1,23 +1,24 @@
+import { describe, expect, test } from 'bun:test';
 import { SYSTEM_GROUP_NAME } from '../domain-constants';
 import { makeGroupName } from '../make-group-name';
 
 describe('makeGroupName', () => {
     describe('when any sorting is specified', () => {
-        it('should return the system group if missing url', () => {
+        test('should return the system group if missing url', () => {
             const type = 'granular';
             const url = undefined;
             const groupName = makeGroupName(type, url);
             expect(groupName).toBe(SYSTEM_GROUP_NAME);
         });
 
-        it('should return new nomenclature for new tabs', () => {
+        test('should return new nomenclature for new tabs', () => {
             const type = 'granular';
             const url = 'chrome://newtab';
             const groupName = makeGroupName(type, url);
             expect(groupName).toBe('new');
         });
 
-        it('should return system group for unlisted urls', () => {
+        test('should return system group for unlisted urls', () => {
             const type = 'granular';
             const chromeUrl = 'chrome://extensions';
             const chromeGroup = makeGroupName(type, chromeUrl);
@@ -36,21 +37,21 @@ describe('makeGroupName', () => {
             expect(unlistedGroup).toBe(SYSTEM_GROUP_NAME);
         });
 
-        it('should return the system group when tld only', () => {
+        test('should return the system group when tld only', () => {
             const type = 'granular';
             const url = 'https://com';
             const groupName = makeGroupName(type, url);
             expect(groupName).toBe(SYSTEM_GROUP_NAME);
         });
 
-        it('should properly group source code urls', () => {
+        test('should properly group source code urls', () => {
             const type = 'granular';
             const url = 'view-source:https://domain.com';
             const groupName = makeGroupName(type, url);
             expect(groupName).toBe('domain');
         });
 
-        it('should properly group valid protocols', () => {
+        test('should properly group valid protocols', () => {
             const type = 'granular';
             const httpUrl = 'http://domain.com';
             const httpUrlGroup = makeGroupName(type, httpUrl);
@@ -62,14 +63,14 @@ describe('makeGroupName', () => {
     });
 
     describe('when granular sorting is specified', () => {
-        it('should return the domain when there are no subdomains', () => {
+        test('should return the domain when there are no subdomains', () => {
             const type = 'granular';
             const url = 'https://domain.com';
             const groupName = makeGroupName(type, url);
             expect(groupName).toBe('domain');
         });
 
-        it('should return the domain for if only subdomain is common', () => {
+        test('should return the domain for if only subdomain is common', () => {
             const type = 'granular';
             const wwwUrl = 'https://www.domain.com';
             const wwwGroup = makeGroupName(type, wwwUrl);
@@ -79,7 +80,7 @@ describe('makeGroupName', () => {
             expect(ww2Group).toBe('domain');
         });
 
-        it('should return the highest level subdomain', () => {
+        test('should return the highest level subdomain', () => {
             const type = 'granular';
             const oneSubUrl = 'https://sub.domain.com';
             const oneSubdomainGroup = makeGroupName(type, oneSubUrl);
@@ -91,7 +92,7 @@ describe('makeGroupName', () => {
     });
 
     describe('when shared sorting is specified', () => {
-        it('should return the domain regardless of subdomains', () => {
+        test('should return the domain regardless of subdomains', () => {
             const type = 'shared';
             const domainUrl = 'https://domain.com';
             const domainGroup = makeGroupName(type, domainUrl);
