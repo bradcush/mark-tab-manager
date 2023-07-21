@@ -10,7 +10,7 @@
             "esnext"
         ],
         "module": "esnext",
-        "moduleResolution": "nodenext",
+        "moduleResolution": "bundler",
         "noImplicitReturns": true,
         "paths": {
             "src/*": [
