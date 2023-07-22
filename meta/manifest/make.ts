@@ -35,7 +35,7 @@ export function make(): Manifest {
             'tabGroups',
             'tabs',
         ],
-        version: '0.1.44',
+        version: '0.1.45',
     };
     return manifest;
 }
