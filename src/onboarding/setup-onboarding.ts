@@ -1,6 +1,6 @@
 import { logVerbose } from 'src/logs/console';
 import { runtimeOnInstalled } from 'src/infra/browser/runtime/on-installed';
-import { openResourcesLink } from 'src/resources/open-resource-link';
+import { openResourcesLink } from 'src/toolbar/resources/open-resource-link';
 import { organizeTabs } from 'src/tabs/organize-tabs';
 import { managementOnEnabled } from 'src/infra/browser/management/on-enabled';
 import { runtimeGetId } from 'src/infra/browser/runtime/constants/id';
