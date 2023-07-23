@@ -4,8 +4,7 @@ import { storageSyncGet } from './infra/browser/storage/sync/get';
 import { storageSyncSet } from './infra/browser/storage/sync/set';
 import { setupMemoryManagement } from './memory/setup-memory-management';
 import { setupOnboarding } from './onboarding/setup-onboarding';
-import { setupResourcesMenu } from './resources/setup-resources-menu';
-import { setupSettingsMenu } from './settings/setup-settings-menu';
+import { setupMenus } from './toolbar/setup-menus';
 import { setupShortcuts } from './shortcuts/setup-shortcuts';
 import { MemoryCache } from './storage/memory-cache';
 import { setMemoryCache } from './storage/memory-cache-instance';
@@ -39,13 +38,12 @@ function initialize(infrastructure: InitializeInfra) {
     const memoryCacheInstance = new MemoryCache();
     setMemoryCache(memoryCacheInstance);
 
+    void setupMenus();
     setupTabsManagement();
     setupMemoryManagement();
-    setupResourcesMenu();
-    setupSettingsMenu();
+    setUninstallSurvey(runtimeSetUninstallUrl);
     setupShortcuts();
     setupOnboarding();
-    setUninstallSurvey(runtimeSetUninstallUrl);
 }
 
 initialize({

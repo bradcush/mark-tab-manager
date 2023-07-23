@@ -2,7 +2,6 @@ import { logVerbose } from 'src/logs/console';
 import { getPersistedStore } from 'src/storage/persisted-store-instance';
 import { Checkbox } from './settings-types';
 import { isTabGroupingSupported } from 'src/infra/browser/tab-groups/is-supported';
-import { runtimeOnInstalled } from 'src/infra/browser/runtime/on-installed';
 import { contextMenusCreateLeveled } from 'src/infra/business/context-menus/create-leveled';
 
 /**
@@ -76,23 +75,14 @@ async function createMenuItems() {
 /**
  * Create entire settings menu
  */
-export function createSettingsMenu() {
-    // Only create menus when the extension is installed
-    // and updated or the browser itself is updated
-    // Handlers can be async since we just care to fire and forget
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    runtimeOnInstalled.addListener(async (details) => {
-        logVerbose('runtimeOnInstalled', details);
-        // We have no shared dependencies
-        if (details.reason === 'shared_module_update') {
-            return;
-        }
-        const menuItems = await createMenuItems();
-        void contextMenusCreateLeveled(
-            'Settings',
-            menuItems,
-            'settings',
-            'action'
-        );
-    });
+export async function createSettingsMenu(): Promise<void> {
+    logVerbose('createSettingsMenu');
+    const menuItems = await createMenuItems();
+    const settingsTitle = 'Settings';
+    void contextMenusCreateLeveled(
+        settingsTitle,
+        menuItems,
+        'settings',
+        'action'
+    );
 }

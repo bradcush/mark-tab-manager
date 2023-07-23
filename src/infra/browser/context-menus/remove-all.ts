@@ -1,6 +1,6 @@
-export function contextMenusRemove(menuItemId: string): Promise<void> {
+export function contextMenusRemoveAll(): Promise<void> {
     return new Promise((resolve, reject) => {
-        chrome.contextMenus.remove(menuItemId, () => {
+        chrome.contextMenus.removeAll(() => {
             if (chrome.runtime.lastError) {
                 const message =
                     chrome.runtime.lastError.message ??
