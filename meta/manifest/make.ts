@@ -28,7 +28,6 @@ export function make(): Manifest {
         name: 'Mark tab manager',
         offline_enabled: true,
         permissions: [
-            'commands',
             'contextMenus',
             'management',
             'storage',

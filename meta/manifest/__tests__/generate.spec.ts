@@ -53,7 +53,6 @@ describe('generate', () => {
                     name: 'Mark tab manager',
                     offline_enabled: true,
                     permissions: [
-                        'commands',
                         'contextMenus',
                         'management',
                         'storage',
@@ -109,7 +108,6 @@ describe('generate', () => {
                 name: 'Mark tab manager',
                 offline_enabled: true,
                 permissions: [
-                    'commands',
                     'contextMenus',
                     'management',
                     'storage',
