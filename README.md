@@ -53,10 +53,10 @@ Unit testing: `bun test:unit`
 
 ## Linting
 
-Linting using `tsc` and `eslint` is also automatically run as part of the
-GitHub CI for both a commit push and pull request. It is also run locally
-before committing using a pre-commit hook. There must be no errors for any pull
-request to be merged into the main branch.
+Linting using `eslint` is also automatically run as part of the GitHub CI for
+both a commit push and pull request. It is also run locally before committing
+using a pre-commit hook. There must be no errors for any pull request to be
+merged into the main branch.
 
 Linting: `bun lint`
 

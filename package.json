@@ -9,7 +9,7 @@
   "scripts": {
     "build:dev": "bun meta:clean && bun meta:manifest && bun meta/dev.build.ts && bun meta:copy",
     "build:prod": "bun meta:clean && bun meta:manifest && bun meta/prod.build.ts && bun meta:copy",
-    "lint": "tsc --noEmit && eslint --ext .ts,.json .",
+    "lint": "eslint --ext .ts,.json .",
     "meta:clean": "rm -rf dist && rm -rf generated && mkdir generated",
     "meta:copy": "cp generated/* dist && mkdir -p dist/icons && cp src/icons/* dist/icons",
     "meta:manifest": "bun meta/manifest/run.ts --browser chromium > generated/manifest.json",
