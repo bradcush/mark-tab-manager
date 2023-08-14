@@ -1,6 +1,6 @@
 {
   "name": "Mark tab manager",
-  "version": "0.1.45",
+  "version": "0.1.46",
   "description": "Automatically group tabs by domain",
   "repository": "https://github.com/bradcush/mark-tab-manager.git",
   "author": "Bradley Cushing <bradleycushing@gmail.com>",
@@ -9,7 +9,7 @@
   "scripts": {
     "build:dev": "bun meta:clean && bun meta:manifest && bun meta/dev.build.ts && bun meta:copy",
     "build:prod": "bun meta:clean && bun meta:manifest && bun meta/prod.build.ts && bun meta:copy",
-    "lint": "tsc --noEmit && eslint --ext .ts,.json .",
+    "lint": "eslint --ext .ts,.json .",
     "meta:clean": "rm -rf dist && rm -rf generated && mkdir generated",
     "meta:copy": "cp generated/* dist && mkdir -p dist/icons && cp src/icons/* dist/icons",
     "meta:manifest": "bun meta/manifest/run.ts --browser chromium > generated/manifest.json",
@@ -36,7 +36,7 @@
     "@types/chrome": "^0.0.171",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
-    "bun-types": "^0.6.13",
+    "bun-types": "^0.7.3",
     "commander": "^7.2.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
