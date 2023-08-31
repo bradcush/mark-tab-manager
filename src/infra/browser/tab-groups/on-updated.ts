@@ -3,7 +3,7 @@ export function isTabGroupsOnUpdatedSupported(): boolean {
 }
 
 function addListener(
-    callback: (group: chrome.tabGroups.TabGroup) => void
+    callback: (group: chrome.tabGroups.TabGroup) => void,
 ): void {
     if (!isTabGroupsOnUpdatedSupported()) {
         throw new Error('No tabGroups.onUpdated support');

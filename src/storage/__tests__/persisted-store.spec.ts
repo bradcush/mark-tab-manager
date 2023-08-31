@@ -39,7 +39,7 @@ describe('PersistedStore', () => {
             const storageSyncSetMock = mock(async () => {});
             const persistedStore = new PersistedStore(
                 storageSyncGetMock,
-                storageSyncSetMock
+                storageSyncSetMock,
             );
             await persistedStore.load();
             const state = await persistedStore.getState();
@@ -62,7 +62,7 @@ describe('PersistedStore', () => {
             const storageSyncSetMock = mock(async () => {});
             const persistedStore = new PersistedStore(
                 storageSyncGetMock,
-                storageSyncSetMock
+                storageSyncSetMock,
             );
             await persistedStore.load();
             const state = await persistedStore.getState();
@@ -85,7 +85,7 @@ describe('PersistedStore', () => {
             const storageSyncSetMock = mock(async () => {});
             const persistedStore = new PersistedStore(
                 storageSyncGetMock,
-                storageSyncSetMock
+                storageSyncSetMock,
             );
             await persistedStore.load();
             const state = await persistedStore.getState();
@@ -117,7 +117,7 @@ describe('PersistedStore', () => {
             storageSyncGetMock.mockImplementation(syncGetMock);
             const persistedStore = new PersistedStore(
                 storageSyncGetMock,
-                storageSyncSetMock
+                storageSyncSetMock,
             );
             await persistedStore.load();
             const state = await persistedStore.getState();
@@ -139,7 +139,7 @@ describe('PersistedStore', () => {
             const storageSyncSetMock = mock(async () => {});
             const persistedStore = new PersistedStore(
                 storageSyncGetMock,
-                storageSyncSetMock
+                storageSyncSetMock,
             );
             await persistedStore.load();
             const state = await persistedStore.getState();
@@ -169,7 +169,7 @@ describe('PersistedStore', () => {
             const storageSyncSetMock = mock(async () => {});
             const persistedStore = new PersistedStore(
                 storageSyncGetMock,
-                storageSyncSetMock
+                storageSyncSetMock,
             );
             await persistedStore.load();
             const state = await persistedStore.getState();
@@ -193,7 +193,7 @@ describe('PersistedStore', () => {
             const storageSyncSetMock = mock(async () => {});
             const persistedStore = new PersistedStore(
                 storageSyncGetMock,
-                storageSyncSetMock
+                storageSyncSetMock,
             );
             await persistedStore.load();
             const state = {
@@ -219,7 +219,7 @@ describe('PersistedStore', () => {
             const storageSyncSetMock = mock(async () => {});
             const persistedStore = new PersistedStore(
                 storageSyncGetMock,
-                storageSyncSetMock
+                storageSyncSetMock,
             );
             await persistedStore.load();
 
@@ -264,7 +264,7 @@ describe('PersistedStore', () => {
             const storageSyncSetMock = mock(async () => {});
             const persistedStore = new PersistedStore(
                 storageSyncGetMock,
-                storageSyncSetMock
+                storageSyncSetMock,
             );
             await persistedStore.load();
             const state = await persistedStore.getState();

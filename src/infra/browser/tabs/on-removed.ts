@@ -1,5 +1,5 @@
 function addListener(
-    callback: (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => void
+    callback: (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => void,
 ): void {
     chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
         if (chrome.runtime.lastError) {

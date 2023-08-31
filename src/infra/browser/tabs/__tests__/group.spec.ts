@@ -12,11 +12,11 @@ describe('tabsGroup', () => {
                 group: mock(
                     (
                         _options: chrome.tabs.GroupOptions,
-                        callback: (groupId: number) => void
+                        callback: (groupId: number) => void,
                     ) => {
                         const groupId = 2;
                         callback(groupId);
-                    }
+                    },
                 ),
             },
             runtime: {},

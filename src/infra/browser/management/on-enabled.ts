@@ -1,5 +1,5 @@
 function addListener(
-    callback: (info: chrome.management.ExtensionInfo) => void
+    callback: (info: chrome.management.ExtensionInfo) => void,
 ): void {
     chrome.management.onEnabled.addListener((info) => {
         if (chrome.runtime.lastError) {

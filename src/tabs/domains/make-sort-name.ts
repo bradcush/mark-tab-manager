@@ -12,7 +12,7 @@ import { parseValidDomain } from './parse-valid-domain';
 function makeGranularSortName(
     groupType: GroupType,
     domain: string,
-    subDomains: string[]
+    subDomains: string[],
 ) {
     // Subdomain grouping not possible
     if (!subDomains.length) {

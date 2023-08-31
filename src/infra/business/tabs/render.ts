@@ -8,7 +8,7 @@ export function tabsRender(
     tabs: {
         identifier?: number;
         windowId?: number;
-    }[]
+    }[],
 ): void {
     tabs.forEach(({ identifier, windowId }) => {
         if (!identifier) {

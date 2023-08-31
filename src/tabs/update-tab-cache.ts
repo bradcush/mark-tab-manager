@@ -23,7 +23,7 @@ async function makeCacheItems(tabs: chrome.tabs.Tab[]) {
 export async function updateTabCache(
     tabs: chrome.tabs.Tab[],
     updatedTab?: chrome.tabs.Tab,
-    clean = false
+    clean = false,
 ): Promise<void> {
     if (clean) {
         // Clear the cache for rebuild

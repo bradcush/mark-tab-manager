@@ -38,6 +38,6 @@ export function createResourcesMenu(): void {
         resourceTitle,
         menuItems,
         'resources',
-        'action'
+        'action',
     );
 }

@@ -83,6 +83,6 @@ export async function createSettingsMenu(): Promise<void> {
         settingsTitle,
         menuItems,
         'settings',
-        'action'
+        'action',
     );
 }

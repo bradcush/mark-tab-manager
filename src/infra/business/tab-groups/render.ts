@@ -34,7 +34,7 @@ export function tabGroupsRender(
               action: 'ungroup';
               tabIds: number[];
           }
-    )[]
+    )[],
 ): void {
     tabCollectionItems.forEach((item) => {
         const { action } = item;

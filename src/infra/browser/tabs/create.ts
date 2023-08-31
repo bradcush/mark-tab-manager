@@ -1,5 +1,5 @@
 export function tabsCreate(
-    createProperties: chrome.tabs.CreateProperties
+    createProperties: chrome.tabs.CreateProperties,
 ): Promise<chrome.tabs.Tab> {
     return new Promise((resolve, reject) => {
         chrome.tabs.create(createProperties, (tab) => {

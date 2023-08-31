@@ -3,7 +3,7 @@ export function isTabGroupsQuerySupported(): boolean {
 }
 
 export function tabGroupsQuery(
-    queryInfo: chrome.tabGroups.QueryInfo
+    queryInfo: chrome.tabGroups.QueryInfo,
 ): Promise<chrome.tabGroups.TabGroup[]> {
     if (!isTabGroupsQuerySupported()) {
         throw new Error('No tabGroups.query support');

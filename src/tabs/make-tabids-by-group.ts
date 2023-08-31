@@ -16,7 +16,7 @@ import { makeGroupName } from './domains/make-group-name';
  * }
  */
 export async function makeTabIdsByGroup(
-    tabs: chrome.tabs.Tab[]
+    tabs: chrome.tabs.Tab[],
 ): Promise<TabIdsByGroup> {
     logVerbose('makeTabIdsByGroup', tabs);
     const { enableSubdomainFiltering, forceWindowConsolidation } =

@@ -1,5 +1,5 @@
 function addListener(
-    callback: (details: chrome.runtime.InstalledDetails) => void
+    callback: (details: chrome.runtime.InstalledDetails) => void,
 ): void {
     chrome.runtime.onInstalled.addListener((details) => {
         if (chrome.runtime.lastError) {

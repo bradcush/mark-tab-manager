@@ -10,10 +10,10 @@ describe('actionSetBadgeBackgroundColor', () => {
                 setBadgeBackgroundColor: mock(
                     (
                         _details: chrome.action.BadgeBackgroundColorDetails,
-                        callback: () => void
+                        callback: () => void,
                     ) => {
                         callback();
-                    }
+                    },
                 ),
             },
             runtime: {},

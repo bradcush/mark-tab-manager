@@ -16,7 +16,7 @@ import { StorageSyncSet } from 'src/ports/storage-sync-set';
 export class PersistedStore implements Store<State> {
     public constructor(
         private storageSyncGet: StorageSyncGet,
-        private storageSyncSet: StorageSyncSet
+        private storageSyncSet: StorageSyncSet,
     ) {
         logVerbose('constructor');
 
@@ -167,7 +167,7 @@ export class PersistedStore implements Store<State> {
                 acc[migratedKey] = state[legacyStateKey];
                 return acc;
             },
-            {}
+            {},
         );
         logVerbose('migrateState', migratedState);
         return migratedState;
@@ -213,7 +213,7 @@ export class PersistedStore implements Store<State> {
                 acc[validStateKey] = parsedState[validStateKey];
                 return acc;
             },
-            {}
+            {},
         );
         logVerbose('parseValidState', validParsedState);
         // Migrating any previously named values during parsing without

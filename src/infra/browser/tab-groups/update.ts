@@ -4,7 +4,7 @@ export function isTabGroupsUpdateSupported(): boolean {
 
 export function tabGroupsUpdate(
     groupId: number,
-    updateProperties: chrome.tabGroups.UpdateProperties
+    updateProperties: chrome.tabGroups.UpdateProperties,
 ): Promise<void> {
     if (!isTabGroupsUpdateSupported()) {
         throw new Error('No tabGroups.update support');

@@ -11,10 +11,10 @@ describe('tabsMove', () => {
                     (
                         _id: number,
                         _moveProperties: chrome.tabs.MoveProperties,
-                        callback: () => void
+                        callback: () => void,
                     ) => {
                         callback();
-                    }
+                    },
                 ),
             },
             runtime: {},
