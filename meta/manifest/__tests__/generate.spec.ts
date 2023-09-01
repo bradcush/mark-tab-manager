@@ -80,7 +80,7 @@ describe('generate', () => {
     describe('when manifest generation is run as shell script', () => {
         test('should write any manifest to standard output', () => {
             const manifestBuffer = childProcess.execSync(
-                'bun meta/manifest/run.ts --browser chromium'
+                'bun meta/manifest/run.ts --browser chromium',
             );
             // JSON.parse type declarations specify any return value
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

@@ -51,7 +51,7 @@ async function alphabetizeTabs(tabs: chrome.tabs.Tab[]) {
  * Sort tabs based on settings
  */
 export async function treatTabOrder(
-    tabs: chrome.tabs.Tab[]
+    tabs: chrome.tabs.Tab[],
 ): Promise<chrome.tabs.Tab[]> {
     logVerbose('treatTabOrder', tabs);
     const { enableAlphabeticSorting, clusterGroupedTabs } =

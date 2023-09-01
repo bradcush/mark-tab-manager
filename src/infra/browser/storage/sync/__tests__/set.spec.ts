@@ -11,10 +11,10 @@ describe('storageSyncSet', () => {
                     set: mock(
                         (
                             _items: Record<string, unknown>,
-                            callback: () => void
+                            callback: () => void,
                         ) => {
                             callback();
-                        }
+                        },
                     ),
                 },
             },

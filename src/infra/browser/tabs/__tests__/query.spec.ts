@@ -10,14 +10,14 @@ describe('tabsQuery', () => {
                 query: mock(
                     (
                         _queryInfo: chrome.tabs.QueryInfo,
-                        callback: (tabs: chrome.tabs.Tab[]) => void
+                        callback: (tabs: chrome.tabs.Tab[]) => void,
                     ) => {
                         const tab = {
                             id: 1,
                             windowId: 2,
                         } as chrome.tabs.Tab;
                         callback([tab]);
-                    }
+                    },
                 ),
             },
             runtime: {},

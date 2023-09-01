@@ -14,7 +14,7 @@ describe('tabsGet', () => {
                             windowId: 2,
                         } as chrome.tabs.Tab;
                         callback(tab);
-                    }
+                    },
                 ),
             },
             runtime: {},

@@ -5,7 +5,7 @@ import { getTabGroupsColor } from 'src/infra/browser/tab-groups/constants/colors
  * is valid for a tab group
  */
 function isTabGroupsColorValid(
-    color: string
+    color: string,
 ): color is chrome.tabGroups.ColorEnum {
     const colors = [
         'blue',

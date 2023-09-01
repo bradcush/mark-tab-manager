@@ -10,10 +10,10 @@ describe('actionSetBadgeText', () => {
                 setBadgeText: mock(
                     (
                         _details: chrome.action.BadgeTextDetails,
-                        callback: () => void
+                        callback: () => void,
                     ) => {
                         callback();
-                    }
+                    },
                 ),
             },
             runtime: {},

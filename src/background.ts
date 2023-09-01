@@ -26,7 +26,7 @@ function initialize(infrastructure: InitializeInfra) {
     // Load settings from storage
     const persistedStoreInstance = new PersistedStore(
         storageSyncGet,
-        storageSyncSet
+        storageSyncSet,
     );
     void persistedStoreInstance.load();
     // Set instance for direct use without

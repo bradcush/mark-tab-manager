@@ -10,10 +10,10 @@ describe('contextMenusCreate', () => {
                 create: mock(
                     (
                         _createProperties: chrome.contextMenus.CreateProperties,
-                        callback: () => void
+                        callback: () => void,
                     ) => {
                         callback();
-                    }
+                    },
                 ),
             },
             runtime: {},

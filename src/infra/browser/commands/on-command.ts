@@ -1,5 +1,5 @@
 function addListener(
-    callback: (command: string, tab: chrome.tabs.Tab) => void
+    callback: (command: string, tab: chrome.tabs.Tab) => void,
 ): void {
     chrome.commands.onCommand.addListener((command, tab) => {
         if (chrome.runtime.lastError) {

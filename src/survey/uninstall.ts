@@ -8,7 +8,7 @@ const UNINSTALL_SURVERY_URL = 'https://forms.gle/wNhryQtn8bHNLT488';
  * redirected to when the extension is uninstalled
  */
 export function setUninstallSurvey(
-    runtimeSetUninstallUrl: RuntimeSetUninstallUrl
+    runtimeSetUninstallUrl: RuntimeSetUninstallUrl,
 ): void {
     void runtimeSetUninstallUrl(UNINSTALL_SURVERY_URL);
 }

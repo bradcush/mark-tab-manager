@@ -2,8 +2,8 @@ function addListener(
     callback: (
         tabId: number,
         changeInfo: chrome.tabs.TabChangeInfo,
-        tab: chrome.tabs.Tab
-    ) => void
+        tab: chrome.tabs.Tab,
+    ) => void,
 ): void {
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         if (chrome.runtime.lastError) {

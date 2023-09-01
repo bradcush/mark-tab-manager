@@ -10,13 +10,13 @@ describe('tabsDiscard', () => {
                 discard: mock(
                     (
                         _tabId: number,
-                        callback: (tab: chrome.tabs.Tab) => void
+                        callback: (tab: chrome.tabs.Tab) => void,
                     ) => {
                         const tab = {
                             id: 1,
                         } as chrome.tabs.Tab;
                         callback(tab);
-                    }
+                    },
                 ),
             },
             runtime: {},

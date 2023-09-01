@@ -37,7 +37,7 @@ describe('tabGroupsQuery', () => {
         (global.chrome as any).tabGroups.query = mock(
             (
                 _queryInfo: chrome.tabGroups.QueryInfo,
-                callback: (groups: chrome.tabGroups.TabGroup[]) => void
+                callback: (groups: chrome.tabGroups.TabGroup[]) => void,
             ) => {
                 const group = {
                     collapsed: false,
@@ -47,7 +47,7 @@ describe('tabGroupsQuery', () => {
                     windowId: 1,
                 };
                 callback([group]);
-            }
+            },
         );
         global.chrome.runtime.lastError = undefined;
         const queryInfo = { title: 'match' };
@@ -68,10 +68,10 @@ describe('tabGroupsQuery', () => {
         (global.chrome as any).tabGroups.query = mock(
             (
                 _queryInfo: chrome.tabGroups.QueryInfo,
-                callback: (groups: chrome.tabGroups.TabGroup[]) => void
+                callback: (groups: chrome.tabGroups.TabGroup[]) => void,
             ) => {
                 callback([]);
-            }
+            },
         );
         global.chrome.runtime.lastError = {
             message: 'error',

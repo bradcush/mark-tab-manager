@@ -13,10 +13,10 @@ describe('tabGroupsUpdate', () => {
                     (
                         _groupId: number,
                         _updateProperties: chrome.tabGroups.UpdateProperties,
-                        callback: () => void
+                        callback: () => void,
                     ) => {
                         callback();
-                    }
+                    },
                 ),
             },
             runtime: {},
@@ -54,7 +54,7 @@ describe('tabGroupsUpdate', () => {
         const groupId = 1;
         const updateProperties = { title: 'title' };
         expect(tabGroupsUpdate(groupId, updateProperties)).rejects.toBe(
-            'error'
+            'error',
         );
     });
 });

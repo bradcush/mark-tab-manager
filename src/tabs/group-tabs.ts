@@ -22,7 +22,7 @@ function getActiveTabIdsByWindowId(tabs: chrome.tabs.Tab[]) {
             acc.set(windowId, id);
             return acc;
         },
-        new Map<number, number | undefined>()
+        new Map<number, number | undefined>(),
     );
 }
 
@@ -83,7 +83,7 @@ async function makeTabCollection(
     activeTabIdsByWindowId: ActiveTabIdsByWindowId,
     tabIdsByGroup: TabIdsByGroup,
     format: GroupFormat,
-    updatedTab?: chrome.tabs.Tab
+    updatedTab?: chrome.tabs.Tab,
 ) {
     logVerbose('makeTabCollection', tabIdsByGroup);
     let isolatedGroupCount = 0;
@@ -145,7 +145,7 @@ async function makeTabCollection(
 export async function groupTabs(
     format: GroupFormat,
     tabsToRender: chrome.tabs.Tab[],
-    newTab?: chrome.tabs.Tab
+    newTab?: chrome.tabs.Tab,
 ): Promise<void> {
     logVerbose('groupTabs', format);
     const activeTabIdsByWindowId = getActiveTabIdsByWindowId(tabsToRender);
@@ -154,7 +154,7 @@ export async function groupTabs(
         activeTabIdsByWindowId,
         tabIdsByGroup,
         format,
-        newTab
+        newTab,
     );
     void tabGroupsRender(tabCollection);
 }

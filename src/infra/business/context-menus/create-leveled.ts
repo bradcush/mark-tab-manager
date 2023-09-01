@@ -9,7 +9,7 @@ export async function contextMenusCreateLeveled(
     heading: string,
     children: MenuItem[],
     label: string,
-    location: chrome.contextMenus.ContextType
+    location: chrome.contextMenus.ContextType,
 ): Promise<void> {
     // Finish creating the menu heading
     // before linking it's children

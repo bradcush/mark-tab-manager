@@ -1,8 +1,8 @@
 function addListener(
     callback: (
         info: chrome.contextMenus.OnClickData,
-        tab?: chrome.tabs.Tab
-    ) => void
+        tab?: chrome.tabs.Tab,
+    ) => void,
 ): void {
     chrome.contextMenus.onClicked.addListener((info, tab) => {
         if (chrome.runtime.lastError) {

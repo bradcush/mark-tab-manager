@@ -24,7 +24,7 @@ async function hasGroupChanged(currentUrl: string, id: number) {
  */
 async function shouldUpdate(
     tabId: number,
-    changeInfo: chrome.tabs.TabChangeInfo
+    changeInfo: chrome.tabs.TabChangeInfo,
 ) {
     logVerbose('shouldUpdate');
     const { status, url } = changeInfo;
@@ -66,7 +66,7 @@ export function setupTabsManagement(): void {
                     updatedTab: tab,
                 });
             }
-        }
+        },
     );
 
     // Handle removed tabs

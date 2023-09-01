@@ -11,13 +11,13 @@ describe('storageSyncGet', () => {
                     get: mock(
                         (
                             _keys: string | Record<string, unknown>,
-                            callback: (items: Record<string, unknown>) => void
+                            callback: (items: Record<string, unknown>) => void,
                         ) => {
                             const items = {
                                 settings: 'settings',
                             };
                             callback(items);
-                        }
+                        },
                     ),
                 },
             },

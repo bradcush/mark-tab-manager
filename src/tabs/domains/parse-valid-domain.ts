@@ -5,7 +5,7 @@ import { ParsedValidDomainResult } from './domain-types';
  * Parse the domain info from a valid URL
  */
 export function parseValidDomain(
-    hostname: string
+    hostname: string,
 ): ParsedValidDomainResult | null {
     // Unlisted domains are considered invalid
     const parseResult = parseDomain(hostname);

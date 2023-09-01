@@ -1,5 +1,5 @@
 export function contextMenusCreate(
-    createProperties: chrome.contextMenus.CreateProperties
+    createProperties: chrome.contextMenus.CreateProperties,
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         chrome.contextMenus.create(createProperties, () => {

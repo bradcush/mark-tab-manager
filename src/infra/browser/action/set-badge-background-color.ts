@@ -1,5 +1,5 @@
 export function actionSetBadgeBackgroundColor(
-    details: chrome.action.BadgeBackgroundColorDetails
+    details: chrome.action.BadgeBackgroundColorDetails,
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         chrome.action.setBadgeBackgroundColor(details, () => {
